@@ -1,0 +1,21 @@
+# ── Secrets: never leave the box ──
+.env
+*.env
+!.env.example
+*.key
+*.pem
+*.crt
+**/secrets/
+
+# ── Live data & volumes: never in git ──
+**/volumes/
+**/*-data/
+
+# ── Backups & logs ──
+**/backups/
+**/logs/
+*.log
+
+# ── OS noise ──
+.DS_Store
+Thumbs.db
