@@ -1,0 +1,15 @@
+services:
+  snippetbox:
+    image: pawelmalak/snippet-box:latest
+    container_name: snippetbox
+    restart: unless-stopped
+    ports:
+      - "127.0.0.1:5000:5000"
+    volumes:
+      - ./volumes/data:/app/data
+    networks:
+      - drawbridge
+
+networks:
+  drawbridge:
+    external: true
