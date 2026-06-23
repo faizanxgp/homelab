@@ -1,0 +1,41 @@
+services:
+  glance:
+    image: glanceapp/glance:latest
+    container_name: glance
+    restart: unless-stopped
+    volumes:
+      - ./glance/config/glance.yml:/app/config/glance.yml:ro
+      - /var/run/docker.sock:/var/run/docker.sock:ro
+    ports:
+      - "127.0.0.1:8081:8080"
+    networks:
+      - drawbridge
+
+  dashy:
+    image: lissy93/dashy:latest
+    container_name: dashy
+    restart: unless-stopped
+    volumes:
+      - ./dashy/config:/app/user-data
+    ports:
+      - "127.0.0.1:4000:8080"
+    networks:
+      - drawbridge
+
+  homepage:
+    image: ghcr.io/gethomepage/homepage:latest
+    container_name: homepage
+    restart: unless-stopped
+    environment:
+      - HOMEPAGE_ALLOWED_HOSTS=localhost:3002
+    volumes:
+      - ./homepage/config:/app/config
+      - /var/run/docker.sock:/var/run/docker.sock:ro
+    ports:
+      - "127.0.0.1:3002:3000"
+    networks:
+      - drawbridge
+
+networks:
+  drawbridge:
+    external: true

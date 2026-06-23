@@ -1,0 +1,21 @@
+pageInfo:
+  title: BoBo Prime
+appConfig:
+  theme: nord
+sections:
+  - name: Monitoring
+    items:
+      - title: Grafana
+        url: http://localhost:3000
+        icon: hl-grafana
+      - title: Prometheus
+        url: http://localhost:9090
+        icon: hl-prometheus
+      - title: Uptime Kuma
+        url: http://localhost:3001
+        icon: hl-uptime-kuma
+  - name: Apps
+    items:
+      - title: Snippetbox
+        url: http://localhost:5000
+        icon: hl-snippet-box

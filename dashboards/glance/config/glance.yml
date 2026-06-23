@@ -1,0 +1,10 @@
+pages:
+  - name: BoBo Prime
+    columns:
+      - size: small
+        widgets:
+          - type: clock
+            hour-format: 24h
+      - size: full
+        widgets:
+          - type: docker-containers

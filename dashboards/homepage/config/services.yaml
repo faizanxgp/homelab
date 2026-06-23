@@ -1,0 +1,18 @@
+- Monitoring:
+    - Grafana:
+        href: http://localhost:3000
+        container: grafana
+        server: my-docker
+    - Prometheus:
+        href: http://localhost:9090
+        container: prometheus
+        server: my-docker
+    - Uptime Kuma:
+        href: http://localhost:3001
+        container: uptime-kuma
+        server: my-docker
+- Apps:
+    - Snippetbox:
+        href: http://localhost:5000
+        container: snippetbox
+        server: my-docker
