@@ -1,0 +1,81 @@
+services:
+  evo-postgres:
+    image: postgres:16
+    container_name: evo-postgres
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: evolution
+      POSTGRES_PASSWORD: ${EVO_DB_PASSWORD}
+      POSTGRES_DB: evolution
+    volumes:
+      - ./volumes/postgres:/var/lib/postgresql/data
+    networks:
+      - automation
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U evolution -d evolution"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  evo-redis:
+    image: redis:7
+    container_name: evo-redis
+    restart: unless-stopped
+    command: redis-server --appendonly yes
+    volumes:
+      - ./volumes/redis:/data
+    networks:
+      - automation
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  evolution-api:
+    image: atendai/evolution-api:latest
+    container_name: evolution-api
+    restart: unless-stopped
+    depends_on:
+      evo-postgres:
+        condition: service_healthy
+      evo-redis:
+        condition: service_healthy
+    environment:
+      SERVER_URL: http://localhost:8080
+      AUTHENTICATION_API_KEY: ${EVO_API_KEY}
+      AUTHENTICATION_EXPOSE_IN_FETCH_INSTANCES: "false"
+      DEL_INSTANCE: "false"
+      TELEMETRY_ENABLED: "false"
+      DATABASE_ENABLED: "true"
+      DATABASE_PROVIDER: postgresql
+      DATABASE_CONNECTION_URI: postgresql://evolution:${EVO_DB_PASSWORD}@evo-postgres:5432/evolution?schema=public
+      DATABASE_CONNECTION_CLIENT_NAME: evolution
+      DATABASE_SAVE_DATA_INSTANCE: "true"
+      DATABASE_SAVE_DATA_NEW_MESSAGE: "true"
+      DATABASE_SAVE_MESSAGE_UPDATE: "true"
+      DATABASE_SAVE_DATA_CONTACTS: "true"
+      DATABASE_SAVE_DATA_CHATS: "true"
+      DATABASE_SAVE_DATA_LABELS: "true"
+      DATABASE_SAVE_DATA_HISTORIC: "true"
+      CACHE_REDIS_ENABLED: "true"
+      CACHE_REDIS_URI: redis://evo-redis:6379/6
+      CACHE_REDIS_PREFIX_KEY: evolution
+      CACHE_REDIS_SAVE_INSTANCES: "false"
+      CACHE_LOCAL_ENABLED: "false"
+      RABBITMQ_ENABLED: "false"
+      S3_ENABLED: "false"
+      TZ: Asia/Karachi
+    volumes:
+      - ./volumes/instances:/evolution/instances
+    ports:
+      - "127.0.0.1:8080:8080"
+    networks:
+      - automation
+      - drawbridge
+
+networks:
+  automation:
+    external: true
+  drawbridge:
+    external: true
