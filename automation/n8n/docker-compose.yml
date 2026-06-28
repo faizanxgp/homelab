@@ -12,6 +12,23 @@ x-n8n-env: &n8n-env
   N8N_RUNNERS_ENABLED: "true"
   GENERIC_TIMEZONE: Asia/Karachi
   TZ: Asia/Karachi
+  # ---- Prometheus metrics: expose everything n8n can emit ----
+  N8N_METRICS: "true"
+  N8N_METRICS_PREFIX: n8n_
+  N8N_METRICS_INCLUDE_DEFAULT_METRICS: "true"
+  N8N_METRICS_INCLUDE_CACHE_METRICS: "true"
+  N8N_METRICS_INCLUDE_MESSAGE_EVENT_BUS_METRICS: "true"
+  N8N_METRICS_INCLUDE_WORKFLOW_ID_LABEL: "true"
+  N8N_METRICS_INCLUDE_NODE_TYPE_LABEL: "true"
+  N8N_METRICS_INCLUDE_CREDENTIAL_TYPE_LABEL: "true"
+  N8N_METRICS_INCLUDE_API_ENDPOINTS: "true"
+  N8N_METRICS_INCLUDE_API_PATH_LABEL: "true"
+  N8N_METRICS_INCLUDE_API_METHOD_LABEL: "true"
+  N8N_METRICS_INCLUDE_API_STATUS_CODE_LABEL: "true"
+  N8N_METRICS_INCLUDE_QUEUE_METRICS: "true"
+  N8N_METRICS_QUEUE_METRICS_INTERVAL: "20"
+  N8N_METRICS_INCLUDE_SSRF_METRICS: "true"
+  N8N_METRICS_INCLUDE_DNS_CACHE_METRICS: "true"
 
 x-n8n-common: &n8n-common
   image: n8nio/n8n:latest
@@ -20,6 +37,7 @@ x-n8n-common: &n8n-common
     - ./volumes/n8n:/home/node/.n8n
   networks:
     - automation
+    - observatory
   depends_on:
     n8n-postgres:
       condition: service_healthy
@@ -39,6 +57,7 @@ services:
       - ./volumes/postgres:/var/lib/postgresql/data
     networks:
       - automation
+      - observatory
     healthcheck:
       test: ["CMD-SHELL", "pg_isready -U n8n -d n8n"]
       interval: 10s
@@ -54,6 +73,7 @@ services:
       - ./volumes/redis:/data
     networks:
       - automation
+      - observatory
     healthcheck:
       test: ["CMD", "redis-cli", "ping"]
       interval: 10s
@@ -73,6 +93,7 @@ services:
     networks:
       - automation
       - drawbridge
+      - observatory
 
   n8n-worker:
     <<: *n8n-common
@@ -80,9 +101,39 @@ services:
     command: worker
     environment:
       <<: *n8n-env
+      # Start the worker's HTTP server so /metrics + /healthz are exposed
+      QUEUE_HEALTH_CHECK_ACTIVE: "true"
+      N8N_PORT: 5678
+
+  # ---- Exporters ----
+  n8n-postgres-exporter:
+    image: prometheuscommunity/postgres-exporter:latest
+    container_name: n8n-postgres-exporter
+    restart: unless-stopped
+    environment:
+      DATA_SOURCE_NAME: "postgresql://n8n:${N8N_DB_PASSWORD}@n8n-postgres:5432/n8n?sslmode=disable"
+    depends_on:
+      n8n-postgres:
+        condition: service_healthy
+    networks:
+      - observatory
+
+  n8n-redis-exporter:
+    image: oliver006/redis_exporter:latest
+    container_name: n8n-redis-exporter
+    restart: unless-stopped
+    environment:
+      REDIS_ADDR: "redis://n8n-redis:6379"
+    depends_on:
+      n8n-redis:
+        condition: service_healthy
+    networks:
+      - observatory
 
 networks:
   automation:
     external: true
   drawbridge:
+    external: true
+  observatory:
     external: true

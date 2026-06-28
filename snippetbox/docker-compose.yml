@@ -9,7 +9,10 @@ services:
       - ./volumes/data:/app/data
     networks:
       - drawbridge
+      - observatory
 
 networks:
   drawbridge:
+    external: true
+  observatory:
     external: true

@@ -11,6 +11,7 @@ services:
       - ./volumes/postgres:/var/lib/postgresql/data
     networks:
       - automation
+      - observatory
     healthcheck:
       test: ["CMD-SHELL", "pg_isready -U evolution -d evolution"]
       interval: 10s
@@ -26,6 +27,7 @@ services:
       - ./volumes/redis:/data
     networks:
       - automation
+      - observatory
     healthcheck:
       test: ["CMD", "redis-cli", "ping"]
       interval: 10s
@@ -73,9 +75,37 @@ services:
     networks:
       - automation
       - drawbridge
+      - observatory
+
+  # ---- Exporters ----
+  evo-postgres-exporter:
+    image: prometheuscommunity/postgres-exporter:latest
+    container_name: evo-postgres-exporter
+    restart: unless-stopped
+    environment:
+      DATA_SOURCE_NAME: "postgresql://evolution:${EVO_DB_PASSWORD}@evo-postgres:5432/evolution?sslmode=disable"
+    depends_on:
+      evo-postgres:
+        condition: service_healthy
+    networks:
+      - observatory
+
+  evo-redis-exporter:
+    image: oliver006/redis_exporter:latest
+    container_name: evo-redis-exporter
+    restart: unless-stopped
+    environment:
+      REDIS_ADDR: "redis://evo-redis:6379"
+    depends_on:
+      evo-redis:
+        condition: service_healthy
+    networks:
+      - observatory
 
 networks:
   automation:
     external: true
   drawbridge:
+    external: true
+  observatory:
     external: true

@@ -7,6 +7,7 @@ scrape_configs:
     static_configs:
       - targets: ['localhost:9090']
 
+  # ---- Host & container level ----
   - job_name: node-exporter
     static_configs:
       - targets: ['node-exporter:9100']
@@ -14,3 +15,38 @@ scrape_configs:
   - job_name: cadvisor
     static_configs:
       - targets: ['cadvisor:8080']
+
+  # ---- n8n application metrics (queue mode) ----
+  - job_name: n8n
+    metrics_path: /metrics
+    static_configs:
+      - targets: ['n8n-main:5678']
+        labels: {instance: 'n8n-main'}
+      - targets: ['n8n-worker:5678']
+        labels: {instance: 'n8n-worker'}
+
+  # ---- PostgreSQL exporters ----
+  - job_name: postgres
+    static_configs:
+      - targets: ['n8n-postgres-exporter:9187']
+        labels: {instance: 'n8n-postgres'}
+      - targets: ['evo-postgres-exporter:9187']
+        labels: {instance: 'evo-postgres'}
+      - targets: ['automation-postgres-exporter:9187']
+        labels: {instance: 'postgres-automation'}
+
+  # ---- Redis exporters ----
+  - job_name: redis
+    static_configs:
+      - targets: ['n8n-redis-exporter:9121']
+        labels: {instance: 'n8n-redis'}
+      - targets: ['evo-redis-exporter:9121']
+        labels: {instance: 'evo-redis'}
+      - targets: ['textbee-redis-exporter:9121']
+        labels: {instance: 'textbee-redis'}
+
+  # ---- MongoDB exporter ----
+  - job_name: mongodb
+    static_configs:
+      - targets: ['textbee-mongo-exporter:9216']
+        labels: {instance: 'textbee-db'}

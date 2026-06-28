@@ -11,12 +11,30 @@ services:
       - ./volumes/postgres:/var/lib/postgresql/data
     networks:
       - automation
+      - observatory
+      - drawbridge      # reachable via Cloudflare Tunnel (Access-gated) for schema work
     healthcheck:
       test: ["CMD-SHELL", "pg_isready -U automation -d automation"]
       interval: 10s
       timeout: 5s
       retries: 5
 
+  automation-postgres-exporter:
+    image: prometheuscommunity/postgres-exporter:latest
+    container_name: automation-postgres-exporter
+    restart: unless-stopped
+    environment:
+      DATA_SOURCE_NAME: "postgresql://automation:${AUTOMATION_DB_PASSWORD}@postgres-automation:5432/automation?sslmode=disable"
+    depends_on:
+      postgres-automation:
+        condition: service_healthy
+    networks:
+      - observatory
+
 networks:
   automation:
+    external: true
+  observatory:
+    external: true
+  drawbridge:
     external: true

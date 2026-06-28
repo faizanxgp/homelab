@@ -9,7 +9,10 @@ services:
       - ./volumes/data:/app/data
     networks:
       - observatory
+      - drawbridge      # reachable via Cloudflare Tunnel at uptime.itproxima.com
 
 networks:
   observatory:
+    external: true
+  drawbridge:
     external: true
