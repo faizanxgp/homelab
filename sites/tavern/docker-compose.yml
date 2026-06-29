@@ -1,0 +1,21 @@
+# ── SillyTavern — tavern.itproxima.com ─────────────────────────────────────────
+# Fronted by the shared Cloudflare Tunnel (drawbridge net).
+# Public hostname + Cloudflare Access gate managed by
+# /opt/homelab/utility/cloudflared/deploy-tunnel.sh
+services:
+  sillytavern:
+    image: ghcr.io/sillytavern/sillytavern:latest
+    container_name: sillytavern
+    restart: unless-stopped
+    environment:
+      TZ: Asia/Karachi
+    volumes:
+      - ./volumes/config:/home/node/app/config
+      - ./volumes/data:/home/node/app/data
+    # No published host ports — the ONLY ingress is via cloudflared on drawbridge.
+    networks:
+      - drawbridge
+
+networks:
+  drawbridge:
+    external: true

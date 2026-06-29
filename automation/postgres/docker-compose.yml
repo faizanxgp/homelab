@@ -12,7 +12,8 @@ services:
     networks:
       - automation
       - observatory
-      - drawbridge      # reachable via Cloudflare Tunnel (Access-gated) for schema work
+      # drawbridge removed 2026-06-28: DB is internal-only. Schema work is done via the
+      # db-viewer (pgweb) stack at /opt/homelab/utility/db-viewer, which bridges automation<->drawbridge.
     healthcheck:
       test: ["CMD-SHELL", "pg_isready -U automation -d automation"]
       interval: 10s
@@ -35,6 +36,4 @@ networks:
   automation:
     external: true
   observatory:
-    external: true
-  drawbridge:
     external: true

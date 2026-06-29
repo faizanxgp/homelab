@@ -1,0 +1,16 @@
+services:
+  apk-server:
+    image: nginx:alpine
+    container_name: apk-server
+    restart: unless-stopped
+    volumes:
+      - ./nginx.conf:/etc/nginx/conf.d/default.conf:ro
+      - ./files:/srv:ro
+    ports:
+      - "127.0.0.1:3020:80"   # local test only; public access is via the cloudflare tunnel
+    networks:
+      - drawbridge            # the public tunnel network; cloudflared reaches http://apk-server:80
+
+networks:
+  drawbridge:
+    external: true

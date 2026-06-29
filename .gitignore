@@ -21,3 +21,31 @@
 # ── OS noise ──
 .DS_Store
 Thumbs.db
+
+# ── Build artifacts & bloat: never in git ──
+*.apk
+**/node_modules/
+**/.next/
+**/dist/
+**/build/
+**/android/app/build/
+**/android/.gradle/
+**/.gradle/
+
+# ── App secrets that aren't .env (Firebase / signing) ──
+**/google-services.json
+*.jks
+*.keystore
+
+# ── Served / generated file drops (keep folder, drop contents) ──
+utility/downloads/files/*
+utility/uploads/files/*
+utility/apk-server/files/*
+!utility/downloads/files/.gitkeep
+!utility/uploads/files/.gitkeep
+!utility/apk-server/files/.gitkeep
+wa_qr*.png
+wa_qr*.html
+
+# ── Vendored upstream app: tracked in its own repo, not here (revisit) ──
+automation/textbee/

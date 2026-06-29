@@ -1,0 +1,25 @@
+# Temporary web DB viewer (pgweb) for poking at postgres-automation.
+# Bridges automation<->drawbridge so the tunnel can reach a UI that can reach the DB,
+# WITHOUT the DB itself being on drawbridge.
+# Public hostname (set in Cloudflare dashboard): db.itproxima.com -> http://db-viewer:8081
+# DELETE AFTER USE:  docker compose -f /opt/homelab/utility/db-viewer/docker-compose.yml down
+services:
+  db-viewer:
+    image: sosedoff/pgweb:latest
+    container_name: db-viewer
+    restart: unless-stopped
+    # Image entrypoint already sets --bind=0.0.0.0 --listen=8081 (0.0.0.0 = the container's
+    # own interfaces, NOT the public internet). We just add the connect screen.
+    # --sessions = show the connect screen so you type host/user/pass/db in the browser.
+    command: ["--sessions"]
+    # No host port published on purpose: the ONLY way in is the Cloudflare tunnel reaching
+    # http://db-viewer:8081 container-to-container over drawbridge. Nothing touches the host.
+    networks:
+      - drawbridge              # cloudflared reaches it at http://db-viewer:8081
+      - automation              # so it can reach postgres-automation:5432 internally
+
+networks:
+  drawbridge:
+    external: true
+  automation:
+    external: true

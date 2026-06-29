@@ -1,0 +1,17 @@
+services:
+  uploads:
+    image: python:3.12-alpine
+    container_name: uploads
+    restart: unless-stopped
+    command: ["python", "/app/app.py"]
+    volumes:
+      - ./app.py:/app/app.py:ro
+      - ./files:/srv/uploads          # uploaded files land here (read-write)
+    ports:
+      - "127.0.0.1:3022:80"           # local test only; public access is via the cloudflare tunnel (CF Access gated)
+    networks:
+      - drawbridge                    # the public tunnel network; cloudflared reaches http://uploads:80
+
+networks:
+  drawbridge:
+    external: true

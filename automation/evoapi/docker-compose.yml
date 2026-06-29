@@ -45,6 +45,9 @@ services:
         condition: service_healthy
     environment:
       SERVER_URL: http://localhost:8080
+      # Pin to a current WhatsApp Web version. The image's default (2.3000.1015901307)
+      # is stale and WhatsApp now rejects the handshake -> socket closes before any QR.
+      CONFIG_SESSION_PHONE_VERSION: 2.3000.1035194821
       AUTHENTICATION_API_KEY: ${EVO_API_KEY}
       AUTHENTICATION_EXPOSE_IN_FETCH_INSTANCES: "false"
       DEL_INSTANCE: "false"

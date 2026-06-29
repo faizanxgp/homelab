@@ -31,10 +31,12 @@ ok() { echo "$1" | jq -e '.success == true' >/dev/null 2>&1; }
 die() { echo "ERROR: $1"; echo "$2" | jq '.errors' 2>/dev/null || echo "$2"; exit 1; }
 
 # --- hostname -> service map --------------------------------------------
-# (host service)  service is what cloudflared connects to inside docker
+# "host service [path-regex]"  -- optional 3rd field routes only matching paths
+# (ordered: more specific path rules MUST come before the host catch-all)
 ROUTES=(
   "n8n.$ZONE_NAME            http://n8n-main:5678"
   "evolution.$ZONE_NAME      http://evolution-api:8080"
+  "text.$ZONE_NAME           http://textbee-api:3001    ^/api/v1"
   "text.$ZONE_NAME           http://textbee-web:3000"
   "home.$ZONE_NAME           http://homepage:3000"
   "dash.$ZONE_NAME           http://dashy:8080"
@@ -43,6 +45,18 @@ ROUTES=(
   "uptime.$ZONE_NAME         http://uptime-kuma:3001"
   "snippets.$ZONE_NAME       http://snippetbox:5000"
   "db.$ZONE_NAME             tcp://postgres-automation:5432"
+  "tavern.$ZONE_NAME         http://sillytavern:8000"
+  "apk.$ZONE_NAME            http://apk-server:80"
+  "downloads.$ZONE_NAME      http://downloads:80"
+  "uploads.$ZONE_NAME        http://uploads:80"
+)
+
+# Hostnames that get an email-allowlist Cloudflare Access gate in front of them.
+# (db is tcp so its app is self_hosted; tavern is http so http is fine.)
+ACCESS_HOSTS=(
+  "db.$ZONE_NAME"
+  "tavern.$ZONE_NAME"
+  "uploads.$ZONE_NAME"
 )
 
 echo "==> Resolving account + zone"
@@ -75,8 +89,12 @@ TUNNEL_TOKEN="$(echo "$TOKEN_RESP" | jq -r '.result')"
 echo "==> Pushing ingress config"
 ING="[]"
 for r in "${ROUTES[@]}"; do
-  h="$(echo "$r" | awk '{print $1}')"; s="$(echo "$r" | awk '{print $2}')"
-  ING="$(echo "$ING" | jq -c --arg h "$h" --arg s "$s" '. + [{hostname:$h, service:$s}]')"
+  h="$(echo "$r" | awk '{print $1}')"; s="$(echo "$r" | awk '{print $2}')"; p="$(echo "$r" | awk '{print $3}')"
+  if [ -n "$p" ]; then
+    ING="$(echo "$ING" | jq -c --arg h "$h" --arg s "$s" --arg p "$p" '. + [{hostname:$h, service:$s, path:$p}]')"
+  else
+    ING="$(echo "$ING" | jq -c --arg h "$h" --arg s "$s" '. + [{hostname:$h, service:$s}]')"
+  fi
 done
 ING="$(echo "$ING" | jq -c '. + [{service:"http_status:404"}]')"
 CFG="$(jq -nc --argjson ing "$ING" '{config:{ingress:$ing}}')"
@@ -87,8 +105,11 @@ echo "    $(echo "$ING" | jq 'length') ingress rules set"
 # --- DNS CNAMEs (upsert, proxied) ---------------------------------------
 echo "==> DNS records -> $TUNNEL_ID.cfargotunnel.com"
 TARGET="$TUNNEL_ID.cfargotunnel.com"
+seen_hosts=""
 for r in "${ROUTES[@]}"; do
   h="$(echo "$r" | awk '{print $1}')"
+  case " $seen_hosts " in *" $h "*) continue ;; esac   # one DNS record per host (skip path-rule dupes)
+  seen_hosts="$seen_hosts $h"
   body="$(jq -nc --arg n "$h" --arg c "$TARGET" '{type:"CNAME",name:$n,content:$c,proxied:true}')"
   ex="$(api GET "/zones/$ZONE_ID/dns_records?type=CNAME&name=$h")"
   rid="$(echo "$ex" | jq -r '.result[0].id // empty')"
@@ -100,26 +121,37 @@ for r in "${ROUTES[@]}"; do
   ok "$out" && echo "    $verb  $h" || die "DNS $h failed" "$out"
 done
 
-# --- Access gate for Postgres -------------------------------------------
-echo "==> Cloudflare Access for db.$ZONE_NAME"
+# --- Access gates (email allowlist) for sensitive hosts ----------------
+echo "==> Cloudflare Access gates"
 APPS="$(api GET "/accounts/$ACCT_ID/access/apps")"
-APP_ID="$(echo "$APPS" | jq -r --arg d "db.$ZONE_NAME" '.result[]? | select(.domain==$d) | .id' | head -1)"
-appbody="$(jq -nc --arg d "db.$ZONE_NAME" '{name:"Postgres (BoBo Prime)",domain:$d,type:"self_hosted",session_duration:"24h"}')"
-if [ -z "$APP_ID" ]; then
-  AR="$(api POST "/accounts/$ACCT_ID/access/apps" "$appbody")"; ok "$AR" || die "access app create failed" "$AR"
-  APP_ID="$(echo "$AR" | jq -r '.result.id')"; echo "    app created $APP_ID"
-else
-  echo "    app exists $APP_ID"
-fi
 polbody="$(jq -nc --arg e "$ACCESS_EMAIL" '{name:"allow-owner",decision:"allow",include:[{email:{email:$e}}]}')"
-POLS="$(api GET "/accounts/$ACCT_ID/access/apps/$APP_ID/policies")"
-POL_ID="$(echo "$POLS" | jq -r '.result[]? | select(.name=="allow-owner") | .id' | head -1)"
-if [ -z "$POL_ID" ]; then
-  PR="$(api POST "/accounts/$ACCT_ID/access/apps/$APP_ID/policies" "$polbody")"; ok "$PR" || die "policy create failed" "$PR"
-  echo "    policy created (allow $ACCESS_EMAIL)"
-else
-  PR="$(api PUT "/accounts/$ACCT_ID/access/apps/$APP_ID/policies/$POL_ID" "$polbody")"; echo "    policy updated (allow $ACCESS_EMAIL)"
-fi
+
+for d in "${ACCESS_HOSTS[@]}"; do
+  case "$d" in
+    db.*)   appname="Postgres (BoBo Prime)"; apptype="self_hosted" ;;
+    tavern.*) appname="SillyTavern (BoBo Prime)"; apptype="self_hosted" ;;
+    uploads.*) appname="Uploads (BoBo Prime)"; apptype="self_hosted" ;;
+    *)      appname="$d"; apptype="self_hosted" ;;
+  esac
+
+  APP_ID="$(echo "$APPS" | jq -r --arg d "$d" '.result[]? | select(.domain==$d) | .id' | head -1)"
+  appbody="$(jq -nc --arg d "$d" --arg n "$appname" --arg t "$apptype" '{name:$n,domain:$d,type:$t,session_duration:"24h"}')"
+  if [ -z "$APP_ID" ]; then
+    AR="$(api POST "/accounts/$ACCT_ID/access/apps" "$appbody")"; ok "$AR" || die "access app create failed ($d)" "$AR"
+    APP_ID="$(echo "$AR" | jq -r '.result.id')"; echo "    app created $APP_ID  ($d)"
+  else
+    echo "    app exists $APP_ID  ($d)"
+  fi
+  POLS="$(api GET "/accounts/$ACCT_ID/access/apps/$APP_ID/policies")"
+  POL_ID="$(echo "$POLS" | jq -r '.result[]? | select(.name=="allow-owner") | .id' | head -1)"
+  if [ -z "$POL_ID" ]; then
+    PR="$(api POST "/accounts/$ACCT_ID/access/apps/$APP_ID/policies" "$polbody")"; ok "$PR" || die "policy create failed ($d)" "$PR"
+    echo "    policy created (allow $ACCESS_EMAIL)  ($d)"
+  else
+    PR="$(api PUT "/accounts/$ACCT_ID/access/apps/$APP_ID/policies/$POL_ID" "$polbody")"; ok "$PR" || die "policy update failed ($d)" "$PR"
+    echo "    policy updated (allow $ACCESS_EMAIL)  ($d)"
+  fi
+done
 
 # --- write connector token + bring up -----------------------------------
 echo "==> Writing .env"
