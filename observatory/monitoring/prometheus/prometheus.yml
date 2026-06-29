@@ -24,6 +24,10 @@ scrape_configs:
         labels: {instance: 'n8n-main'}
       - targets: ['n8n-worker:5678']
         labels: {instance: 'n8n-worker'}
+      - targets: ['n8n-worker-2:5678']
+        labels: {instance: 'n8n-worker-2'}
+      - targets: ['n8n-worker-3:5678']
+        labels: {instance: 'n8n-worker-3'}
 
   # ---- PostgreSQL exporters ----
   - job_name: postgres
@@ -56,3 +60,9 @@ scrape_configs:
     static_configs:
       - targets: ['couchdb-exporter:9984']
         labels: {instance: 'couchdb'}
+
+  # ---- Cloudflare Tunnel (cloudflared built-in metrics) ----
+  - job_name: cloudflared
+    static_configs:
+      - targets: ['cloudflared:60123']
+        labels: {instance: 'bobo-prime-tunnel'}

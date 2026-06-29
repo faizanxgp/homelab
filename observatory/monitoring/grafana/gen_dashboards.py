@@ -336,4 +336,29 @@ write("Obsidian", "obsidian-vault.json", dashboard(
     "Obsidian — Vault (via CouchDB)", "obsidian-vault", ["obsidian", "homelab", "couchdb"], v,
     variables=[var_query("vault", 'label_values(couchdb_database_doc_count{db_name!~"_.*"}, db_name)', "Vault DB")]))
 
+# ============================================================ CLOUDFLARE TUNNEL
+cf = []
+cf.append(stat("Scrape Up", [tgt('up{job="cloudflared"}', "tunnel")], 0, 1, 4, 4, unit="none", mappings=UP_MAP, thresholds=UP_TH))
+cf.append(stat("HA Connections", [tgt('cloudflared_tunnel_ha_connections')], 4, 1, 4, 4, unit="short", color_mode="value", thresholds=[{"color":"red","value":None},{"color":"yellow","value":1},{"color":"green","value":2}]))
+cf.append(stat("Concurrent Requests", [tgt('sum(cloudflared_tunnel_concurrent_requests_per_tunnel)')], 8, 1, 4, 4, unit="short", color_mode="value"))
+cf.append(stat("Request Errors (total)", [tgt('sum(cloudflared_tunnel_request_errors)')], 12, 1, 4, 4, unit="short", color_mode="value", thresholds=[{"color":"green","value":None},{"color":"red","value":1}]))
+cf.append(stat("TCP Active Sessions", [tgt('cloudflared_tcp_active_sessions')], 16, 1, 4, 4, unit="short", color_mode="value"))
+cf.append(stat("UDP Active Sessions", [tgt('cloudflared_udp_active_sessions')], 20, 1, 4, 4, unit="short", color_mode="value"))
+cf.append(row("Traffic", 5))
+cf.append(ts("Requests / sec", [tgt('rate(cloudflared_tunnel_total_requests[5m])', "requests/s")], 0, 6, 12, 8, unit="reqps"))
+cf.append(ts("Responses / sec by status code", [tgt('sum by(status_code)(rate(cloudflared_tunnel_response_by_code[5m]))', "{{status_code}}")], 12, 6, 12, 8, unit="reqps", legend_table=True))
+cf.append(ts("Request Errors / sec (proxy-to-origin failures)", [tgt('rate(cloudflared_tunnel_request_errors[5m])', "errors/s")], 0, 14, 12, 8, unit="ops"))
+cf.append(ts("Proxy Connect Stream Errors / sec", [tgt('rate(cloudflared_proxy_connect_streams_errors[5m])', "errors/s")], 12, 14, 12, 8, unit="ops"))
+cf.append(row("Edge & QUIC Transport", 22))
+cf.append(table("Connected Edge Locations", [tgt('cloudflared_tunnel_server_locations == 1', "{{edge_location}}")], 0, 23, 12, 8, unit="short"))
+cf.append(ts("QUIC Smoothed RTT to edge (ms)", [tgt('quic_client_smoothed_rtt', "conn {{conn_index}}")], 12, 23, 12, 8, unit="ms", legend_table=True))
+cf.append(ts("QUIC Throughput", [
+    tgt('sum(rate(quic_client_receive_bytes[5m]))', "received"),
+    tgt('sum(rate(quic_client_sent_bytes[5m]))', "sent", "B")], 0, 31, 12, 8, unit="Bps"))
+cf.append(ts("TCP / UDP Sessions per sec", [
+    tgt('rate(cloudflared_tcp_total_sessions[5m])', "tcp/s"),
+    tgt('rate(cloudflared_udp_total_sessions[5m])', "udp/s", "B")], 12, 31, 12, 8, unit="ops"))
+write("Cloudflare", "cloudflared-tunnel.json", dashboard(
+    "Cloudflare Tunnel — bobo-prime", "cloudflared-tunnel", ["cloudflare", "tunnel", "homelab"], cf))
+
 print("\nDone.")
