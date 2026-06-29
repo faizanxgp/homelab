@@ -41,9 +41,11 @@ Thumbs.db
 utility/downloads/files/*
 utility/uploads/files/*
 utility/apk-server/files/*
+utility/storage/archive/*
 !utility/downloads/files/.gitkeep
 !utility/uploads/files/.gitkeep
 !utility/apk-server/files/.gitkeep
+!utility/storage/archive/.gitkeep
 wa_qr*.png
 wa_qr*.html
 

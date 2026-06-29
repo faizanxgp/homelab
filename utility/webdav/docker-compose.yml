@@ -1,0 +1,28 @@
+services:
+  # Network-drive view of the vault's bulk folders. Mount dav.itproxima.com on the
+  # desktop and downloads/uploads/archive appear inside the master vault tree,
+  # streaming on demand — the 50GB never lands on the laptop. Runs as root so it
+  # can read/write the root-owned bind mounts.
+  webdav:
+    image: hacdias/webdav:latest
+    container_name: webdav
+    restart: unless-stopped
+    command: ["-c", "/etc/webdav/config.yaml"]
+    environment:
+      - WEBDAV_PASSWORD=${WEBDAV_PASSWORD}
+    volumes:
+      - ./config.yaml:/etc/webdav/config.yaml:ro
+      - ../downloads/files:/data/downloads     # same dir downloads.itproxima.com serves
+      - ../uploads/files:/data/uploads          # same dir uploads.itproxima.com writes to
+      - ../storage/archive:/data/archive        # bulk storage (OneDrive 50GB)
+    ports:
+      - "127.0.0.1:3024:6065"        # local test only; public access is via the cloudflare tunnel
+    networks:
+      - drawbridge                   # public tunnel net; cloudflared reaches http://webdav:6065
+      - observatory                  # so promtail/cadvisor observe it
+
+networks:
+  drawbridge:
+    external: true
+  observatory:
+    external: true

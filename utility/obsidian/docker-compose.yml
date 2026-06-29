@@ -17,8 +17,11 @@ services:
       # same model as uploads/db. (Set CUSTOM_USER/PASSWORD here to re-add one.)
     volumes:
       - ./volumes/config:/config                       # app data; the vault lives at /config/vault
-      - ../downloads/files:/config/vault/downloads     # SAME dir downloads.itproxima.com serves
-      - ../uploads/files:/config/vault/uploads         # SAME dir uploads.itproxima.com writes to
+      # Bulk folders nested under storage/ so the tree matches the desktop's WebDAV
+      # mount exactly. LiveSync ignores storage/ (these never go through CouchDB).
+      - ../downloads/files:/config/vault/storage/downloads   # SAME dir downloads.itproxima.com serves
+      - ../uploads/files:/config/vault/storage/uploads       # SAME dir uploads.itproxima.com writes to
+      - ../storage/archive:/config/vault/storage/archive     # bulk storage (OneDrive 50GB); also served over WebDAV
     ports:
       - "127.0.0.1:3023:3000"        # local test only; public access is via the cloudflare tunnel (CF Access gated)
     networks:

@@ -1,0 +1,19 @@
+# WebDAV — exposes the vault's bulk folders (downloads, uploads, archive) as a
+# mountable network drive for the desktop, so they show up in the master vault
+# tree without copying 50GB to the laptop. Auth is basic (its own user/pass) —
+# NOT Cloudflare-Access-gated, because a mounted drive can't do interactive OTP
+# (same reasoning as couch). Password comes from the WEBDAV_PASSWORD env var.
+address: 0.0.0.0
+port: 6065
+prefix: /
+directory: /data
+permissions: none          # deny by default; the user below is granted CRUD
+debug: false
+
+cors:
+  enabled: false
+
+users:
+  - username: mian
+    password: "{env}WEBDAV_PASSWORD"
+    permissions: CRUD        # Create, Read, Update, Delete
