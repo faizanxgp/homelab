@@ -279,4 +279,61 @@ e.append(ts("Event Loop Lag (stddev)", [tgt('n8n_nodejs_eventloop_lag_stddev_sec
 write("n8n", "n8n-runtime-eventloop.json", dashboard(
     "n8n — Runtime: Event Loop & Cache", "n8n-runtime-eventloop", ["n8n", "homelab", "runtime"], e))
 
+# ============================================================ COUCHDB (infra)
+c = []
+c.append(stat("Scrape Up", [tgt('up{job="couchdb"}', "couchdb")], 0, 1, 4, 4, unit="none", mappings=UP_MAP, thresholds=UP_TH))
+c.append(stat("Node Up", [tgt('couchdb_httpd_node_up')], 4, 1, 4, 4, unit="none", mappings=UP_MAP, thresholds=UP_TH))
+c.append(stat("Cluster Stable", [tgt('couchdb_replicator_cluster_is_stable')], 8, 1, 4, 4, unit="none", mappings=UP_MAP, thresholds=UP_TH))
+c.append(stat("Databases", [tgt('couchdb_httpd_databases_total')], 12, 1, 4, 4, unit="short", color_mode="value"))
+c.append(stat("Open Databases", [tgt('couchdb_httpd_open_databases')], 16, 1, 4, 4, unit="short", color_mode="value"))
+c.append(stat("Open OS Files", [tgt('couchdb_httpd_open_os_files')], 20, 1, 4, 4, unit="short", color_mode="value"))
+c.append(row("HTTP Traffic", 5))
+c.append(ts("Requests / sec by method", [tgt('sum by(method)(rate(couchdb_httpd_request_methods[5m]))', "{{method}}")], 0, 6, 12, 8, unit="reqps", legend_table=True))
+c.append(ts("Responses / sec by status code", [tgt('sum by(code)(rate(couchdb_httpd_status_codes[5m]))', "{{code}}")], 12, 6, 12, 8, unit="reqps", legend_table=True))
+c.append(ts("Database Reads vs Writes / sec", [
+    tgt('rate(couchdb_httpd_database_reads[5m])', "reads"),
+    tgt('rate(couchdb_httpd_database_writes[5m])', "writes", "B")], 0, 14, 12, 8, unit="ops"))
+c.append(ts("Bulk Requests / sec", [tgt('rate(couchdb_httpd_bulk_requests[5m])', "bulk")], 12, 14, 12, 8, unit="ops"))
+c.append(row("LiveSync Activity & Auth", 22))
+c.append(ts("Clients on continuous _changes (active live-sync feeds)", [tgt('sum(couchdb_httpd_clients_requesting_changes)', "clients")], 0, 23, 12, 8, unit="short"))
+c.append(ts("Auth Cache Hit Ratio %", [tgt('100 * rate(couchdb_httpd_auth_cache_hits[5m]) / (rate(couchdb_httpd_auth_cache_hits[5m]) + rate(couchdb_httpd_auth_cache_misses[5m]) > 0)', "hit %")], 12, 23, 12, 8, unit="percent"))
+c.append(row("Replicator", 31))
+c.append(ts("Replicator Connections", [tgt('couchdb_replicator_connections', "{{metric}}")], 0, 32, 12, 8, unit="short"))
+c.append(ts("Replicator Docs", [tgt('couchdb_replicator_docs', "{{metric}}")], 12, 32, 12, 8, unit="short"))
+c.append(row("Erlang VM Memory", 40))
+c.append(ts("Erlang Memory by type", [
+    tgt('couchdb_erlang_memory_processes', "processes"),
+    tgt('couchdb_erlang_memory_binary', "binary", "B"),
+    tgt('couchdb_erlang_memory_ets', "ets", "C"),
+    tgt('couchdb_erlang_memory_code', "code", "D"),
+    tgt('couchdb_erlang_memory_atom', "atom", "E"),
+    tgt('couchdb_erlang_memory_other', "other", "F")], 0, 41, 12, 8, unit="bytes", stack=True))
+c.append(ts("Total Disk Size (all DBs)", [tgt('sum(couchdb_database_disk_size)', "disk")], 12, 41, 12, 8, unit="bytes"))
+write("CouchDB", "couchdb-overview.json", dashboard(
+    "CouchDB — Overview", "couchdb-overview", ["couchdb", "homelab", "obsidian"], c))
+
+# ============================================================ OBSIDIAN VAULT
+# A vault == a CouchDB database (named in the LiveSync plugin, e.g. "obsidiandb").
+# The $vault variable lists user databases (system _* dbs filtered out); pick yours.
+DBSEL = '{db_name=~"$vault"}'
+v = []
+v.append(stat("Documents (notes + sync chunks)", [tgt(f'sum(couchdb_database_doc_count{DBSEL})', "docs")], 0, 1, 6, 4, unit="short", color_mode="value", graph=True))
+v.append(stat("Deleted Documents (tombstones)", [tgt(f'sum(couchdb_database_doc_del_count{DBSEL})', "deleted")], 6, 1, 6, 4, unit="short", color_mode="value"))
+v.append(stat("Vault Disk Size", [tgt(f'sum(couchdb_database_disk_size{DBSEL})', "disk")], 12, 1, 6, 4, unit="bytes", color_mode="value", graph=True))
+v.append(stat("Vault Data Size", [tgt(f'sum(couchdb_database_data_size{DBSEL})', "data")], 18, 1, 6, 4, unit="bytes", color_mode="value"))
+v.append(row("Vault Growth", 5))
+v.append(ts("Document Count over time", [tgt(f'couchdb_database_doc_count{DBSEL}', "{{db_name}}")], 0, 6, 12, 8, unit="short", legend_table=True))
+v.append(ts("Disk vs Data Size", [
+    tgt(f'sum(couchdb_database_disk_size{DBSEL})', "disk"),
+    tgt(f'sum(couchdb_database_data_size{DBSEL})', "data", "B")], 12, 6, 12, 8, unit="bytes"))
+v.append(row("Compaction & Overhead", 14))
+v.append(ts("Disk Overhead (reclaimable by compaction)", [tgt(f'sum(couchdb_database_overhead{DBSEL})', "overhead")], 0, 15, 12, 8, unit="bytes"))
+v.append(ts("Compaction Running", [tgt(f'couchdb_database_compact_running{DBSEL}', "{{db_name}}")], 12, 15, 12, 8, unit="short"))
+v.append(row("Sync Activity (server-wide)", 23))
+v.append(ts("Database Writes / sec (edits being pushed)", [tgt('rate(couchdb_httpd_database_writes[5m])', "writes/s")], 0, 24, 12, 8, unit="ops"))
+v.append(ts("Active Live-Sync Feeds (continuous _changes)", [tgt('sum(couchdb_httpd_clients_requesting_changes)', "clients")], 12, 24, 12, 8, unit="short"))
+write("Obsidian", "obsidian-vault.json", dashboard(
+    "Obsidian — Vault (via CouchDB)", "obsidian-vault", ["obsidian", "homelab", "couchdb"], v,
+    variables=[var_query("vault", 'label_values(couchdb_database_doc_count{db_name!~"_.*"}, db_name)', "Vault DB")]))
+
 print("\nDone.")

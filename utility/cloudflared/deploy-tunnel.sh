@@ -50,6 +50,7 @@ ROUTES=(
   "downloads.$ZONE_NAME      http://downloads:80"
   "uploads.$ZONE_NAME        http://uploads:80"
   "obsidian.$ZONE_NAME       http://obsidian:3000"
+  "couch.$ZONE_NAME          http://couchdb:5984"
 )
 
 # Hostnames that get an email-allowlist Cloudflare Access gate in front of them.

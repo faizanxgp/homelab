@@ -50,3 +50,9 @@ scrape_configs:
     static_configs:
       - targets: ['textbee-mongo-exporter:9216']
         labels: {instance: 'textbee-db'}
+
+  # ---- CouchDB exporter (Obsidian LiveSync backend) ----
+  - job_name: couchdb
+    static_configs:
+      - targets: ['couchdb-exporter:9984']
+        labels: {instance: 'couchdb'}

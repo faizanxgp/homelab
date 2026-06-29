@@ -1,0 +1,53 @@
+services:
+  # CouchDB — the live-sync backend for Obsidian (phone + laptop + web vault all
+  # replicate here). Reachable at couch.itproxima.com with NO Cloudflare Access gate
+  # (mobile/desktop LiveSync can't do interactive OTP) — CouchDB's own admin auth is
+  # the gate. The LiveSync config is provided declaratively in ./local.ini.
+  couchdb:
+    image: couchdb:3
+    container_name: couchdb
+    restart: unless-stopped
+    environment:
+      - COUCHDB_USER=${COUCHDB_USER}
+      - COUCHDB_PASSWORD=${COUCHDB_PASSWORD}
+    volumes:
+      - ./local.ini:/opt/couchdb/etc/local.d/10-livesync.ini
+      - ./volumes/data:/opt/couchdb/data
+    ports:
+      - "127.0.0.1:5984:5984"        # local test / Fauxton; public access is via the cloudflare tunnel
+    healthcheck:
+      # require_valid_user gates /_up too, so the check authenticates.
+      test: ["CMD-SHELL", "curl -sf -u \"$$COUCHDB_USER:$$COUCHDB_PASSWORD\" http://localhost:5984/_up || exit 1"]
+      interval: 15s
+      timeout: 5s
+      retries: 5
+      start_period: 30s
+    networks:
+      - drawbridge                   # public tunnel net; cloudflared reaches http://couchdb:5984
+      - observatory                  # so promtail/cadvisor observe it
+
+  # Prometheus exporter — same pattern as the postgres/redis/mongo exporters.
+  # gesellix exporter gives per-database doc counts & disk sizes, which is exactly
+  # what powers the Obsidian-vault Grafana dashboard (the vault IS a couchdb db).
+  couchdb-exporter:
+    image: gesellix/couchdb-prometheus-exporter:latest
+    container_name: couchdb-exporter
+    restart: unless-stopped
+    command:
+      - --couchdb.uri=http://couchdb:5984
+      - --databases=_all_dbs
+      - --telemetry.address=0.0.0.0:9984
+    environment:
+      - COUCHDB_USERNAME=${COUCHDB_USER}
+      - COUCHDB_PASSWORD=${COUCHDB_PASSWORD}
+    depends_on:
+      couchdb:
+        condition: service_healthy
+    networks:
+      - observatory
+
+networks:
+  drawbridge:
+    external: true
+  observatory:
+    external: true
