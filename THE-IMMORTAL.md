@@ -36,9 +36,21 @@ session reads this and continues from "NEXT".
 | 3 | `git-push-pull.md` green-commit cron | ✅ DONE — `5a0a48b` |
 | 4 | Expose Claude Code files in Obsidian | ✅ DONE — `a53124a` |
 | 5 | Finish Uptime Kuma no-endpoint container monitors | ✅ CODE DONE — `b6bcbfa` (run to apply) |
-| 6 | Deploy Postiz + marketing brief for Giant Group interview (Wed) | 🔄 in progress |
-| 7 | Hermes agent web UI + docker interactivity | ⏳ |
-| 8 | GitHub badges plan (`github.com/faizanxgp`) | ⏳ |
+| 6 | Deploy Postiz + marketing brief for Giant Group interview (Wed) | ✅ DONE — `f6e29be` |
+| 7 | Hermes agent web UI + docker interactivity | ✅ DONE — `3aae645` |
+| 8 | GitHub badges plan (`github.com/faizanxgp`) | ✅ DONE — `174b8bb` |
+
+### Round 2 (power held — Faizan awake)
+| # | Task | Status |
+|---|------|--------|
+| 9 | Rename Midnight Oil → **The Immortal** (+run) | ✅ DONE — `ba77bd7` |
+| 10 | Create Postiz admin account (needed Temporal+ES fix) | ✅ DONE — `b2265d1` |
+| 11 | Apply Kuma monitors live (83 total) + Postiz/Hermes | ✅ DONE — `ea131a7` |
+| 12 | Postiz pg+redis exporters → Prometheus + Grafana | ✅ DONE — `e49134a` |
+| 13 | Collect all READMEs → downloads/Homelab-Docs | ✅ DONE — `6db5026` |
+
+**ALL TASKS COMPLETE.** Postiz login: `mianfaizanxgp@gmail.com` (registration locked).
+Kuma/Postiz creds were provided live and are NOT stored in git.
 
 ---
 
