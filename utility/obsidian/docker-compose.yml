@@ -1,0 +1,32 @@
+services:
+  # Real Obsidian, rendered in the browser via KasmVNC. Runs the genuine desktop
+  # app so the "Self-hosted LiveSync" community plugin works exactly like it does
+  # on phone/laptop — they all replicate against the same CouchDB (couch.itproxima.com).
+  obsidian:
+    image: lscr.io/linuxserver/obsidian:latest
+    container_name: obsidian
+    restart: unless-stopped
+    security_opt:
+      - seccomp:unconfined          # KasmVNC/Chromium sandbox needs this
+    shm_size: "1gb"                  # Electron/Chromium shared-memory headroom
+    environment:
+      - PUID=0
+      - PGID=0
+      - TZ=Asia/Karachi
+      - CUSTOM_USER=${KASM_USER}     # KasmVNC web login (inner gate; CF Access is the outer gate)
+      - PASSWORD=${KASM_PASSWORD}
+    volumes:
+      - ./volumes/config:/config                       # app data; the vault lives at /config/vault
+      - ../downloads/files:/config/vault/downloads     # SAME dir downloads.itproxima.com serves
+      - ../uploads/files:/config/vault/uploads         # SAME dir uploads.itproxima.com writes to
+    ports:
+      - "127.0.0.1:3023:3000"        # local test only; public access is via the cloudflare tunnel (CF Access gated)
+    networks:
+      - drawbridge                   # public tunnel net; cloudflared reaches http://obsidian:3000
+      - observatory                  # so promtail/cadvisor observe it
+
+networks:
+  drawbridge:
+    external: true
+  observatory:
+    external: true

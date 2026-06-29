@@ -49,6 +49,7 @@ ROUTES=(
   "apk.$ZONE_NAME            http://apk-server:80"
   "downloads.$ZONE_NAME      http://downloads:80"
   "uploads.$ZONE_NAME        http://uploads:80"
+  "obsidian.$ZONE_NAME       http://obsidian:3000"
 )
 
 # Hostnames that get an email-allowlist Cloudflare Access gate in front of them.
@@ -57,6 +58,7 @@ ACCESS_HOSTS=(
   "db.$ZONE_NAME"
   "tavern.$ZONE_NAME"
   "uploads.$ZONE_NAME"
+  "obsidian.$ZONE_NAME"
 )
 
 echo "==> Resolving account + zone"
@@ -131,6 +133,7 @@ for d in "${ACCESS_HOSTS[@]}"; do
     db.*)   appname="Postgres (BoBo Prime)"; apptype="self_hosted" ;;
     tavern.*) appname="SillyTavern (BoBo Prime)"; apptype="self_hosted" ;;
     uploads.*) appname="Uploads (BoBo Prime)"; apptype="self_hosted" ;;
+    obsidian.*) appname="Obsidian (BoBo Prime)"; apptype="self_hosted" ;;
     *)      appname="$d"; apptype="self_hosted" ;;
   esac
 
