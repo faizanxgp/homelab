@@ -9,6 +9,7 @@ services:
       - '--storage.tsdb.retention.time=15d'
     volumes:
       - ./prometheus/prometheus.yml:/etc/prometheus/prometheus.yml:ro
+      - ./prometheus/secrets:/etc/prometheus/secrets:ro   # kuma_api_key (gitignored)
       - ./volumes/prometheus:/prometheus
     ports:
       - "127.0.0.1:9090:9090"

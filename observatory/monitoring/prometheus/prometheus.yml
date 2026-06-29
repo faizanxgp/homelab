@@ -66,3 +66,15 @@ scrape_configs:
     static_configs:
       - targets: ['cloudflared:60123']
         labels: {instance: 'bobo-prime-tunnel'}
+
+  # ---- Uptime Kuma (monitor up/down, response time, cert expiry) ----
+  # API key lives in ./prometheus/secrets/kuma_api_key (gitignored); created in the Kuma UI.
+  - job_name: uptime-kuma
+    metrics_path: /metrics
+    scheme: http
+    basic_auth:
+      username: prometheus
+      password_file: /etc/prometheus/secrets/kuma_api_key
+    static_configs:
+      - targets: ['uptime-kuma:3001']
+        labels: {instance: 'uptime-kuma'}

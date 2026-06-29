@@ -388,4 +388,35 @@ write("Containers", "containers-resources.json", dashboard(
     "Containers — Resources", "containers-resources", ["containers", "homelab", "docker"], k,
     variables=[var_query("container", 'label_values(homelab_container_memory_bytes, name)', "Container")]))
 
+# ============================================================ UPTIME KUMA
+# Fed by Prometheus scraping Uptime Kuma's /metrics endpoint (basic-auth API key,
+# see prometheus.yml job "uptime-kuma"). Metrics: monitor_status (1 up/0 down/2 pending/
+# 3 maint), monitor_response_time (ms), monitor_cert_days_remaining / _is_valid.
+MSEL = '{monitor_name=~"$monitor",monitor_type!="group"}'
+CERTSEL = '{monitor_name=~"$monitor"}'
+u = []
+u.append(stat("Monitors Up", [tgt(f'count(monitor_status{MSEL} == 1)', "up")], 0, 1, 5, 4,
+              unit="none", color_mode="value", thresholds=[{"color":"green","value":None}]))
+u.append(stat("Monitors Down", [tgt(f'count(monitor_status{MSEL} == 0) or vector(0)', "down")], 5, 1, 5, 4,
+              unit="none", color_mode="value", thresholds=[{"color":"green","value":None},{"color":"red","value":1}]))
+u.append(stat("Availability", [tgt(f'100 * count(monitor_status{MSEL} == 1) / count(monitor_status{MSEL})', "avail")],
+              10, 1, 5, 4, unit="percent", color_mode="value", decimals=2,
+              thresholds=[{"color":"red","value":None},{"color":"yellow","value":99},{"color":"green","value":99.9}]))
+u.append(stat("Avg response time", [tgt(f'avg(monitor_response_time{MSEL})', "ms")], 15, 1, 4, 4,
+              unit="ms", color_mode="value", graph=True))
+u.append(stat("Soonest cert expiry", [tgt(f'min(monitor_cert_days_remaining{CERTSEL})', "days")], 19, 1, 5, 4,
+              unit="d", color_mode="value", thresholds=[{"color":"red","value":None},{"color":"yellow","value":14},{"color":"green","value":30}]))
+u.append(row("Response time", 5))
+u.append(ts("Response time by monitor (ms)", [tgt(f'monitor_response_time{MSEL}', "{{monitor_name}}")],
+            0, 6, 24, 10, unit="ms", legend_table=True))
+u.append(row("Up / Down over time", 16))
+u.append(ts("Monitor status (1 = up, 0 = down)", [tgt(f'monitor_status{MSEL}', "{{monitor_name}}")],
+            0, 17, 24, 8, unit="short", fill=20))
+u.append(row("Tables", 25))
+u.append(table("Response time now (ms)", [tgt(f'monitor_response_time{MSEL}', "{{monitor_name}}")], 0, 26, 12, 10, unit="ms"))
+u.append(table("Certificate days remaining", [tgt(f'monitor_cert_days_remaining{CERTSEL}', "{{monitor_name}}")], 12, 26, 12, 10, unit="d"))
+write("Uptime Kuma", "uptime-kuma.json", dashboard(
+    "Uptime Kuma — Service Health", "uptime-kuma", ["uptime-kuma", "monitoring", "homelab"], u,
+    variables=[var_query("monitor", 'label_values(monitor_response_time, monitor_name)', "Monitor")]))
+
 print("\nDone.")
