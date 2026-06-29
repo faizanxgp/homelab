@@ -7,6 +7,10 @@ organised into three groups:
 - **🧩 Internal Apps** — app health by container name on the `observatory` network
   (bypasses Cloudflare Access so gated apps still report true health).
 - **🗄️ Databases** — TCP port checks (no credentials stored): Postgres ×3, Redis ×3, Mongo ×1.
+- **🐳 Containers (no endpoint)** — Docker container running-state via the mounted
+  `/var/run/docker.sock`, for services with no HTTP/TCP health to probe: `promtail`,
+  `cloudflared`, `node-exporter`, `cadvisor`, and all 8 metrics exporters. Uses the
+  `DOCKER` monitor type against a `local-socket` Docker host the script auto-creates.
 
 The script is **idempotent** — monitors are keyed by name, so re-running only adds
 what's missing. HTTP monitors accept `200-499` (only connection-refused / timeout /

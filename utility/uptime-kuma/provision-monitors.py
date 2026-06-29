@@ -55,6 +55,18 @@ DBS = [  # TCP port checks (no creds stored)
     ("Redis - TextBee",         "textbee-redis",       6379),
     ("MongoDB - TextBee",       "textbee-db",          27017),
 ]
+# Endpoint-less services: no HTTP/TCP health to hit, so monitor the Docker
+# container's running-state directly via the mounted /var/run/docker.sock.
+CONTAINERS = [
+    "promtail", "cloudflared", "node-exporter", "cadvisor",
+    "couchdb-exporter",
+    "n8n-postgres-exporter", "n8n-redis-exporter",
+    "evo-postgres-exporter", "evo-redis-exporter",
+    "automation-postgres-exporter",
+    "textbee-mongo-exporter", "textbee-redis-exporter",
+]
+DOCKER_HOST_NAME = "local-socket"
+DOCKER_SOCK = "/var/run/docker.sock"
 
 api = UptimeKumaApi("http://127.0.0.1:3001")
 api.login("faizanxgp", PW)
@@ -90,6 +102,30 @@ def ensure_port(name, host, port, parent):
     existing[full] = True
     print(f"    + {full}")
 
+def ensure_docker_host():
+    for h in api.get_docker_hosts():
+        if h.get("name") == DOCKER_HOST_NAME:
+            return h["id"]
+    r = api.add_docker_host(name=DOCKER_HOST_NAME, dockerType="socket",
+                            dockerDaemon=DOCKER_SOCK)
+    hid = (r or {}).get("id") or (r or {}).get("dockerHostID")
+    if hid is None:  # fall back to re-reading the list
+        for h in api.get_docker_hosts():
+            if h.get("name") == DOCKER_HOST_NAME:
+                hid = h["id"]; break
+    print(f"  + docker host {DOCKER_HOST_NAME} (#{hid})")
+    return hid
+
+def ensure_docker(container, host_id, parent):
+    full = f"{container} :: container"
+    if full in existing:
+        return
+    api.add_monitor(type=MonitorType.DOCKER, name=full, parent=parent,
+                    interval=INTERVAL, docker_container=container,
+                    docker_host=host_id)
+    existing[full] = True
+    print(f"    + {full}")
+
 try:
     g_pub = ensure_group("🌐 Public Sites")
     for n, u in PUBLIC:
@@ -100,6 +136,10 @@ try:
     g_db = ensure_group("🗄️ Databases")
     for n, h, p in DBS:
         ensure_port(n, h, p, g_db)
+    g_ctr = ensure_group("🐳 Containers (no endpoint)")
+    host_id = ensure_docker_host()
+    for c in CONTAINERS:
+        ensure_docker(c, host_id, g_ctr)
     print("TOTAL monitors now:", len(api.get_monitors()))
 finally:
     api.disconnect()
