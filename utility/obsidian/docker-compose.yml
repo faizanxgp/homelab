@@ -22,6 +22,17 @@ services:
       - ../downloads/files:/config/vault/storage/downloads   # SAME dir downloads.itproxima.com serves
       - ../uploads/files:/config/vault/storage/uploads       # SAME dir uploads.itproxima.com writes to
       - ../storage/archive:/config/vault/storage/archive     # bulk storage (OneDrive 50GB); also served over WebDAV
+      # ── Claude Code config, surfaced & editable inside Obsidian ───────────────
+      # PUID=0 so the container can read/write these root-owned files. These are
+      # container-only bind mounts, so the vault-to-github rsync (host-side) never
+      # sees them — no risk of pushing settings/logs to GitHub. They DO replicate
+      # via LiveSync to your private CouchDB.
+      - /root/.claude/agents:/config/vault/Claude-Code/agents                       # custom sub-agents (rw)
+      - /root/.claude/projects/-root/memory:/config/vault/Claude-Code/memory        # persistent memory notes (rw)
+      - /root/.claude/settings.json:/config/vault/Claude-Code/settings.json         # global settings (rw)
+      - /root/.claude/settings.local.json:/config/vault/Claude-Code/settings.local.json  # local settings (rw)
+      - /root/.claude/statusline-command.sh:/config/vault/Claude-Code/statusline-command.sh  # statusline (rw)
+      - /root/.claude/projects:/config/vault/Claude-Code/chat-logs:ro               # session transcripts (read-only)
     ports:
       - "127.0.0.1:3023:3000"        # local test only; public access is via the cloudflare tunnel (CF Access gated)
     networks:
