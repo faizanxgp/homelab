@@ -34,9 +34,9 @@ dies, a fresh `oil` session reads this and continues from "NEXT".
 | 1 | Always-on Claude (tmux+systemd `oil`) | ✅ DONE — `fe7c7a2` |
 | 2 | This resume log + frequent updates | 🔄 ongoing |
 | 3 | `git-push-pull.md` green-commit cron | ✅ DONE — `5a0a48b` |
-| 4 | Expose Claude Code files in Obsidian | 🔄 in progress |
-| 5 | Finish Uptime Kuma no-endpoint container monitors | ⏳ |
-| 6 | Deploy Postiz + marketing brief for Giant Group interview (Wed) | ⏳ |
+| 4 | Expose Claude Code files in Obsidian | ✅ DONE — `a53124a` |
+| 5 | Finish Uptime Kuma no-endpoint container monitors | ✅ CODE DONE — `b6bcbfa` (run to apply) |
+| 6 | Deploy Postiz + marketing brief for Giant Group interview (Wed) | 🔄 in progress |
 | 7 | Hermes agent web UI + docker interactivity | ⏳ |
 | 8 | GitHub badges plan (`github.com/faizanxgp`) | ⏳ |
 
@@ -68,11 +68,24 @@ dies, a fresh `oil` session reads this and continues from "NEXT".
   PRIVATE; decide if therapy notes should sync anywhere (separate private/encrypted
   repo?). `gh` CLI is not installed on the box — couldn't verify visibility.
 
+### ✅ #4 Claude Code files in Obsidian
+- `utility/obsidian/docker-compose.yml`: bind-mounted `/root/.claude/{agents,memory,
+  settings*,statusline}` (rw) + `projects` chat-logs (ro) → `/config/vault/Claude-Code/`.
+- Verified present inside container. Container-only mounts → never hit GitHub mirror.
+
+### ✅ #5 Uptime Kuma container monitors (CODE done; apply pending)
+- `provision-monitors.py` now adds a `🐳 Containers (no endpoint)` group with `DOCKER`
+  monitors for promtail, cloudflared, node-exporter, cadvisor + 8 exporters, via a
+  `local-socket` Docker host (auto-created). Idempotent. Compiles clean.
+- **ACTION for Faizan (needs the Kuma admin password, not stored):**
+  `cd /opt/homelab/utility/uptime-kuma && python3 -m venv venv && ./venv/bin/pip install uptime-kuma-api && ./venv/bin/python provision-monitors.py 'YOUR_PW'`
+
 ## NEXT (resume here)
-- **#4** Expose Claude Code files in Obsidian: bind-mount curated `/root/.claude`
-  (agents/, settings*.json, CLAUDE.md, projects/*.jsonl chat logs) into the web
-  vault via `utility/obsidian/docker-compose.yml`, recreate the container.
-- Then #5 Uptime Kuma container monitors → #6 Postiz+brief → #7 Hermes UI → #8 badges.
+- **#6** Deploy Postiz at `utility/postiz` → `postiz.itproxima.com` (follow cloudflared
+  tunnel + drawbridge/observatory pattern). Write the marketing-analytics brief for the
+  Giant Group interview (Wed). Postiz needs Postgres+Redis+JWT secret; social posting
+  needs his OAuth app creds (document, don't fabricate).
+- Then #7 Hermes web UI → #8 GitHub badges plan.
 - Update this file + push after each step.
 
 ## Open decisions to surface to Faizan (don't block on them — pick sane default)
