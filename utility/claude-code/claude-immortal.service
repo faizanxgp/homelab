@@ -1,0 +1,31 @@
+# The Immortal — always-on Claude Code session, detached from SSH.
+#
+# Install:
+#   cp utility/claude-code/claude-immortal.service /etc/systemd/system/claude-immortal.service
+#   systemctl daemon-reload
+#   systemctl enable --now claude-immortal.service
+#
+# After this, a tmux session named 'immortal' running Claude Code exists at all
+# times, is recreated on every boot, and survives any SSH disconnect. Attach with:
+#   immortal      (alias for /opt/homelab/utility/claude-code/immortal.sh)
+#
+[Unit]
+Description=The Immortal — always-on Claude Code (tmux session 'immortal')
+After=network-online.target
+Wants=network-online.target
+
+[Service]
+Type=oneshot
+RemainAfterExit=yes
+# Critical: the tmux server is forked by ExecStart and must OUTLIVE it. Without
+# this, systemd's default control-group cleanup reaps the server the instant the
+# oneshot command returns, and the session vanishes.
+KillMode=process
+User=root
+Environment=IS_SANDBOX=1
+# immortal.sh ensure is idempotent and resolves the nvm node bin itself.
+ExecStart=/opt/homelab/utility/claude-code/immortal.sh ensure
+ExecStop=/usr/bin/tmux -S /tmp/tmux-0/default kill-session -t immortal
+
+[Install]
+WantedBy=multi-user.target

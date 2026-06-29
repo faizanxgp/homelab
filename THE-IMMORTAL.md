@@ -1,12 +1,12 @@
-# 🛢️ Midnight Oil — autonomous work session log
+# ♾️ The Immortal — autonomous work session log
 
-**Started:** 2026-06-29 ~23:30 CEST (≈ 2026-06-30 02:30 PKT)
-**Why:** Load-shedding (power out ~03:10 PKT). Faizan is asleep; Claude works
-autonomously for 3–4 h. This file is the **resume point** — if the SSH session
-dies, a fresh `oil` session reads this and continues from "NEXT".
+**Started:** 2026-06-29 ~23:30 CEST (≈ 2026-06-30 02:30 PKT) · _formerly "Midnight Oil"_
+**Why:** Load-shedding. Built to work autonomously for hours and survive power/SSH
+drops. This file is the **resume point** — if a session dies, a fresh `immortal`
+session reads this and continues from "NEXT".
 
-> Reattach the always-on session from any terminal (incl. phone):  **`oil`**
-> Detach (leave it running): `Ctrl-b` then `d`.
+> Reattach The Immortal from any terminal (incl. phone):  **`immortal`**
+> Fresh clean session: **`immortal new`** · Detach (leave running): `Ctrl-b` then `d`.
 
 ---
 
