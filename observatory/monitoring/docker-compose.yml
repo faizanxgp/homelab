@@ -22,6 +22,9 @@ services:
     pid: host
     command:
       - '--path.rootfs=/host'
+      # per-container metrics from container-metrics.sh (cAdvisor can't name containers
+      # on Docker 29's containerd image store — see scripts/container-metrics.sh)
+      - '--collector.textfile.directory=/host/var/lib/node_exporter/textfile_collector'
     volumes:
       - '/:/host:ro,rslave'
     networks:
@@ -32,6 +35,9 @@ services:
     container_name: cadvisor
     restart: unless-stopped
     privileged: true
+    # NOTE: cAdvisor cannot label containers on this host (Docker 29 containerd image store) —
+    # per-container resource metrics come from scripts/container-metrics.sh via node-exporter's
+    # textfile collector instead. cAdvisor is kept only for machine_* / host-level metrics.
     devices:
       - /dev/kmsg
     volumes:

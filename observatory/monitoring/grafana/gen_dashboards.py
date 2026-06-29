@@ -361,4 +361,31 @@ cf.append(ts("TCP / UDP Sessions per sec", [
 write("Cloudflare", "cloudflared-tunnel.json", dashboard(
     "Cloudflare Tunnel — bobo-prime", "cloudflared-tunnel", ["cloudflare", "tunnel", "homelab"], cf))
 
+# ============================================================ CONTAINERS — RESOURCES
+# Per-container CPU/memory from scripts/container-metrics.sh (cgroup v2 -> node-exporter
+# textfile collector). cAdvisor can't name containers on Docker 29's containerd image
+# store, so these homelab_container_* metrics replace it. $container filters by name.
+CSEL = '{name=~"$container"}'
+TOTAL_RAM = 'node_memory_MemTotal_bytes{job="node-exporter"}'
+k = []
+k.append(stat("Containers Up", [tgt('count(homelab_container_up == 1)', "containers")], 0, 1, 4, 4, unit="none", color_mode="value"))
+k.append(stat("Tracked Memory (sum)", [tgt(f'sum(homelab_container_memory_bytes{CSEL})', "mem")], 4, 1, 5, 4, unit="bytes", color_mode="value", graph=True))
+k.append(stat("Host RAM Total", [tgt(f'{TOTAL_RAM} or vector(0)', "ram")], 9, 1, 5, 4, unit="bytes"))
+k.append(stat("Containers' share of host RAM", [tgt(f'100 * sum(homelab_container_memory_bytes) / scalar({TOTAL_RAM})', "pct")],
+              14, 1, 5, 4, unit="percent", color_mode="value", decimals=1,
+              thresholds=[{"color":"green","value":None},{"color":"yellow","value":60},{"color":"red","value":85}]))
+k.append(stat("Metrics freshness", [tgt('time() - homelab_container_metrics_last_run_seconds', "age")], 19, 1, 5, 4,
+              unit="s", color_mode="value", thresholds=[{"color":"green","value":None},{"color":"yellow","value":120},{"color":"red","value":300}]))
+k.append(row("Memory", 5))
+k.append(ts("Memory usage by container", [tgt(f'homelab_container_memory_bytes{CSEL}', "{{name}}")], 0, 6, 24, 9, unit="bytes", legend_table=True))
+k.append(table("Top memory (current)", [tgt(f'topk(25, homelab_container_memory_bytes{CSEL})', "{{name}}")], 0, 15, 12, 9, unit="bytes"))
+k.append(ts("Anonymous (non-reclaimable) memory by container", [tgt(f'homelab_container_memory_anon_bytes{CSEL}', "{{name}}")], 12, 15, 12, 9, unit="bytes", legend_table=True))
+k.append(row("CPU", 24))
+k.append(ts("CPU cores used by container (rate)", [tgt(f'rate(homelab_container_cpu_usage_seconds_total{CSEL}[5m])', "{{name}}")], 0, 25, 24, 9, unit="short", legend_table=True))
+k.append(table("Top CPU (cores, 5m avg)", [tgt(f'topk(25, rate(homelab_container_cpu_usage_seconds_total{CSEL}[5m]))', "{{name}}")], 0, 34, 12, 9, unit="short"))
+k.append(ts("Processes/threads (pids) by container", [tgt(f'homelab_container_pids{CSEL}', "{{name}}")], 12, 34, 12, 9, unit="short", legend_table=True))
+write("Containers", "containers-resources.json", dashboard(
+    "Containers — Resources", "containers-resources", ["containers", "homelab", "docker"], k,
+    variables=[var_query("container", 'label_values(homelab_container_memory_bytes, name)', "Container")]))
+
 print("\nDone.")
