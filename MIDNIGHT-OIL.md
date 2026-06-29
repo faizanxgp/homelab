@@ -31,10 +31,10 @@ dies, a fresh `oil` session reads this and continues from "NEXT".
 
 | # | Task | Status |
 |---|------|--------|
-| 1 | Always-on Claude (tmux+systemd `oil`) | ✅ DONE — committed `fe7c7a2` |
-| 2 | This resume log + frequent updates | 🔄 in progress |
-| 3 | `git-push-pull.md` green-commit cron | ⏳ next |
-| 4 | Expose Claude Code files in Obsidian | ⏳ |
+| 1 | Always-on Claude (tmux+systemd `oil`) | ✅ DONE — `fe7c7a2` |
+| 2 | This resume log + frequent updates | 🔄 ongoing |
+| 3 | `git-push-pull.md` green-commit cron | ✅ DONE — `5a0a48b` |
+| 4 | Expose Claude Code files in Obsidian | 🔄 in progress |
 | 5 | Finish Uptime Kuma no-endpoint container monitors | ⏳ |
 | 6 | Deploy Postiz + marketing brief for Giant Group interview (Wed) | ⏳ |
 | 7 | Hermes agent web UI + docker interactivity | ⏳ |
@@ -57,11 +57,23 @@ dies, a fresh `oil` session reads this and continues from "NEXT".
 
 ---
 
+### ✅ #3 Green-commit streak keeper
+- `git-push-pull.md` ledger created in web vault; `vault-to-github.sh` appends a
+  row (run# · date · time · comment) every run → guaranteed green square Mon & Thu.
+- Manual override: `vault-to-github.sh "custom comment"`.
+- **⚠️ PRIVACY (told Faizan):** vault has ~65 personal `Claudy-Therapy/` notes.
+  The mirror script pushed to `github.com/faizanxgp/Obsidian`. I **hard-excluded
+  `Claudy-Therapy/`** from the mirror (`5a0a48b`). Last real sync predated these
+  notes so nothing leaked yet. **ACTION for Faizan:** confirm the Obsidian repo is
+  PRIVATE; decide if therapy notes should sync anywhere (separate private/encrypted
+  repo?). `gh` CLI is not installed on the box — couldn't verify visibility.
+
 ## NEXT (resume here)
-- **#3** Add `git-push-pull.md` to the web vault; modify `vault-to-github.sh` to append
-  a timestamped row (date · time · run-id · comment) every run so there's always a diff
-  → guaranteed green commit Mon & Thu. Commit to homelab repo.
-- Then #4 → #8 in order. Update this file + push after each.
+- **#4** Expose Claude Code files in Obsidian: bind-mount curated `/root/.claude`
+  (agents/, settings*.json, CLAUDE.md, projects/*.jsonl chat logs) into the web
+  vault via `utility/obsidian/docker-compose.yml`, recreate the container.
+- Then #5 Uptime Kuma container monitors → #6 Postiz+brief → #7 Hermes UI → #8 badges.
+- Update this file + push after each step.
 
 ## Open decisions to surface to Faizan (don't block on them — pick sane default)
 - Postiz at `postiz.itproxima.com`: will provision behind the existing cloudflared
