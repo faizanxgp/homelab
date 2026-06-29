@@ -1,0 +1,31 @@
+# Always-on Claude Code session, detached from SSH.
+#
+# Install:
+#   cp utility/claude-code/claude-oil.service /etc/systemd/system/claude-oil.service
+#   systemctl daemon-reload
+#   systemctl enable --now claude-oil.service
+#
+# After this, a tmux session named 'oil' running Claude Code exists at all times,
+# is recreated on every boot, and survives any SSH disconnect. Re-attach with:
+#   /opt/homelab/utility/claude-code/oil.sh      (or the 'oil' shell alias)
+#
+[Unit]
+Description=Midnight Oil — always-on Claude Code (tmux session 'oil')
+After=network-online.target
+Wants=network-online.target
+
+[Service]
+Type=oneshot
+RemainAfterExit=yes
+# Critical: the tmux server is forked by ExecStart and must OUTLIVE it. Without
+# this, systemd's default control-group cleanup reaps the server the instant the
+# oneshot command returns, and the 'oil' session vanishes.
+KillMode=process
+User=root
+Environment=IS_SANDBOX=1
+# Recreate the tmux session only if it isn't already up (oil.sh ensure is idempotent).
+ExecStart=/opt/homelab/utility/claude-code/oil.sh ensure
+ExecStop=/usr/bin/tmux -S /tmp/tmux-0/default kill-session -t oil
+
+[Install]
+WantedBy=multi-user.target
