@@ -33,5 +33,15 @@ docker compose -f docker-compose.yml up -d
    - Run **Check database configuration** (all green), then **Apply**.
 5. Do the same LiveSync config on phone + laptop (same URI/creds/db name) → all three live-sync.
 
-> Tip: in LiveSync, add `downloads/` and `uploads/` to the sync **ignore** list if you don't
-> want big drop/upload files replicated to your phone — they'll still be browsable on the web vault.
+> Tip: in LiveSync, add `storage/` to the sync **ignore** list (a vault-root `.gitignore`
+> with `storage/` already does this) so the bulk WebDAV folders never replicate to your phone —
+> they stay browsable on the web vault and the desktop mount.
+
+## Backup to GitHub (notes only, Mon & Thu)
+`vault-to-github.sh` mirrors **`.md` files only** (folder structure preserved) from this web
+vault into the private repo **github.com/faizanxgp/Obsidian** and pushes. It deliberately
+excludes `.obsidian/` (themes, plugins, and the LiveSync `data.json` that holds the CouchDB
+password + E2E passphrase), `storage/`, `.trash/`, and all non-markdown files.
+- Schedule: `cron/obsidian-vault` → installed at `/etc/cron.d/obsidian-vault`, **Mon & Thu 09:00 Asia/Karachi**.
+- Mirror repo lives at `/opt/obsidian-vault` (outside the homelab repo). Logs: `/var/log/homelab/vault-push.log` (also in Loki / the "Vault & Files — Logs" Grafana dashboard).
+- To make the green contribution graph public: GitHub → Settings → Profile → **"Include private contributions on my profile."**

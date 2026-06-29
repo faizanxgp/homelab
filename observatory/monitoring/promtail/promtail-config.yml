@@ -19,3 +19,13 @@ scrape_configs:
         target_label: container
       - source_labels: ['__meta_docker_container_log_stream']
         target_label: stream
+
+  # Host-side job logs (vault->github cron, rclone OneDrive runs, etc.) that aren't
+  # containers. Tail files dropped into /var/log/homelab on the host.
+  - job_name: homelab-host-jobs
+    static_configs:
+      - targets: [localhost]
+        labels:
+          job: homelab-jobs
+          host: bobo-prime
+          __path__: /var/log/homelab/*.log

@@ -1,0 +1,5 @@
+# Obsidian vault -> GitHub, notes only. Monday & Thursday at 09:00 Asia/Karachi.
+# Install:  cp utility/obsidian/cron/obsidian-vault /etc/cron.d/obsidian-vault && chmod 644 /etc/cron.d/obsidian-vault
+CRON_TZ=Asia/Karachi
+0 9 * * 1,4 root /opt/homelab/utility/obsidian/vault-to-github.sh
+# blank line required by cron below
