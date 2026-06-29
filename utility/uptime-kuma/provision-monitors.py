@@ -25,6 +25,8 @@ PUBLIC = [  # full edge: DNS -> Cloudflare -> tunnel -> app
     ("Obsidian",   "https://obsidian.itproxima.com/"),
     ("CouchDB",    "https://couch.itproxima.com/"),
     ("WebDAV",     "https://dav.itproxima.com/"),
+    ("Postiz",     "https://postiz.itproxima.com/"),
+    ("Hermes",     "https://hermes.itproxima.com/"),
 ]
 INTERNAL = [  # app health by container name on the observatory network
     ("n8n (main)",      "http://n8n-main:5678/healthz"),
@@ -45,6 +47,8 @@ INTERNAL = [  # app health by container name on the observatory network
     ("WebDAV",          "http://webdav:6065/"),
     ("Prometheus",      "http://prometheus:9090/-/healthy"),
     ("Loki",            "http://loki:3100/ready"),
+    ("Postiz",          "http://postiz:5000/"),
+    ("Hermes",          "http://hermes:8080/"),
 ]
 DBS = [  # TCP port checks (no creds stored)
     ("Postgres - n8n",          "n8n-postgres",        5432),
@@ -64,6 +68,9 @@ CONTAINERS = [
     "evo-postgres-exporter", "evo-redis-exporter",
     "automation-postgres-exporter",
     "textbee-mongo-exporter", "textbee-redis-exporter",
+    # Postiz stack (no public endpoints — watch container state)
+    "postiz-postgres", "postiz-redis",
+    "temporal", "temporal-postgresql", "temporal-elasticsearch",
 ]
 DOCKER_HOST_NAME = "local-socket"
 DOCKER_SOCK = "/var/run/docker.sock"
