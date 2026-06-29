@@ -1,10 +1,10 @@
 {
-  "uid": "redis-n8n",
-  "title": "Redis \u2014 n8n (n8n-redis)",
+  "uid": "redis-postiz",
+  "title": "Redis \u2014 postiz (postiz-redis)",
   "tags": [
     "redis",
     "homelab",
-    "n8n"
+    "postiz"
   ],
   "schemaVersion": 39,
   "version": 1,
@@ -36,7 +36,7 @@
   },
   "panels": [
     {
-      "id": 123,
+      "id": 174,
       "type": "stat",
       "title": "Up",
       "datasource": {
@@ -55,7 +55,7 @@
             "type": "prometheus",
             "uid": "prometheus"
           },
-          "expr": "redis_up{instance=\"n8n-redis\"}",
+          "expr": "redis_up{instance=\"postiz-redis\"}",
           "legendFormat": "{{instance}}",
           "refId": "A",
           "instant": false
@@ -115,7 +115,7 @@
       }
     },
     {
-      "id": 124,
+      "id": 175,
       "type": "stat",
       "title": "Connected Clients",
       "datasource": {
@@ -134,7 +134,7 @@
             "type": "prometheus",
             "uid": "prometheus"
           },
-          "expr": "sum by(instance)(redis_connected_clients{instance=\"n8n-redis\"})",
+          "expr": "sum by(instance)(redis_connected_clients{instance=\"postiz-redis\"})",
           "legendFormat": "{{instance}}",
           "refId": "A",
           "instant": false
@@ -175,7 +175,7 @@
       }
     },
     {
-      "id": 125,
+      "id": 176,
       "type": "stat",
       "title": "Memory Used",
       "datasource": {
@@ -194,7 +194,7 @@
             "type": "prometheus",
             "uid": "prometheus"
           },
-          "expr": "sum by(instance)(redis_memory_used_bytes{instance=\"n8n-redis\"})",
+          "expr": "sum by(instance)(redis_memory_used_bytes{instance=\"postiz-redis\"})",
           "legendFormat": "{{instance}}",
           "refId": "A",
           "instant": false
@@ -235,7 +235,7 @@
       }
     },
     {
-      "id": 126,
+      "id": 177,
       "type": "stat",
       "title": "Keys (total)",
       "datasource": {
@@ -254,7 +254,7 @@
             "type": "prometheus",
             "uid": "prometheus"
           },
-          "expr": "sum by(instance)(redis_db_keys{instance=\"n8n-redis\"})",
+          "expr": "sum by(instance)(redis_db_keys{instance=\"postiz-redis\"})",
           "legendFormat": "{{instance}}",
           "refId": "A",
           "instant": false
@@ -295,7 +295,7 @@
       }
     },
     {
-      "id": 127,
+      "id": 178,
       "type": "stat",
       "title": "Ops / sec",
       "datasource": {
@@ -314,7 +314,7 @@
             "type": "prometheus",
             "uid": "prometheus"
           },
-          "expr": "sum by(instance)(rate(redis_commands_processed_total{instance=\"n8n-redis\"}[5m]))",
+          "expr": "sum by(instance)(rate(redis_commands_processed_total{instance=\"postiz-redis\"}[5m]))",
           "legendFormat": "{{instance}}",
           "refId": "A",
           "instant": false
@@ -356,7 +356,7 @@
       }
     },
     {
-      "id": 128,
+      "id": 179,
       "type": "stat",
       "title": "Uptime",
       "datasource": {
@@ -375,7 +375,7 @@
             "type": "prometheus",
             "uid": "prometheus"
           },
-          "expr": "max by(instance)(redis_uptime_in_seconds{instance=\"n8n-redis\"})",
+          "expr": "max by(instance)(redis_uptime_in_seconds{instance=\"postiz-redis\"})",
           "legendFormat": "{{instance}}",
           "refId": "A",
           "instant": false
@@ -416,7 +416,7 @@
       }
     },
     {
-      "id": 129,
+      "id": 180,
       "type": "row",
       "title": "Throughput & Clients",
       "collapsed": false,
@@ -429,7 +429,7 @@
       "panels": []
     },
     {
-      "id": 130,
+      "id": 181,
       "type": "timeseries",
       "title": "Commands Processed / sec",
       "datasource": {
@@ -448,7 +448,7 @@
             "type": "prometheus",
             "uid": "prometheus"
           },
-          "expr": "sum by(instance)(rate(redis_commands_processed_total{instance=\"n8n-redis\"}[5m]))",
+          "expr": "sum by(instance)(rate(redis_commands_processed_total{instance=\"postiz-redis\"}[5m]))",
           "legendFormat": "{{instance}}",
           "refId": "A",
           "instant": false
@@ -502,7 +502,7 @@
       }
     },
     {
-      "id": 131,
+      "id": 182,
       "type": "timeseries",
       "title": "Connected / Blocked Clients",
       "datasource": {
@@ -521,7 +521,7 @@
             "type": "prometheus",
             "uid": "prometheus"
           },
-          "expr": "sum by(instance)(redis_connected_clients{instance=\"n8n-redis\"})",
+          "expr": "sum by(instance)(redis_connected_clients{instance=\"postiz-redis\"})",
           "legendFormat": "connected {{instance}}",
           "refId": "A",
           "instant": false
@@ -531,7 +531,7 @@
             "type": "prometheus",
             "uid": "prometheus"
           },
-          "expr": "sum by(instance)(redis_blocked_clients{instance=\"n8n-redis\"})",
+          "expr": "sum by(instance)(redis_blocked_clients{instance=\"postiz-redis\"})",
           "legendFormat": "blocked {{instance}}",
           "refId": "B",
           "instant": false
@@ -581,7 +581,7 @@
       }
     },
     {
-      "id": 132,
+      "id": 183,
       "type": "row",
       "title": "Memory",
       "collapsed": false,
@@ -594,7 +594,7 @@
       "panels": []
     },
     {
-      "id": 133,
+      "id": 184,
       "type": "timeseries",
       "title": "Memory Used",
       "datasource": {
@@ -613,7 +613,7 @@
             "type": "prometheus",
             "uid": "prometheus"
           },
-          "expr": "sum by(instance)(redis_memory_used_bytes{instance=\"n8n-redis\"})",
+          "expr": "sum by(instance)(redis_memory_used_bytes{instance=\"postiz-redis\"})",
           "legendFormat": "used {{instance}}",
           "refId": "A",
           "instant": false
@@ -623,7 +623,7 @@
             "type": "prometheus",
             "uid": "prometheus"
           },
-          "expr": "sum by(instance)(redis_memory_max_bytes{instance=\"n8n-redis\"} > 0)",
+          "expr": "sum by(instance)(redis_memory_max_bytes{instance=\"postiz-redis\"} > 0)",
           "legendFormat": "max {{instance}}",
           "refId": "B",
           "instant": false
@@ -673,7 +673,7 @@
       }
     },
     {
-      "id": 134,
+      "id": 185,
       "type": "timeseries",
       "title": "Memory Fragmentation Ratio",
       "datasource": {
@@ -692,7 +692,7 @@
             "type": "prometheus",
             "uid": "prometheus"
           },
-          "expr": "avg by(instance)(redis_mem_fragmentation_ratio{instance=\"n8n-redis\"})",
+          "expr": "avg by(instance)(redis_mem_fragmentation_ratio{instance=\"postiz-redis\"})",
           "legendFormat": "{{instance}}",
           "refId": "A",
           "instant": false
@@ -742,7 +742,7 @@
       }
     },
     {
-      "id": 135,
+      "id": 186,
       "type": "row",
       "title": "Keyspace & Hit Rate",
       "collapsed": false,
@@ -755,7 +755,7 @@
       "panels": []
     },
     {
-      "id": 136,
+      "id": 187,
       "type": "timeseries",
       "title": "Keyspace Hit Ratio %",
       "datasource": {
@@ -774,7 +774,7 @@
             "type": "prometheus",
             "uid": "prometheus"
           },
-          "expr": "100 * sum by(instance)(rate(redis_keyspace_hits_total{instance=\"n8n-redis\"}[5m])) / (sum by(instance)(rate(redis_keyspace_hits_total{instance=\"n8n-redis\"}[5m])) + sum by(instance)(rate(redis_keyspace_misses_total{instance=\"n8n-redis\"}[5m])) > 0)",
+          "expr": "100 * sum by(instance)(rate(redis_keyspace_hits_total{instance=\"postiz-redis\"}[5m])) / (sum by(instance)(rate(redis_keyspace_hits_total{instance=\"postiz-redis\"}[5m])) + sum by(instance)(rate(redis_keyspace_misses_total{instance=\"postiz-redis\"}[5m])) > 0)",
           "legendFormat": "{{instance}}",
           "refId": "A",
           "instant": false
@@ -824,7 +824,7 @@
       }
     },
     {
-      "id": 137,
+      "id": 188,
       "type": "timeseries",
       "title": "Keys per DB",
       "datasource": {
@@ -843,7 +843,7 @@
             "type": "prometheus",
             "uid": "prometheus"
           },
-          "expr": "redis_db_keys{instance=\"n8n-redis\"}",
+          "expr": "redis_db_keys{instance=\"postiz-redis\"}",
           "legendFormat": "{{instance}} {{db}}",
           "refId": "A",
           "instant": false
@@ -893,7 +893,7 @@
       }
     },
     {
-      "id": 138,
+      "id": 189,
       "type": "timeseries",
       "title": "Expired / Evicted Keys / sec",
       "datasource": {
@@ -912,7 +912,7 @@
             "type": "prometheus",
             "uid": "prometheus"
           },
-          "expr": "sum by(instance)(rate(redis_expired_keys_total{instance=\"n8n-redis\"}[5m]))",
+          "expr": "sum by(instance)(rate(redis_expired_keys_total{instance=\"postiz-redis\"}[5m]))",
           "legendFormat": "expired {{instance}}",
           "refId": "A",
           "instant": false
@@ -922,7 +922,7 @@
             "type": "prometheus",
             "uid": "prometheus"
           },
-          "expr": "sum by(instance)(rate(redis_evicted_keys_total{instance=\"n8n-redis\"}[5m]))",
+          "expr": "sum by(instance)(rate(redis_evicted_keys_total{instance=\"postiz-redis\"}[5m]))",
           "legendFormat": "evicted {{instance}}",
           "refId": "B",
           "instant": false
@@ -972,7 +972,7 @@
       }
     },
     {
-      "id": 139,
+      "id": 190,
       "type": "timeseries",
       "title": "Network I/O",
       "datasource": {
@@ -991,7 +991,7 @@
             "type": "prometheus",
             "uid": "prometheus"
           },
-          "expr": "sum by(instance)(rate(redis_net_input_bytes_total{instance=\"n8n-redis\"}[5m]))",
+          "expr": "sum by(instance)(rate(redis_net_input_bytes_total{instance=\"postiz-redis\"}[5m]))",
           "legendFormat": "in {{instance}}",
           "refId": "A",
           "instant": false
@@ -1001,7 +1001,7 @@
             "type": "prometheus",
             "uid": "prometheus"
           },
-          "expr": "sum by(instance)(rate(redis_net_output_bytes_total{instance=\"n8n-redis\"}[5m]))",
+          "expr": "sum by(instance)(rate(redis_net_output_bytes_total{instance=\"postiz-redis\"}[5m]))",
           "legendFormat": "out {{instance}}",
           "refId": "B",
           "instant": false

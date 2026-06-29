@@ -38,6 +38,8 @@ scrape_configs:
         labels: {instance: 'evo-postgres'}
       - targets: ['automation-postgres-exporter:9187']
         labels: {instance: 'postgres-automation'}
+      - targets: ['postiz-postgres-exporter:9187']
+        labels: {instance: 'postiz-postgres'}
 
   # ---- Redis exporters ----
   - job_name: redis
@@ -48,6 +50,8 @@ scrape_configs:
         labels: {instance: 'evo-redis'}
       - targets: ['textbee-redis-exporter:9121']
         labels: {instance: 'textbee-redis'}
+      - targets: ['postiz-redis-exporter:9121']
+        labels: {instance: 'postiz-redis'}
 
   # ---- MongoDB exporter ----
   - job_name: mongodb

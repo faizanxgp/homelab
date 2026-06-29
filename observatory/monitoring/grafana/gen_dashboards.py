@@ -6,8 +6,8 @@ import json, os
 DS = {"type": "prometheus", "uid": "prometheus"}
 OUT = "/opt/homelab/observatory/monitoring/grafana/dashboards"
 
-PG_INSTANCES = [("n8n-postgres", "n8n"), ("evo-postgres", "evolution"), ("postgres-automation", "automation")]
-REDIS_INSTANCES = [("n8n-redis", "n8n"), ("evo-redis", "evolution"), ("textbee-redis", "textbee")]
+PG_INSTANCES = [("n8n-postgres", "n8n"), ("evo-postgres", "evolution"), ("postgres-automation", "automation"), ("postiz-postgres", "postiz")]
+REDIS_INSTANCES = [("n8n-redis", "n8n"), ("evo-redis", "evolution"), ("textbee-redis", "textbee"), ("postiz-redis", "postiz")]
 
 _id = 0
 def nid():

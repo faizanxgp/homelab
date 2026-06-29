@@ -70,7 +70,34 @@ services:
       timeout: 3s
       retries: 10
 
-  # ── Temporal (Postgres-only; no Elasticsearch, to keep it light) ────────────
+  # ── Metrics exporters (scraped by Prometheus on the observatory network) ────
+  postiz-postgres-exporter:
+    image: prometheuscommunity/postgres-exporter:latest
+    container_name: postiz-postgres-exporter
+    restart: unless-stopped
+    environment:
+      DATA_SOURCE_NAME: "postgresql://postiz:${POSTIZ_DB_PASSWORD}@postiz-postgres:5432/postiz?sslmode=disable"
+    depends_on:
+      postiz-postgres:
+        condition: service_healthy
+    networks:
+      - postiz-internal
+      - observatory
+
+  postiz-redis-exporter:
+    image: oliver006/redis_exporter:latest
+    container_name: postiz-redis-exporter
+    restart: unless-stopped
+    environment:
+      REDIS_ADDR: "redis://postiz-redis:6379"
+    depends_on:
+      postiz-redis:
+        condition: service_healthy
+    networks:
+      - postiz-internal
+      - observatory
+
+  # ── Temporal (Postgres + Elasticsearch visibility) ──────────────────────────
   temporal-postgresql:
     image: postgres:16-alpine
     container_name: temporal-postgresql
