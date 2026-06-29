@@ -52,7 +52,10 @@ ROUTES=(
   "obsidian.$ZONE_NAME       http://obsidian:3000"
   "couch.$ZONE_NAME          http://couchdb:5984"
   "dav.$ZONE_NAME            http://webdav:6065"
+  "postiz.$ZONE_NAME         http://postiz:5000"
 )
+# NOTE: postiz is intentionally NOT in ACCESS_HOSTS — it has its own auth, and a
+# Cloudflare Access gate would break social-platform OAuth callbacks to /api/*.
 
 # Hostnames that get an email-allowlist Cloudflare Access gate in front of them.
 # (db is tcp so its app is self_hosted; tavern is http so http is fine.)

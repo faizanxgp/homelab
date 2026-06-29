@@ -1,0 +1,76 @@
+# Postiz — open-source social-media scheduling & analytics (self-hosted Buffer/Hootsuite).
+# Public at https://postiz.itproxima.com via the cloudflared tunnel (drawbridge net).
+# App-only image; its Postgres + Redis are dedicated and stay on the private
+# postiz-internal network (never exposed).
+services:
+  postiz:
+    image: ghcr.io/gitroomhq/postiz-app:latest
+    container_name: postiz
+    restart: unless-stopped
+    environment:
+      MAIN_URL: "https://postiz.itproxima.com"
+      FRONTEND_URL: "https://postiz.itproxima.com"
+      NEXT_PUBLIC_BACKEND_URL: "https://postiz.itproxima.com/api"
+      JWT_SECRET: "${JWT_SECRET}"
+      DATABASE_URL: "postgresql://postiz:${POSTIZ_DB_PASSWORD}@postiz-postgres:5432/postiz"
+      REDIS_URL: "redis://postiz-redis:6379"
+      BACKEND_INTERNAL_URL: "http://localhost:3000"
+      IS_GENERAL: "true"                 # self-hosted / general mode
+      DISABLE_REGISTRATION: "false"      # set true after you create your account
+      STORAGE_PROVIDER: "local"
+      UPLOAD_DIRECTORY: "/uploads"
+      NEXT_PUBLIC_UPLOAD_DIRECTORY: "/uploads"
+    volumes:
+      - ./volumes/config:/config
+      - ./volumes/uploads:/uploads
+    ports:
+      - "127.0.0.1:5050:5000"            # local test only; public access is via the tunnel
+    depends_on:
+      postiz-postgres:
+        condition: service_healthy
+      postiz-redis:
+        condition: service_healthy
+    networks:
+      - postiz-internal                  # reach its own db/redis
+      - drawbridge                       # cloudflared reaches http://postiz:5000
+      - observatory                      # promtail/cadvisor observe it
+
+  postiz-postgres:
+    image: postgres:17-alpine
+    container_name: postiz-postgres
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: postiz
+      POSTGRES_PASSWORD: "${POSTIZ_DB_PASSWORD}"
+      POSTGRES_DB: postiz
+    volumes:
+      - ./volumes/postgres:/var/lib/postgresql/data
+    networks:
+      - postiz-internal
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postiz -d postiz"]
+      interval: 10s
+      timeout: 3s
+      retries: 10
+
+  postiz-redis:
+    image: redis:7-alpine
+    container_name: postiz-redis
+    restart: unless-stopped
+    volumes:
+      - ./volumes/redis:/data
+    networks:
+      - postiz-internal
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 10s
+      timeout: 3s
+      retries: 10
+
+networks:
+  postiz-internal:
+    driver: bridge
+  drawbridge:
+    external: true
+  observatory:
+    external: true
