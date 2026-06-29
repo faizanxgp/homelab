@@ -6,6 +6,10 @@
 # and the LiveSync data.json which holds the CouchDB password + E2E passphrase),
 # the 50GB storage/ mount, .trash/, and every non-markdown file.
 #
+# PRIVACY: Claudy-Therapy/ is excluded — those are deeply personal therapy notes
+# that must NOT land on the portfolio-facing GitHub. Do not remove that exclude
+# without deliberately deciding to publish them.
+#
 # Run by cron every Monday & Thursday (see utility/obsidian/cron/obsidian-vault).
 set -euo pipefail
 
@@ -20,6 +24,29 @@ exec >>"$LOG" 2>&1
 echo "===== $(date -Is) :: vault -> github sync ====="
 
 if [ ! -d "$VAULT" ]; then echo "vault not found at $VAULT — aborting"; exit 1; fi
+
+# ── Streak keeper ────────────────────────────────────────────────────────────
+# Append a row to git-push-pull.md on EVERY run so there is always a real diff to
+# commit — guaranteeing a green GitHub contribution square Mon & Thu even when no
+# notes changed. Optional arg $1 overrides the comment for manual runs:
+#   vault-to-github.sh "shipped the Postiz deploy"
+LEDGER="$VAULT/git-push-pull.md"
+if [ ! -f "$LEDGER" ]; then
+  cat > "$LEDGER" <<'HDR'
+# 🟩 git push/pull ledger
+
+Auto-appended by `vault-to-github.sh` on every scheduled vault→GitHub sync.
+
+| Run | Date | Time | Comment / update |
+|----:|------|------|------------------|
+HDR
+fi
+RUN=$(( $(grep -cE '^\| *[0-9]' "$LEDGER" 2>/dev/null || echo 0) + 1 ))
+COMMENT="${1:-Automated vault sync — keeping the streak alive 🟩}"
+printf '| %04d | %s | %s | %s |\n' \
+  "$RUN" "$(TZ=Asia/Karachi date +%Y-%m-%d)" "$(TZ=Asia/Karachi date '+%H:%M %Z')" "$COMMENT" \
+  >> "$LEDGER"
+echo "ledger: appended run #$RUN"
 
 # First-run init of the mirror repo
 if [ ! -d "$MIRROR/.git" ]; then
@@ -49,6 +76,7 @@ rsync -a --delete --prune-empty-dirs \
   --exclude='.obsidian/' \
   --exclude='.trash/' \
   --exclude='storage/' \
+  --exclude='Claudy-Therapy/' \
   --include='*/' \
   --include='*.md' \
   --exclude='*' \
