@@ -1,0 +1,35 @@
+# Hermes — the homelab's AI agent with a proper web UI (Open WebUI).
+# Messenger of the gods: a pretty multi-model chat that can reach the OpenRouter
+# frontier models AND, via an imported tool, touch the other containers.
+# Public at https://hermes.itproxima.com behind Cloudflare Access (email OTP).
+services:
+  hermes:
+    image: ghcr.io/open-webui/open-webui:main
+    container_name: hermes
+    restart: unless-stopped
+    environment:
+      WEBUI_NAME: "Hermes"
+      WEBUI_SECRET_KEY: "${WEBUI_SECRET_KEY}"
+      # Use OpenRouter as the OpenAI-compatible backend (all frontier models).
+      # Can also be set in the UI: Settings > Connections. Blank = configure in UI.
+      OPENAI_API_BASE_URL: "https://openrouter.ai/api/v1"
+      OPENAI_API_KEY: "${OPENROUTER_API_KEY}"
+      ENABLE_OLLAMA_API: "false"
+      ENABLE_SIGNUP: "true"        # turn OFF after you create your admin account
+    volumes:
+      - ./volumes/data:/app/backend/data
+      # Lets the imported "Homelab Control" tool inspect/operate containers.
+      # SECURITY: this is root-equivalent on the host — Hermes is gated behind
+      # Cloudflare Access + its own login. Remove this line to disable docker control.
+      - /var/run/docker.sock:/var/run/docker.sock
+    ports:
+      - "127.0.0.1:3025:8080"      # local test only; public access via the tunnel
+    networks:
+      - drawbridge                 # cloudflared reaches http://hermes:8080
+      - observatory                # so Hermes can reach other services by name + be observed
+
+networks:
+  drawbridge:
+    external: true
+  observatory:
+    external: true

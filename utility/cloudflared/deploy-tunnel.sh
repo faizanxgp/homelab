@@ -53,6 +53,7 @@ ROUTES=(
   "couch.$ZONE_NAME          http://couchdb:5984"
   "dav.$ZONE_NAME            http://webdav:6065"
   "postiz.$ZONE_NAME         http://postiz:5000"
+  "hermes.$ZONE_NAME         http://hermes:8080"
 )
 # NOTE: postiz is intentionally NOT in ACCESS_HOSTS — it has its own auth, and a
 # Cloudflare Access gate would break social-platform OAuth callbacks to /api/*.
@@ -64,6 +65,7 @@ ACCESS_HOSTS=(
   "tavern.$ZONE_NAME"
   "uploads.$ZONE_NAME"
   "obsidian.$ZONE_NAME"
+  "hermes.$ZONE_NAME"
 )
 
 echo "==> Resolving account + zone"
