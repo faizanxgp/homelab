@@ -1,7 +1,9 @@
 # Obsidian — web vault (BoBo Prime)
 
-Real Obsidian in the browser (linuxserver KasmVNC image) at **https://obsidian.itproxima.com**
-(Cloudflare Access email-OTP gate → then the KasmVNC login from `.env`).
+Real Obsidian in the browser (linuxserver KasmVNC image) at **https://obsidian.itproxima.com**.
+Single gate: **Cloudflare Access email-OTP** (to mianfaizanxgp@gmail.com). No inner
+KasmVNC login — same model as uploads/db. The CF identity is SSO, so once you've
+OTP'd into any *.itproxima.com Access app, the others auto-allow without re-prompting.
 
 ## What's where
 - **Vault** lives at `/config/vault` inside the container (`./volumes/config/vault` on host).
@@ -10,9 +12,9 @@ Real Obsidian in the browser (linuxserver KasmVNC image) at **https://obsidian.i
 - `vault/uploads` ← bind of `../uploads/files` — the **same** dir `uploads.itproxima.com` writes to.
   Upload a file at uploads.itproxima.com and it appears in the vault.
 
-## Two gates
-1. **Cloudflare Access** (outer) — email OTP to mianfaizanxgp@gmail.com, set in `cloudflared/deploy-tunnel.sh`.
-2. **KasmVNC login** (inner) — `KASM_USER` / `KASM_PASSWORD` in `.env`.
+## Gate
+**Cloudflare Access** — email OTP to mianfaizanxgp@gmail.com, set in `cloudflared/deploy-tunnel.sh`.
+(To add an inner KasmVNC basic-auth login too, set `CUSTOM_USER`/`PASSWORD` env in the compose.)
 
 ## Bring up
 ```bash

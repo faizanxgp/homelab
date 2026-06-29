@@ -13,8 +13,8 @@ services:
       - PUID=0
       - PGID=0
       - TZ=Asia/Karachi
-      - CUSTOM_USER=${KASM_USER}     # KasmVNC web login (inner gate; CF Access is the outer gate)
-      - PASSWORD=${KASM_PASSWORD}
+      # No inner KasmVNC login: Cloudflare Access (email OTP) is the only gate,
+      # same model as uploads/db. (Set CUSTOM_USER/PASSWORD here to re-add one.)
     volumes:
       - ./volumes/config:/config                       # app data; the vault lives at /config/vault
       - ../downloads/files:/config/vault/downloads     # SAME dir downloads.itproxima.com serves
