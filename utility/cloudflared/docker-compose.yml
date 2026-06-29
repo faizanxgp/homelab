@@ -8,7 +8,10 @@ services:
       - TUNNEL_TOKEN=${TUNNEL_TOKEN}
     networks:
       - drawbridge    # the only public door — every internet-facing service joins this net
+      - observatory   # exposes tunnel metrics (:60123) to prometheus; cadvisor/promtail observe it
 
 networks:
   drawbridge:
     external: true   # compose keyword: net already exists (created by the gateway stack), just attach
+  observatory:
+    external: true

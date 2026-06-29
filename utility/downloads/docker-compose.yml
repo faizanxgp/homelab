@@ -10,7 +10,10 @@ services:
       - "127.0.0.1:3021:80"      # local test only; public access is via the cloudflare tunnel
     networks:
       - drawbridge               # the public tunnel network; cloudflared reaches http://downloads:80
+      - observatory              # so cadvisor/promtail observe it
 
 networks:
   drawbridge:
+    external: true
+  observatory:
     external: true

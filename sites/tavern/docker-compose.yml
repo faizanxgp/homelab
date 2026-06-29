@@ -15,7 +15,10 @@ services:
     # No published host ports — the ONLY ingress is via cloudflared on drawbridge.
     networks:
       - drawbridge
+      - observatory     # so cadvisor/promtail observe it
 
 networks:
   drawbridge:
+    external: true
+  observatory:
     external: true

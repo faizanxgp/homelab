@@ -17,9 +17,12 @@ services:
     networks:
       - drawbridge              # cloudflared reaches it at http://db-viewer:8081
       - automation              # so it can reach postgres-automation:5432 internally
+      - observatory             # so cadvisor/promtail observe it
 
 networks:
   drawbridge:
     external: true
   automation:
+    external: true
+  observatory:
     external: true
