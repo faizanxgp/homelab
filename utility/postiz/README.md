@@ -9,16 +9,22 @@ generation and per-post analytics.
 ## Architecture
 - `postiz` — the app (Next.js frontend + NestJS backend + orchestrator), public on
   port 5000 via the tunnel. Local test bind: `127.0.0.1:5050`.
-- `postiz-postgres` (Postgres 17) + `postiz-redis` (Redis 7) — dedicated, kept on
-  the private `postiz-internal` network, never exposed.
+- `postiz-postgres` (Postgres 17) + `postiz-redis` (Redis 7) — dedicated, on the
+  private `postiz-internal` network, never exposed.
+- **Temporal** workflow engine (required by modern Postiz): `temporal`
+  (auto-setup) + `temporal-postgresql` + `temporal-elasticsearch`. ES is mandatory —
+  the Postgres-only visibility store caps Text search attributes at 3 and Postiz
+  needs more (`addSearchAttributes` fails otherwise). ES runs a small 512m heap.
 - Secrets in `.env` (gitignored); see `.env.example`.
 
-## ⚠️ First-run hardening (DO THIS FIRST)
-Registration is currently **open** so you can create your account. Right after:
+## Account (already created)
+- Admin **`mianfaizanxgp@gmail.com`** is registered + activated; log in at
+  https://postiz.itproxima.com. **Registration is now locked**
+  (`DISABLE_REGISTRATION: "true"`); flip to `"false"` + `docker compose up -d` to
+  add more users.
 
-1. Go to https://postiz.itproxima.com → **register** your admin account.
-2. Edit `.env` / compose: set `DISABLE_REGISTRATION: "true"`.
-3. `docker compose up -d` to apply. Now nobody else can sign up.
+> Note: if ES's data dir ever resets, `chown -R 1000:0 volumes/temporal-es` before
+> starting (ES runs as uid 1000).
 
 ## Connecting social accounts (for the real demo)
 Each platform needs an OAuth app (client id/secret) you create in that platform's

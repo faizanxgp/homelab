@@ -14,9 +14,10 @@ services:
       JWT_SECRET: "${JWT_SECRET}"
       DATABASE_URL: "postgresql://postiz:${POSTIZ_DB_PASSWORD}@postiz-postgres:5432/postiz"
       REDIS_URL: "redis://postiz-redis:6379"
+      TEMPORAL_ADDRESS: "temporal:7233"  # required since Postiz moved to Temporal workflows
       BACKEND_INTERNAL_URL: "http://localhost:3000"
       IS_GENERAL: "true"                 # self-hosted / general mode
-      DISABLE_REGISTRATION: "false"      # set true after you create your account
+      DISABLE_REGISTRATION: "true"       # account created; registration locked
       STORAGE_PROVIDER: "local"
       UPLOAD_DIRECTORY: "/uploads"
       NEXT_PUBLIC_UPLOAD_DIRECTORY: "/uploads"
@@ -29,6 +30,8 @@ services:
       postiz-postgres:
         condition: service_healthy
       postiz-redis:
+        condition: service_healthy
+      temporal:
         condition: service_healthy
     networks:
       - postiz-internal                  # reach its own db/redis
@@ -66,6 +69,77 @@ services:
       interval: 10s
       timeout: 3s
       retries: 10
+
+  # ── Temporal (Postgres-only; no Elasticsearch, to keep it light) ────────────
+  temporal-postgresql:
+    image: postgres:16-alpine
+    container_name: temporal-postgresql
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: temporal
+      POSTGRES_PASSWORD: temporal
+    volumes:
+      - ./volumes/temporal-postgres:/var/lib/postgresql/data
+    networks:
+      - postiz-internal
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U temporal"]
+      interval: 10s
+      timeout: 3s
+      retries: 10
+
+  # Elasticsearch is REQUIRED: Postiz registers >3 Text search attributes, which
+  # the Postgres-only visibility store refuses ("cannot have more than 3 search
+  # attribute of type Text"). ES (small heap) lifts that cap.
+  temporal-elasticsearch:
+    image: elasticsearch:7.17.27
+    container_name: temporal-elasticsearch
+    restart: unless-stopped
+    environment:
+      - discovery.type=single-node
+      - xpack.security.enabled=false
+      - ES_JAVA_OPTS=-Xms512m -Xmx512m
+      - cluster.routing.allocation.disk.threshold_enabled=true
+      - cluster.routing.allocation.disk.watermark.low=1gb
+      - cluster.routing.allocation.disk.watermark.high=512mb
+      - cluster.routing.allocation.disk.watermark.flood_stage=256mb
+    volumes:
+      - ./volumes/temporal-es:/usr/share/elasticsearch/data
+    networks:
+      - postiz-internal
+    healthcheck:
+      test: ["CMD-SHELL", "curl -fsS http://localhost:9200/_cluster/health || exit 1"]
+      interval: 15s
+      timeout: 5s
+      retries: 12
+      start_period: 45s
+
+  temporal:
+    image: temporalio/auto-setup:1.28.1
+    container_name: temporal
+    restart: unless-stopped
+    depends_on:
+      temporal-postgresql:
+        condition: service_healthy
+      temporal-elasticsearch:
+        condition: service_healthy
+    environment:
+      DB: postgres12                 # pgx driver name (works with PG16)
+      DB_PORT: 5432
+      POSTGRES_USER: temporal
+      POSTGRES_PWD: temporal
+      POSTGRES_SEEDS: temporal-postgresql
+      ENABLE_ES: "true"
+      ES_SEEDS: temporal-elasticsearch
+      ES_VERSION: v7
+    networks:
+      - postiz-internal
+    healthcheck:
+      test: ["CMD", "tctl", "--address", "temporal:7233", "cluster", "health"]
+      interval: 15s
+      timeout: 5s
+      retries: 12
+      start_period: 90s
 
 networks:
   postiz-internal:
