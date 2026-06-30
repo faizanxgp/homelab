@@ -1,0 +1,68 @@
+# Matomo — self-hosted web analytics (MariaDB-backed).
+# Part of the marketing stack. Defined but kept stopped (review before `up`).
+# Public (when enabled) via cloudflared at matomo.itproxima.com.
+name: matomo
+services:
+  matomo:
+    image: matomo:apache
+    container_name: matomo
+    restart: unless-stopped
+    depends_on:
+      matomo-db:
+        condition: service_healthy
+    environment:
+      MATOMO_DATABASE_HOST: matomo-db
+      MATOMO_DATABASE_ADAPTER: mysql
+      MATOMO_DATABASE_TABLES_PREFIX: matomo_
+      MATOMO_DATABASE_USERNAME: matomo
+      MATOMO_DATABASE_PASSWORD: "${MATOMO_DB_PASSWORD}"
+      MATOMO_DATABASE_DBNAME: matomo
+      TZ: Asia/Karachi
+    volumes:
+      - ./volumes/matomo:/var/www/html
+    ports:
+      - "127.0.0.1:8412:80"   # local test only; public via tunnel
+    networks: [matomo-internal, marketing, drawbridge, observatory]
+
+  matomo-db:
+    image: mariadb:11
+    container_name: matomo-db
+    restart: unless-stopped
+    command: --max-allowed-packet=64MB
+    environment:
+      MARIADB_ROOT_PASSWORD: "${MATOMO_DB_ROOT_PASSWORD}"
+      MARIADB_DATABASE: matomo
+      MARIADB_USER: matomo
+      MARIADB_PASSWORD: "${MATOMO_DB_PASSWORD}"
+    volumes:
+      - ./volumes/db:/var/lib/mysql
+    networks: [matomo-internal]
+    healthcheck:
+      test: ["CMD", "healthcheck.sh", "--connect", "--innodb_initialized"]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+
+  matomo-db-exporter:
+    image: prom/mysqld-exporter:v0.15.1
+    container_name: matomo-db-exporter
+    restart: unless-stopped
+    environment:
+      MYSQLD_EXPORTER_PASSWORD: "${MATOMO_DB_PASSWORD}"
+    command:
+      - "--mysqld.username=matomo"
+      - "--mysqld.address=matomo-db:3306"
+    depends_on:
+      matomo-db:
+        condition: service_healthy
+    networks: [matomo-internal, observatory]
+
+networks:
+  matomo-internal:
+    driver: bridge
+  marketing:
+    external: true
+  drawbridge:
+    external: true
+  observatory:
+    external: true
