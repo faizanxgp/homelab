@@ -60,7 +60,7 @@
   },
   "panels": [
     {
-      "id": 509,
+      "id": 606,
       "type": "stat",
       "title": "Monitors Up",
       "datasource": {
@@ -120,7 +120,7 @@
       }
     },
     {
-      "id": 510,
+      "id": 607,
       "type": "stat",
       "title": "Monitors Down",
       "datasource": {
@@ -184,7 +184,7 @@
       }
     },
     {
-      "id": 511,
+      "id": 608,
       "type": "stat",
       "title": "Availability",
       "datasource": {
@@ -253,7 +253,7 @@
       }
     },
     {
-      "id": 512,
+      "id": 609,
       "type": "stat",
       "title": "Avg response time",
       "datasource": {
@@ -313,7 +313,7 @@
       }
     },
     {
-      "id": 513,
+      "id": 610,
       "type": "stat",
       "title": "Soonest cert expiry",
       "datasource": {
@@ -381,7 +381,7 @@
       }
     },
     {
-      "id": 514,
+      "id": 611,
       "type": "row",
       "title": "Response time",
       "collapsed": false,
@@ -394,7 +394,7 @@
       "panels": []
     },
     {
-      "id": 515,
+      "id": 612,
       "type": "timeseries",
       "title": "Response time by monitor (ms)",
       "datasource": {
@@ -467,7 +467,7 @@
       }
     },
     {
-      "id": 516,
+      "id": 613,
       "type": "row",
       "title": "Up / Down over time",
       "collapsed": false,
@@ -480,7 +480,7 @@
       "panels": []
     },
     {
-      "id": 517,
+      "id": 614,
       "type": "timeseries",
       "title": "Monitor status (1 = up, 0 = down)",
       "datasource": {
@@ -549,7 +549,7 @@
       }
     },
     {
-      "id": 518,
+      "id": 615,
       "type": "row",
       "title": "Tables",
       "collapsed": false,
@@ -562,7 +562,7 @@
       "panels": []
     },
     {
-      "id": 519,
+      "id": 616,
       "type": "table",
       "title": "Response time now (ms)",
       "datasource": {
@@ -618,7 +618,7 @@
       ]
     },
     {
-      "id": 520,
+      "id": 617,
       "type": "table",
       "title": "Certificate days remaining",
       "datasource": {

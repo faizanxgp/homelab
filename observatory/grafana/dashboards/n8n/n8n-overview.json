@@ -35,7 +35,7 @@
   },
   "panels": [
     {
-      "id": 410,
+      "id": 507,
       "type": "stat",
       "title": "Instances Up",
       "datasource": {
@@ -99,7 +99,7 @@
       }
     },
     {
-      "id": 411,
+      "id": 508,
       "type": "stat",
       "title": "Main Up",
       "datasource": {
@@ -178,7 +178,7 @@
       }
     },
     {
-      "id": 412,
+      "id": 509,
       "type": "stat",
       "title": "Worker Up",
       "datasource": {
@@ -257,7 +257,7 @@
       }
     },
     {
-      "id": 413,
+      "id": 510,
       "type": "stat",
       "title": "Active Workflows",
       "datasource": {
@@ -317,7 +317,7 @@
       }
     },
     {
-      "id": 414,
+      "id": 511,
       "type": "stat",
       "title": "Leader Elected",
       "datasource": {
@@ -395,7 +395,7 @@
       }
     },
     {
-      "id": 415,
+      "id": 512,
       "type": "stat",
       "title": "Jobs Waiting",
       "datasource": {
@@ -463,7 +463,7 @@
       }
     },
     {
-      "id": 416,
+      "id": 513,
       "type": "row",
       "title": "Cache & Activity",
       "collapsed": false,
@@ -476,7 +476,7 @@
       "panels": []
     },
     {
-      "id": 417,
+      "id": 514,
       "type": "timeseries",
       "title": "Cache Hit Ratio % (main+worker)",
       "datasource": {
@@ -545,7 +545,7 @@
       }
     },
     {
-      "id": 418,
+      "id": 515,
       "type": "timeseries",
       "title": "Seconds Since Last Activity",
       "datasource": {
@@ -614,7 +614,7 @@
       }
     },
     {
-      "id": 419,
+      "id": 516,
       "type": "row",
       "title": "Resource Usage (per instance)",
       "collapsed": false,
@@ -627,7 +627,7 @@
       "panels": []
     },
     {
-      "id": 420,
+      "id": 517,
       "type": "timeseries",
       "title": "CPU Usage",
       "datasource": {
@@ -700,7 +700,7 @@
       }
     },
     {
-      "id": 421,
+      "id": 518,
       "type": "timeseries",
       "title": "Resident Memory",
       "datasource": {

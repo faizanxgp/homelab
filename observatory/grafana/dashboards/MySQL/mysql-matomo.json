@@ -37,7 +37,7 @@
   },
   "panels": [
     {
-      "id": 537,
+      "id": 634,
       "type": "stat",
       "title": "Up",
       "datasource": {
@@ -116,7 +116,7 @@
       }
     },
     {
-      "id": 538,
+      "id": 635,
       "type": "stat",
       "title": "Threads Connected",
       "datasource": {
@@ -176,7 +176,7 @@
       }
     },
     {
-      "id": 539,
+      "id": 636,
       "type": "stat",
       "title": "Max Connections",
       "datasource": {
@@ -236,7 +236,7 @@
       }
     },
     {
-      "id": 540,
+      "id": 637,
       "type": "stat",
       "title": "Uptime",
       "datasource": {
@@ -296,7 +296,7 @@
       }
     },
     {
-      "id": 541,
+      "id": 638,
       "type": "stat",
       "title": "Slow Queries (total)",
       "datasource": {
@@ -360,7 +360,7 @@
       }
     },
     {
-      "id": 542,
+      "id": 639,
       "type": "stat",
       "title": "Aborted Connects",
       "datasource": {
@@ -420,7 +420,7 @@
       }
     },
     {
-      "id": 543,
+      "id": 640,
       "type": "row",
       "title": "Throughput",
       "collapsed": false,
@@ -433,7 +433,7 @@
       "panels": []
     },
     {
-      "id": 544,
+      "id": 641,
       "type": "timeseries",
       "title": "Queries / sec",
       "datasource": {
@@ -502,7 +502,7 @@
       }
     },
     {
-      "id": 545,
+      "id": 642,
       "type": "timeseries",
       "title": "Connection Utilisation %",
       "datasource": {
@@ -571,7 +571,7 @@
       }
     },
     {
-      "id": 546,
+      "id": 643,
       "type": "timeseries",
       "title": "Command Rate (select/insert/update/delete)",
       "datasource": {
@@ -670,7 +670,7 @@
       }
     },
     {
-      "id": 547,
+      "id": 644,
       "type": "timeseries",
       "title": "Network Bytes / sec",
       "datasource": {
@@ -749,7 +749,7 @@
       }
     },
     {
-      "id": 548,
+      "id": 645,
       "type": "row",
       "title": "InnoDB",
       "collapsed": false,
@@ -762,7 +762,7 @@
       "panels": []
     },
     {
-      "id": 549,
+      "id": 646,
       "type": "timeseries",
       "title": "InnoDB Buffer Pool (data vs total)",
       "datasource": {
@@ -841,7 +841,7 @@
       }
     },
     {
-      "id": 550,
+      "id": 647,
       "type": "timeseries",
       "title": "InnoDB Row Ops / sec",
       "datasource": {
