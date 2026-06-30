@@ -30,7 +30,7 @@ To disable docker control entirely, remove the `docker.sock` volume in the compo
 
 ## Manage
 ```bash
-cd /opt/homelab/utility/hermes
+cd /opt/homelab/ai-agents/hermes
 docker compose ps
 docker compose logs -f hermes
 docker compose up -d

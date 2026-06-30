@@ -25,7 +25,7 @@ copy "$REPO/THE-IMMORTAL.md"                       "00 - The Immortal (session l
 copy "$REPO/utility/claude-code/README.md"         "01 - The Immortal - always-on Claude (how-to).md"
 copy "$REPO/marketing/postiz/README.md"              "02 - Postiz (social scheduler).md"
 copy "$REPO/marketing/postiz/marketing-arsenal.md"   "03 - Marketing Analytics Arsenal (interview brief).md"
-copy "$REPO/utility/hermes/README.md"              "04 - Hermes (AI agent web UI).md"
+copy "$REPO/ai-agents/hermes/README.md"              "04 - Hermes (AI agent web UI).md"
 copy "$REPO/utility/uptime-kuma/README.md"         "05 - Uptime Kuma (monitors).md"
 copy "$REPO/COOL-STACK-IDEAS.md"                   "06 - Cool Stack Ideas (what to add next).md"
 copy "$REPO/GITHUB-BADGES.md"                      "07 - GitHub Badges (farming plan).md"

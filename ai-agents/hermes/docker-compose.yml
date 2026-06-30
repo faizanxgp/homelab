@@ -27,9 +27,12 @@ services:
     networks:
       - drawbridge                 # cloudflared reaches http://hermes:8080
       - observatory                # so Hermes can reach other services by name + be observed
+      - agents                     # grouped with the AI-agents stack
 
 networks:
   drawbridge:
     external: true
   observatory:
+    external: true
+  agents:
     external: true
