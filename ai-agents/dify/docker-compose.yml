@@ -23,6 +23,7 @@ x-dify-api-env: &dify-api-env
   OPENDAL_SCHEME: fs
   CODE_EXECUTION_ENDPOINT: "http://dify-sandbox:8194"
   CODE_EXECUTION_API_KEY: "${DIFY_SANDBOX_KEY}"
+  MIGRATION_ENABLED: "true"     # api builds/upgrades the DB schema on boot
   LOG_LEVEL: INFO
 
 services:
@@ -63,6 +64,8 @@ services:
     environment:
       CONSOLE_API_URL: "https://dify.itproxima.com"
       APP_API_URL: "https://dify.itproxima.com"
+      HOSTNAME: "0.0.0.0"     # Next.js standalone otherwise binds to the container id
+      PORT: "3000"
     ports:
       - "127.0.0.1:8511:3000"   # web; default route via the tunnel
     networks: [dify-internal, agents, drawbridge, observatory]
