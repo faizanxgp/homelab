@@ -93,7 +93,7 @@ Kuma/Postiz creds were provided live and are NOT stored in git.
   `cd /opt/homelab/utility/uptime-kuma && python3 -m venv venv && ./venv/bin/pip install uptime-kuma-api && ./venv/bin/python provision-monitors.py 'YOUR_PW'`
 
 ## NEXT (resume here)
-- **#6** Deploy Postiz at `utility/postiz` → `postiz.itproxima.com` (follow cloudflared
+- **#6** Deploy Postiz at `marketing/postiz` → `postiz.itproxima.com` (follow cloudflared
   tunnel + drawbridge/observatory pattern). Write the marketing-analytics brief for the
   Giant Group interview (Wed). Postiz needs Postgres+Redis+JWT secret; social posting
   needs his OAuth app creds (document, don't fabricate).

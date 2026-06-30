@@ -45,7 +45,7 @@ single `docker compose up` in a new `utility/<name>/` folder + one route in
 ## 📊 Data / dashboards (marketing-interview relevant)
 | App | What it gives you |
 |---|---|
-| **Metabase** | No-code BI dashboards over any DB (see `utility/postiz/marketing-arsenal.md`) |
+| **Metabase** | No-code BI dashboards over any DB (see `marketing/postiz/marketing-arsenal.md`) |
 | **PostHog** | Product analytics: funnels, cohorts, session replay, A/B, flags |
 | **Umami** / **Matomo** | Privacy-first web analytics (GA replacement) |
 | **Listmonk** | Self-hosted newsletter + campaign analytics |
