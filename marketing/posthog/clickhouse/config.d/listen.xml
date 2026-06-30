@@ -1,0 +1,4 @@
+<clickhouse>
+    <!-- Listen on all container interfaces (internal network only; not host-published). -->
+    <listen_host>0.0.0.0</listen_host>
+</clickhouse>
