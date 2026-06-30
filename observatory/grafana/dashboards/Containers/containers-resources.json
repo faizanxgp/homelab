@@ -60,7 +60,7 @@
   },
   "panels": [
     {
-      "id": 315,
+      "id": 496,
       "type": "stat",
       "title": "Containers Up",
       "datasource": {
@@ -120,7 +120,7 @@
       }
     },
     {
-      "id": 316,
+      "id": 497,
       "type": "stat",
       "title": "Tracked Memory (sum)",
       "datasource": {
@@ -180,7 +180,7 @@
       }
     },
     {
-      "id": 317,
+      "id": 498,
       "type": "stat",
       "title": "Host RAM Total",
       "datasource": {
@@ -240,7 +240,7 @@
       }
     },
     {
-      "id": 318,
+      "id": 499,
       "type": "stat",
       "title": "Containers' share of host RAM",
       "datasource": {
@@ -309,7 +309,7 @@
       }
     },
     {
-      "id": 319,
+      "id": 500,
       "type": "stat",
       "title": "Metrics freshness",
       "datasource": {
@@ -377,7 +377,7 @@
       }
     },
     {
-      "id": 320,
+      "id": 501,
       "type": "row",
       "title": "Memory",
       "collapsed": false,
@@ -390,7 +390,7 @@
       "panels": []
     },
     {
-      "id": 321,
+      "id": 502,
       "type": "timeseries",
       "title": "Memory usage by container",
       "datasource": {
@@ -463,7 +463,7 @@
       }
     },
     {
-      "id": 322,
+      "id": 503,
       "type": "table",
       "title": "Top memory (current)",
       "datasource": {
@@ -519,7 +519,7 @@
       ]
     },
     {
-      "id": 323,
+      "id": 504,
       "type": "timeseries",
       "title": "Anonymous (non-reclaimable) memory by container",
       "datasource": {
@@ -592,7 +592,7 @@
       }
     },
     {
-      "id": 324,
+      "id": 505,
       "type": "row",
       "title": "CPU",
       "collapsed": false,
@@ -605,7 +605,7 @@
       "panels": []
     },
     {
-      "id": 325,
+      "id": 506,
       "type": "timeseries",
       "title": "CPU cores used by container (rate)",
       "datasource": {
@@ -678,7 +678,7 @@
       }
     },
     {
-      "id": 326,
+      "id": 507,
       "type": "table",
       "title": "Top CPU (cores, 5m avg)",
       "datasource": {
@@ -734,7 +734,7 @@
       ]
     },
     {
-      "id": 327,
+      "id": 508,
       "type": "timeseries",
       "title": "Processes/threads (pids) by container",
       "datasource": {

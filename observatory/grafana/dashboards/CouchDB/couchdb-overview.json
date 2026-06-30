@@ -36,7 +36,7 @@
   },
   "panels": [
     {
-      "id": 266,
+      "id": 447,
       "type": "stat",
       "title": "Scrape Up",
       "datasource": {
@@ -115,7 +115,7 @@
       }
     },
     {
-      "id": 267,
+      "id": 448,
       "type": "stat",
       "title": "Node Up",
       "datasource": {
@@ -194,7 +194,7 @@
       }
     },
     {
-      "id": 268,
+      "id": 449,
       "type": "stat",
       "title": "Cluster Stable",
       "datasource": {
@@ -273,7 +273,7 @@
       }
     },
     {
-      "id": 269,
+      "id": 450,
       "type": "stat",
       "title": "Databases",
       "datasource": {
@@ -333,7 +333,7 @@
       }
     },
     {
-      "id": 270,
+      "id": 451,
       "type": "stat",
       "title": "Open Databases",
       "datasource": {
@@ -393,7 +393,7 @@
       }
     },
     {
-      "id": 271,
+      "id": 452,
       "type": "stat",
       "title": "Open OS Files",
       "datasource": {
@@ -453,7 +453,7 @@
       }
     },
     {
-      "id": 272,
+      "id": 453,
       "type": "row",
       "title": "HTTP Traffic",
       "collapsed": false,
@@ -466,7 +466,7 @@
       "panels": []
     },
     {
-      "id": 273,
+      "id": 454,
       "type": "timeseries",
       "title": "Requests / sec by method",
       "datasource": {
@@ -539,7 +539,7 @@
       }
     },
     {
-      "id": 274,
+      "id": 455,
       "type": "timeseries",
       "title": "Responses / sec by status code",
       "datasource": {
@@ -612,7 +612,7 @@
       }
     },
     {
-      "id": 275,
+      "id": 456,
       "type": "timeseries",
       "title": "Database Reads vs Writes / sec",
       "datasource": {
@@ -691,7 +691,7 @@
       }
     },
     {
-      "id": 276,
+      "id": 457,
       "type": "timeseries",
       "title": "Bulk Requests / sec",
       "datasource": {
@@ -760,7 +760,7 @@
       }
     },
     {
-      "id": 277,
+      "id": 458,
       "type": "row",
       "title": "LiveSync Activity & Auth",
       "collapsed": false,
@@ -773,7 +773,7 @@
       "panels": []
     },
     {
-      "id": 278,
+      "id": 459,
       "type": "timeseries",
       "title": "Clients on continuous _changes (active live-sync feeds)",
       "datasource": {
@@ -842,7 +842,7 @@
       }
     },
     {
-      "id": 279,
+      "id": 460,
       "type": "timeseries",
       "title": "Auth Cache Hit Ratio %",
       "datasource": {
@@ -911,7 +911,7 @@
       }
     },
     {
-      "id": 280,
+      "id": 461,
       "type": "row",
       "title": "Replicator",
       "collapsed": false,
@@ -924,7 +924,7 @@
       "panels": []
     },
     {
-      "id": 281,
+      "id": 462,
       "type": "timeseries",
       "title": "Replicator Connections",
       "datasource": {
@@ -993,7 +993,7 @@
       }
     },
     {
-      "id": 282,
+      "id": 463,
       "type": "timeseries",
       "title": "Replicator Docs",
       "datasource": {
@@ -1062,7 +1062,7 @@
       }
     },
     {
-      "id": 283,
+      "id": 464,
       "type": "row",
       "title": "Erlang VM Memory",
       "collapsed": false,
@@ -1075,7 +1075,7 @@
       "panels": []
     },
     {
-      "id": 284,
+      "id": 465,
       "type": "timeseries",
       "title": "Erlang Memory by type",
       "datasource": {
@@ -1194,7 +1194,7 @@
       }
     },
     {
-      "id": 285,
+      "id": 466,
       "type": "timeseries",
       "title": "Total Disk Size (all DBs)",
       "datasource": {

@@ -36,7 +36,7 @@
   },
   "panels": [
     {
-      "id": 212,
+      "id": 393,
       "type": "stat",
       "title": "Up",
       "datasource": {
@@ -115,7 +115,7 @@
       }
     },
     {
-      "id": 213,
+      "id": 394,
       "type": "stat",
       "title": "Uptime",
       "datasource": {
@@ -175,7 +175,7 @@
       }
     },
     {
-      "id": 214,
+      "id": 395,
       "type": "stat",
       "title": "Current Connections",
       "datasource": {
@@ -235,7 +235,7 @@
       }
     },
     {
-      "id": 215,
+      "id": 396,
       "type": "stat",
       "title": "Available Connections",
       "datasource": {
@@ -295,7 +295,7 @@
       }
     },
     {
-      "id": 216,
+      "id": 397,
       "type": "stat",
       "title": "Resident Memory (MB)",
       "datasource": {
@@ -355,7 +355,7 @@
       }
     },
     {
-      "id": 217,
+      "id": 398,
       "type": "stat",
       "title": "Virtual Memory (MB)",
       "datasource": {
@@ -415,7 +415,7 @@
       }
     },
     {
-      "id": 218,
+      "id": 399,
       "type": "row",
       "title": "Operations",
       "collapsed": false,
@@ -428,7 +428,7 @@
       "panels": []
     },
     {
-      "id": 219,
+      "id": 400,
       "type": "timeseries",
       "title": "Operations / sec by type",
       "datasource": {
@@ -501,7 +501,7 @@
       }
     },
     {
-      "id": 220,
+      "id": 401,
       "type": "timeseries",
       "title": "Document Metrics / sec",
       "datasource": {
@@ -570,7 +570,7 @@
       }
     },
     {
-      "id": 221,
+      "id": 402,
       "type": "row",
       "title": "Connections & Memory",
       "collapsed": false,
@@ -583,7 +583,7 @@
       "panels": []
     },
     {
-      "id": 222,
+      "id": 403,
       "type": "timeseries",
       "title": "Connections by state",
       "datasource": {
@@ -652,7 +652,7 @@
       }
     },
     {
-      "id": 223,
+      "id": 404,
       "type": "timeseries",
       "title": "Memory (MB)",
       "datasource": {
@@ -721,7 +721,7 @@
       }
     },
     {
-      "id": 224,
+      "id": 405,
       "type": "row",
       "title": "Network & Asserts",
       "collapsed": false,
@@ -734,7 +734,7 @@
       "panels": []
     },
     {
-      "id": 225,
+      "id": 406,
       "type": "timeseries",
       "title": "Network Requests / sec",
       "datasource": {
@@ -803,7 +803,7 @@
       }
     },
     {
-      "id": 226,
+      "id": 407,
       "type": "timeseries",
       "title": "Asserts / sec",
       "datasource": {
@@ -872,7 +872,7 @@
       }
     },
     {
-      "id": 227,
+      "id": 408,
       "type": "timeseries",
       "title": "Page Faults / sec",
       "datasource": {
@@ -941,7 +941,7 @@
       }
     },
     {
-      "id": 228,
+      "id": 409,
       "type": "timeseries",
       "title": "WiredTiger Cache Bytes",
       "datasource": {

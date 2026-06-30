@@ -36,7 +36,7 @@
   },
   "panels": [
     {
-      "id": 340,
+      "id": 521,
       "type": "stat",
       "title": "Up",
       "datasource": {
@@ -115,7 +115,7 @@
       }
     },
     {
-      "id": 341,
+      "id": 522,
       "type": "stat",
       "title": "Nodes",
       "datasource": {
@@ -175,7 +175,7 @@
       }
     },
     {
-      "id": 342,
+      "id": 523,
       "type": "stat",
       "title": "Docs",
       "datasource": {
@@ -235,7 +235,7 @@
       }
     },
     {
-      "id": 343,
+      "id": 524,
       "type": "stat",
       "title": "Store Size",
       "datasource": {
@@ -295,7 +295,7 @@
       }
     },
     {
-      "id": 344,
+      "id": 525,
       "type": "stat",
       "title": "Unassigned Shards",
       "datasource": {
@@ -359,7 +359,7 @@
       }
     },
     {
-      "id": 345,
+      "id": 526,
       "type": "stat",
       "title": "Active Shards",
       "datasource": {
@@ -419,7 +419,7 @@
       }
     },
     {
-      "id": 346,
+      "id": 527,
       "type": "row",
       "title": "JVM & Process",
       "collapsed": false,
@@ -432,7 +432,7 @@
       "panels": []
     },
     {
-      "id": 347,
+      "id": 528,
       "type": "timeseries",
       "title": "JVM Heap (used vs max)",
       "datasource": {
@@ -511,7 +511,7 @@
       }
     },
     {
-      "id": 348,
+      "id": 529,
       "type": "timeseries",
       "title": "Process CPU %",
       "datasource": {
@@ -580,7 +580,7 @@
       }
     },
     {
-      "id": 349,
+      "id": 530,
       "type": "timeseries",
       "title": "OS Load (1/5/15m)",
       "datasource": {
@@ -669,7 +669,7 @@
       }
     },
     {
-      "id": 350,
+      "id": 531,
       "type": "timeseries",
       "title": "GC Collections / sec",
       "datasource": {
@@ -738,7 +738,7 @@
       }
     },
     {
-      "id": 351,
+      "id": 532,
       "type": "row",
       "title": "Indices Activity",
       "collapsed": false,
@@ -751,7 +751,7 @@
       "panels": []
     },
     {
-      "id": 352,
+      "id": 533,
       "type": "timeseries",
       "title": "Indexing Rate / sec",
       "datasource": {
@@ -820,7 +820,7 @@
       }
     },
     {
-      "id": 353,
+      "id": 534,
       "type": "timeseries",
       "title": "Search Query Rate / sec",
       "datasource": {
@@ -889,7 +889,7 @@
       }
     },
     {
-      "id": 354,
+      "id": 535,
       "type": "timeseries",
       "title": "Circuit Breakers Tripped",
       "datasource": {
@@ -958,7 +958,7 @@
       }
     },
     {
-      "id": 355,
+      "id": 536,
       "type": "timeseries",
       "title": "Store Size by Index",
       "datasource": {

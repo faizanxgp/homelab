@@ -42,6 +42,21 @@ scrape_configs:
         labels: {instance: 'postiz-postgres'}
       - targets: ['temporal-postgres-exporter:9187']
         labels: {instance: 'temporal-postgres'}
+      # marketing stack (targets DOWN until the stack is started)
+      - targets: ['listmonk-postgres-exporter:9187']
+        labels: {instance: 'listmonk-db'}
+      - targets: ['umami-postgres-exporter:9187']
+        labels: {instance: 'umami-db'}
+      - targets: ['metabase-postgres-exporter:9187']
+        labels: {instance: 'metabase-db'}
+      - targets: ['typebot-postgres-exporter:9187']
+        labels: {instance: 'typebot-db'}
+      - targets: ['chatwoot-postgres-exporter:9187']
+        labels: {instance: 'chatwoot-postgres'}
+      - targets: ['plausible-postgres-exporter:9187']
+        labels: {instance: 'plausible-db'}
+      - targets: ['posthog-postgres-exporter:9187']
+        labels: {instance: 'posthog-db'}
 
   # ---- Redis exporters ----
   - job_name: redis
@@ -54,6 +69,11 @@ scrape_configs:
         labels: {instance: 'textbee-redis'}
       - targets: ['postiz-redis-exporter:9121']
         labels: {instance: 'postiz-redis'}
+      # marketing stack (targets DOWN until the stack is started)
+      - targets: ['chatwoot-redis-exporter:9121']
+        labels: {instance: 'chatwoot-redis'}
+      - targets: ['posthog-redis-exporter:9121']
+        labels: {instance: 'posthog-redis'}
 
   # ---- MongoDB exporter ----
   - job_name: mongodb
@@ -72,6 +92,20 @@ scrape_configs:
     static_configs:
       - targets: ['temporal-es-exporter:9114']
         labels: {instance: 'temporal-es'}
+
+  # ---- MySQL / MariaDB exporter (Matomo) — DOWN until marketing stack starts ----
+  - job_name: mysql
+    static_configs:
+      - targets: ['matomo-db-exporter:9104']
+        labels: {instance: 'matomo-db'}
+
+  # ---- ClickHouse native metrics (Plausible + PostHog) — DOWN until started ----
+  - job_name: clickhouse
+    static_configs:
+      - targets: ['plausible-events-db:9363']
+        labels: {instance: 'plausible-clickhouse'}
+      - targets: ['posthog-clickhouse:9363']
+        labels: {instance: 'posthog-clickhouse'}
 
   # ---- Cloudflare Tunnel (cloudflared built-in metrics) ----
   - job_name: cloudflared
