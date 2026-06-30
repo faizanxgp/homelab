@@ -35,7 +35,7 @@ callback).
 
 ## Manage
 ```bash
-cd /opt/homelab/utility/postiz
+cd /opt/homelab/marketing/postiz
 docker compose ps
 docker compose logs -f postiz
 docker compose up -d        # apply changes

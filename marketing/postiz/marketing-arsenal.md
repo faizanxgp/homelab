@@ -64,6 +64,6 @@ Using LLMs orchestrated through **n8n + OpenRouter** (already in production here
 > infrastructure to measure them. That's rare in a marketing hire.
 
 ---
-*Deployment status: Postiz is live in `utility/postiz/`. The rest are one
+*Deployment status: Postiz is live in `marketing/postiz/`. The rest are one
 `docker compose up` each — say the word and I'll stand up PostHog + Metabase +
 Matomo next so you can demo the full board.*

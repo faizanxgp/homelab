@@ -37,6 +37,7 @@ services:
       - postiz-internal                  # reach its own db/redis
       - drawbridge                       # cloudflared reaches http://postiz:5000
       - observatory                      # promtail/cadvisor observe it
+      - marketing                        # shared net for the marketing stack
 
   postiz-postgres:
     image: postgres:17-alpine
@@ -174,4 +175,6 @@ networks:
   drawbridge:
     external: true
   observatory:
+    external: true
+  marketing:
     external: true
