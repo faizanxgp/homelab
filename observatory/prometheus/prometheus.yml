@@ -57,6 +57,13 @@ scrape_configs:
         labels: {instance: 'plausible-db'}
       - targets: ['posthog-postgres-exporter:9187']
         labels: {instance: 'posthog-db'}
+      # ai-agents stack (targets DOWN until the stack is started)
+      - targets: ['flowise-postgres-exporter:9187']
+        labels: {instance: 'flowise-db'}
+      - targets: ['langflow-postgres-exporter:9187']
+        labels: {instance: 'langflow-db'}
+      - targets: ['dify-postgres-exporter:9187']
+        labels: {instance: 'dify-db'}
 
   # ---- Redis exporters ----
   - job_name: redis
@@ -74,12 +81,18 @@ scrape_configs:
         labels: {instance: 'chatwoot-redis'}
       - targets: ['posthog-redis-exporter:9121']
         labels: {instance: 'posthog-redis'}
+      # ai-agents stack (DOWN until started)
+      - targets: ['dify-redis-exporter:9121']
+        labels: {instance: 'dify-redis'}
 
   # ---- MongoDB exporter ----
   - job_name: mongodb
     static_configs:
       - targets: ['textbee-mongo-exporter:9216']
         labels: {instance: 'textbee-mongo'}
+      # ai-agents stack (DOWN until started)
+      - targets: ['librechat-mongo-exporter:9216']
+        labels: {instance: 'librechat-mongo'}
 
   # ---- CouchDB exporter (Obsidian LiveSync backend) ----
   - job_name: couchdb

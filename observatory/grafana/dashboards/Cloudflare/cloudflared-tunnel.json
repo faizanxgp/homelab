@@ -36,7 +36,7 @@
   },
   "panels": [
     {
-      "id": 480,
+      "id": 577,
       "type": "stat",
       "title": "Scrape Up",
       "datasource": {
@@ -115,7 +115,7 @@
       }
     },
     {
-      "id": 481,
+      "id": 578,
       "type": "stat",
       "title": "HA Connections",
       "datasource": {
@@ -183,7 +183,7 @@
       }
     },
     {
-      "id": 482,
+      "id": 579,
       "type": "stat",
       "title": "Concurrent Requests",
       "datasource": {
@@ -243,7 +243,7 @@
       }
     },
     {
-      "id": 483,
+      "id": 580,
       "type": "stat",
       "title": "Request Errors (total)",
       "datasource": {
@@ -307,7 +307,7 @@
       }
     },
     {
-      "id": 484,
+      "id": 581,
       "type": "stat",
       "title": "TCP Active Sessions",
       "datasource": {
@@ -367,7 +367,7 @@
       }
     },
     {
-      "id": 485,
+      "id": 582,
       "type": "stat",
       "title": "UDP Active Sessions",
       "datasource": {
@@ -427,7 +427,7 @@
       }
     },
     {
-      "id": 486,
+      "id": 583,
       "type": "row",
       "title": "Traffic",
       "collapsed": false,
@@ -440,7 +440,7 @@
       "panels": []
     },
     {
-      "id": 487,
+      "id": 584,
       "type": "timeseries",
       "title": "Requests / sec",
       "datasource": {
@@ -509,7 +509,7 @@
       }
     },
     {
-      "id": 488,
+      "id": 585,
       "type": "timeseries",
       "title": "Responses / sec by status code",
       "datasource": {
@@ -582,7 +582,7 @@
       }
     },
     {
-      "id": 489,
+      "id": 586,
       "type": "timeseries",
       "title": "Request Errors / sec (proxy-to-origin failures)",
       "datasource": {
@@ -651,7 +651,7 @@
       }
     },
     {
-      "id": 490,
+      "id": 587,
       "type": "timeseries",
       "title": "Proxy Connect Stream Errors / sec",
       "datasource": {
@@ -720,7 +720,7 @@
       }
     },
     {
-      "id": 491,
+      "id": 588,
       "type": "row",
       "title": "Edge & QUIC Transport",
       "collapsed": false,
@@ -733,7 +733,7 @@
       "panels": []
     },
     {
-      "id": 492,
+      "id": 589,
       "type": "table",
       "title": "Connected Edge Locations",
       "datasource": {
@@ -789,7 +789,7 @@
       ]
     },
     {
-      "id": 493,
+      "id": 590,
       "type": "timeseries",
       "title": "QUIC Smoothed RTT to edge (ms)",
       "datasource": {
@@ -862,7 +862,7 @@
       }
     },
     {
-      "id": 494,
+      "id": 591,
       "type": "timeseries",
       "title": "QUIC Throughput",
       "datasource": {
@@ -941,7 +941,7 @@
       }
     },
     {
-      "id": 495,
+      "id": 592,
       "type": "timeseries",
       "title": "TCP / UDP Sessions per sec",
       "datasource": {

@@ -1,10 +1,10 @@
 {
-  "uid": "mongodb-textbee",
-  "title": "MongoDB \u2014 textbee (textbee-mongo)",
+  "uid": "mongodb-librechat",
+  "title": "MongoDB \u2014 librechat (librechat-mongo)",
   "tags": [
     "mongodb",
     "homelab",
-    "textbee"
+    "librechat"
   ],
   "schemaVersion": 39,
   "version": 1,
@@ -36,7 +36,7 @@
   },
   "panels": [
     {
-      "id": 473,
+      "id": 490,
       "type": "stat",
       "title": "Up",
       "datasource": {
@@ -55,7 +55,7 @@
             "type": "prometheus",
             "uid": "prometheus"
           },
-          "expr": "mongodb_up{instance=\"textbee-mongo\"}",
+          "expr": "mongodb_up{instance=\"librechat-mongo\"}",
           "legendFormat": "{{instance}}",
           "refId": "A",
           "instant": false
@@ -115,7 +115,7 @@
       }
     },
     {
-      "id": 474,
+      "id": 491,
       "type": "stat",
       "title": "Uptime",
       "datasource": {
@@ -134,7 +134,7 @@
             "type": "prometheus",
             "uid": "prometheus"
           },
-          "expr": "mongodb_instance_uptime_seconds{instance=\"textbee-mongo\"}",
+          "expr": "mongodb_instance_uptime_seconds{instance=\"librechat-mongo\"}",
           "legendFormat": "",
           "refId": "A",
           "instant": false
@@ -175,7 +175,7 @@
       }
     },
     {
-      "id": 475,
+      "id": 492,
       "type": "stat",
       "title": "Current Connections",
       "datasource": {
@@ -194,7 +194,7 @@
             "type": "prometheus",
             "uid": "prometheus"
           },
-          "expr": "mongodb_connections{instance=\"textbee-mongo\",state=\"current\"}",
+          "expr": "mongodb_connections{instance=\"librechat-mongo\",state=\"current\"}",
           "legendFormat": "",
           "refId": "A",
           "instant": false
@@ -235,7 +235,7 @@
       }
     },
     {
-      "id": 476,
+      "id": 493,
       "type": "stat",
       "title": "Available Connections",
       "datasource": {
@@ -254,7 +254,7 @@
             "type": "prometheus",
             "uid": "prometheus"
           },
-          "expr": "mongodb_connections{instance=\"textbee-mongo\",state=\"available\"}",
+          "expr": "mongodb_connections{instance=\"librechat-mongo\",state=\"available\"}",
           "legendFormat": "",
           "refId": "A",
           "instant": false
@@ -295,7 +295,7 @@
       }
     },
     {
-      "id": 477,
+      "id": 494,
       "type": "stat",
       "title": "Resident Memory (MB)",
       "datasource": {
@@ -314,7 +314,7 @@
             "type": "prometheus",
             "uid": "prometheus"
           },
-          "expr": "mongodb_memory{instance=\"textbee-mongo\",type=\"resident\"}",
+          "expr": "mongodb_memory{instance=\"librechat-mongo\",type=\"resident\"}",
           "legendFormat": "",
           "refId": "A",
           "instant": false
@@ -355,7 +355,7 @@
       }
     },
     {
-      "id": 478,
+      "id": 495,
       "type": "stat",
       "title": "Virtual Memory (MB)",
       "datasource": {
@@ -374,7 +374,7 @@
             "type": "prometheus",
             "uid": "prometheus"
           },
-          "expr": "mongodb_memory{instance=\"textbee-mongo\",type=\"virtual\"}",
+          "expr": "mongodb_memory{instance=\"librechat-mongo\",type=\"virtual\"}",
           "legendFormat": "",
           "refId": "A",
           "instant": false
@@ -415,7 +415,7 @@
       }
     },
     {
-      "id": 479,
+      "id": 496,
       "type": "row",
       "title": "Operations",
       "collapsed": false,
@@ -428,7 +428,7 @@
       "panels": []
     },
     {
-      "id": 480,
+      "id": 497,
       "type": "timeseries",
       "title": "Operations / sec by type",
       "datasource": {
@@ -447,7 +447,7 @@
             "type": "prometheus",
             "uid": "prometheus"
           },
-          "expr": "rate(mongodb_op_counters_total{instance=\"textbee-mongo\"}[5m])",
+          "expr": "rate(mongodb_op_counters_total{instance=\"librechat-mongo\"}[5m])",
           "legendFormat": "{{type}}",
           "refId": "A",
           "instant": false
@@ -501,7 +501,7 @@
       }
     },
     {
-      "id": 481,
+      "id": 498,
       "type": "timeseries",
       "title": "Document Metrics / sec",
       "datasource": {
@@ -520,7 +520,7 @@
             "type": "prometheus",
             "uid": "prometheus"
           },
-          "expr": "rate(mongodb_metrics_document_total{instance=\"textbee-mongo\"}[5m])",
+          "expr": "rate(mongodb_metrics_document_total{instance=\"librechat-mongo\"}[5m])",
           "legendFormat": "{{state}}",
           "refId": "A",
           "instant": false
@@ -570,7 +570,7 @@
       }
     },
     {
-      "id": 482,
+      "id": 499,
       "type": "row",
       "title": "Connections & Memory",
       "collapsed": false,
@@ -583,7 +583,7 @@
       "panels": []
     },
     {
-      "id": 483,
+      "id": 500,
       "type": "timeseries",
       "title": "Connections by state",
       "datasource": {
@@ -602,7 +602,7 @@
             "type": "prometheus",
             "uid": "prometheus"
           },
-          "expr": "mongodb_connections{instance=\"textbee-mongo\"}",
+          "expr": "mongodb_connections{instance=\"librechat-mongo\"}",
           "legendFormat": "{{state}}",
           "refId": "A",
           "instant": false
@@ -652,7 +652,7 @@
       }
     },
     {
-      "id": 484,
+      "id": 501,
       "type": "timeseries",
       "title": "Memory (MB)",
       "datasource": {
@@ -671,7 +671,7 @@
             "type": "prometheus",
             "uid": "prometheus"
           },
-          "expr": "mongodb_memory{instance=\"textbee-mongo\"}",
+          "expr": "mongodb_memory{instance=\"librechat-mongo\"}",
           "legendFormat": "{{type}}",
           "refId": "A",
           "instant": false
@@ -721,7 +721,7 @@
       }
     },
     {
-      "id": 485,
+      "id": 502,
       "type": "row",
       "title": "Network & Asserts",
       "collapsed": false,
@@ -734,7 +734,7 @@
       "panels": []
     },
     {
-      "id": 486,
+      "id": 503,
       "type": "timeseries",
       "title": "Network Requests / sec",
       "datasource": {
@@ -753,7 +753,7 @@
             "type": "prometheus",
             "uid": "prometheus"
           },
-          "expr": "rate(mongodb_network_metrics_num_requests_total{instance=\"textbee-mongo\"}[5m])",
+          "expr": "rate(mongodb_network_metrics_num_requests_total{instance=\"librechat-mongo\"}[5m])",
           "legendFormat": "requests",
           "refId": "A",
           "instant": false
@@ -803,7 +803,7 @@
       }
     },
     {
-      "id": 487,
+      "id": 504,
       "type": "timeseries",
       "title": "Asserts / sec",
       "datasource": {
@@ -822,7 +822,7 @@
             "type": "prometheus",
             "uid": "prometheus"
           },
-          "expr": "rate(mongodb_asserts_total{instance=\"textbee-mongo\"}[5m])",
+          "expr": "rate(mongodb_asserts_total{instance=\"librechat-mongo\"}[5m])",
           "legendFormat": "{{type}}",
           "refId": "A",
           "instant": false
@@ -872,7 +872,7 @@
       }
     },
     {
-      "id": 488,
+      "id": 505,
       "type": "timeseries",
       "title": "Page Faults / sec",
       "datasource": {
@@ -891,7 +891,7 @@
             "type": "prometheus",
             "uid": "prometheus"
           },
-          "expr": "rate(mongodb_extra_info_page_faults_total{instance=\"textbee-mongo\"}[5m])",
+          "expr": "rate(mongodb_extra_info_page_faults_total{instance=\"librechat-mongo\"}[5m])",
           "legendFormat": "page faults",
           "refId": "A",
           "instant": false
@@ -941,7 +941,7 @@
       }
     },
     {
-      "id": 489,
+      "id": 506,
       "type": "timeseries",
       "title": "WiredTiger Cache Bytes",
       "datasource": {
@@ -960,7 +960,7 @@
             "type": "prometheus",
             "uid": "prometheus"
           },
-          "expr": "mongodb_mongod_wiredtiger_cache_bytes{instance=\"textbee-mongo\"}",
+          "expr": "mongodb_mongod_wiredtiger_cache_bytes{instance=\"librechat-mongo\"}",
           "legendFormat": "{{type}}",
           "refId": "A",
           "instant": false

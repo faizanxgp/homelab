@@ -36,7 +36,7 @@
   },
   "panels": [
     {
-      "id": 376,
+      "id": 439,
       "type": "stat",
       "title": "Up",
       "datasource": {
@@ -115,7 +115,7 @@
       }
     },
     {
-      "id": 377,
+      "id": 440,
       "type": "stat",
       "title": "Connected Clients",
       "datasource": {
@@ -175,7 +175,7 @@
       }
     },
     {
-      "id": 378,
+      "id": 441,
       "type": "stat",
       "title": "Memory Used",
       "datasource": {
@@ -235,7 +235,7 @@
       }
     },
     {
-      "id": 379,
+      "id": 442,
       "type": "stat",
       "title": "Keys (total)",
       "datasource": {
@@ -295,7 +295,7 @@
       }
     },
     {
-      "id": 380,
+      "id": 443,
       "type": "stat",
       "title": "Ops / sec",
       "datasource": {
@@ -356,7 +356,7 @@
       }
     },
     {
-      "id": 381,
+      "id": 444,
       "type": "stat",
       "title": "Uptime",
       "datasource": {
@@ -416,7 +416,7 @@
       }
     },
     {
-      "id": 382,
+      "id": 445,
       "type": "row",
       "title": "Throughput & Clients",
       "collapsed": false,
@@ -429,7 +429,7 @@
       "panels": []
     },
     {
-      "id": 383,
+      "id": 446,
       "type": "timeseries",
       "title": "Commands Processed / sec",
       "datasource": {
@@ -502,7 +502,7 @@
       }
     },
     {
-      "id": 384,
+      "id": 447,
       "type": "timeseries",
       "title": "Connected / Blocked Clients",
       "datasource": {
@@ -581,7 +581,7 @@
       }
     },
     {
-      "id": 385,
+      "id": 448,
       "type": "row",
       "title": "Memory",
       "collapsed": false,
@@ -594,7 +594,7 @@
       "panels": []
     },
     {
-      "id": 386,
+      "id": 449,
       "type": "timeseries",
       "title": "Memory Used",
       "datasource": {
@@ -673,7 +673,7 @@
       }
     },
     {
-      "id": 387,
+      "id": 450,
       "type": "timeseries",
       "title": "Memory Fragmentation Ratio",
       "datasource": {
@@ -742,7 +742,7 @@
       }
     },
     {
-      "id": 388,
+      "id": 451,
       "type": "row",
       "title": "Keyspace & Hit Rate",
       "collapsed": false,
@@ -755,7 +755,7 @@
       "panels": []
     },
     {
-      "id": 389,
+      "id": 452,
       "type": "timeseries",
       "title": "Keyspace Hit Ratio %",
       "datasource": {
@@ -824,7 +824,7 @@
       }
     },
     {
-      "id": 390,
+      "id": 453,
       "type": "timeseries",
       "title": "Keys per DB",
       "datasource": {
@@ -893,7 +893,7 @@
       }
     },
     {
-      "id": 391,
+      "id": 454,
       "type": "timeseries",
       "title": "Expired / Evicted Keys / sec",
       "datasource": {
@@ -972,7 +972,7 @@
       }
     },
     {
-      "id": 392,
+      "id": 455,
       "type": "timeseries",
       "title": "Network I/O",
       "datasource": {

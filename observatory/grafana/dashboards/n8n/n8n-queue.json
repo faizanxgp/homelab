@@ -36,7 +36,7 @@
   },
   "panels": [
     {
-      "id": 422,
+      "id": 519,
       "type": "stat",
       "title": "Jobs Waiting",
       "datasource": {
@@ -104,7 +104,7 @@
       }
     },
     {
-      "id": 423,
+      "id": 520,
       "type": "stat",
       "title": "Jobs Active",
       "datasource": {
@@ -164,7 +164,7 @@
       }
     },
     {
-      "id": 424,
+      "id": 521,
       "type": "stat",
       "title": "Completed (total)",
       "datasource": {
@@ -224,7 +224,7 @@
       }
     },
     {
-      "id": 425,
+      "id": 522,
       "type": "stat",
       "title": "Failed (total)",
       "datasource": {
@@ -288,7 +288,7 @@
       }
     },
     {
-      "id": 426,
+      "id": 523,
       "type": "row",
       "title": "Queue Depth",
       "collapsed": false,
@@ -301,7 +301,7 @@
       "panels": []
     },
     {
-      "id": 427,
+      "id": 524,
       "type": "timeseries",
       "title": "Jobs Waiting vs Active",
       "datasource": {
@@ -380,7 +380,7 @@
       }
     },
     {
-      "id": 428,
+      "id": 525,
       "type": "row",
       "title": "Throughput",
       "collapsed": false,
@@ -393,7 +393,7 @@
       "panels": []
     },
     {
-      "id": 429,
+      "id": 526,
       "type": "timeseries",
       "title": "Jobs Completed / sec",
       "datasource": {
@@ -462,7 +462,7 @@
       }
     },
     {
-      "id": 430,
+      "id": 527,
       "type": "timeseries",
       "title": "Jobs Failed / sec",
       "datasource": {

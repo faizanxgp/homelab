@@ -1,10 +1,10 @@
 {
-  "uid": "mongodb-textbee",
-  "title": "MongoDB \u2014 textbee (textbee-mongo)",
+  "uid": "redis-dify",
+  "title": "Redis \u2014 dify (dify-redis)",
   "tags": [
-    "mongodb",
+    "redis",
     "homelab",
-    "textbee"
+    "dify"
   ],
   "schemaVersion": 39,
   "version": 1,
@@ -36,7 +36,7 @@
   },
   "panels": [
     {
-      "id": 473,
+      "id": 456,
       "type": "stat",
       "title": "Up",
       "datasource": {
@@ -55,7 +55,7 @@
             "type": "prometheus",
             "uid": "prometheus"
           },
-          "expr": "mongodb_up{instance=\"textbee-mongo\"}",
+          "expr": "redis_up{instance=\"dify-redis\"}",
           "legendFormat": "{{instance}}",
           "refId": "A",
           "instant": false
@@ -115,9 +115,9 @@
       }
     },
     {
-      "id": 474,
+      "id": 457,
       "type": "stat",
-      "title": "Uptime",
+      "title": "Connected Clients",
       "datasource": {
         "type": "prometheus",
         "uid": "prometheus"
@@ -134,68 +134,8 @@
             "type": "prometheus",
             "uid": "prometheus"
           },
-          "expr": "mongodb_instance_uptime_seconds{instance=\"textbee-mongo\"}",
-          "legendFormat": "",
-          "refId": "A",
-          "instant": false
-        }
-      ],
-      "fieldConfig": {
-        "defaults": {
-          "color": {
-            "mode": "value"
-          },
-          "custom": {},
-          "unit": "s",
-          "thresholds": {
-            "mode": "absolute",
-            "steps": [
-              {
-                "color": "green",
-                "value": null
-              }
-            ]
-          }
-        },
-        "overrides": []
-      },
-      "options": {
-        "reduceOptions": {
-          "calcs": [
-            "lastNotNull"
-          ],
-          "fields": "",
-          "values": false
-        },
-        "orientation": "auto",
-        "colorMode": "value",
-        "graphMode": "none",
-        "justifyMode": "auto",
-        "textMode": "auto"
-      }
-    },
-    {
-      "id": 475,
-      "type": "stat",
-      "title": "Current Connections",
-      "datasource": {
-        "type": "prometheus",
-        "uid": "prometheus"
-      },
-      "gridPos": {
-        "x": 8,
-        "y": 1,
-        "w": 4,
-        "h": 4
-      },
-      "targets": [
-        {
-          "datasource": {
-            "type": "prometheus",
-            "uid": "prometheus"
-          },
-          "expr": "mongodb_connections{instance=\"textbee-mongo\",state=\"current\"}",
-          "legendFormat": "",
+          "expr": "sum by(instance)(redis_connected_clients{instance=\"dify-redis\"})",
+          "legendFormat": "{{instance}}",
           "refId": "A",
           "instant": false
         }
@@ -235,9 +175,69 @@
       }
     },
     {
-      "id": 476,
+      "id": 458,
       "type": "stat",
-      "title": "Available Connections",
+      "title": "Memory Used",
+      "datasource": {
+        "type": "prometheus",
+        "uid": "prometheus"
+      },
+      "gridPos": {
+        "x": 8,
+        "y": 1,
+        "w": 4,
+        "h": 4
+      },
+      "targets": [
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "prometheus"
+          },
+          "expr": "sum by(instance)(redis_memory_used_bytes{instance=\"dify-redis\"})",
+          "legendFormat": "{{instance}}",
+          "refId": "A",
+          "instant": false
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "value"
+          },
+          "custom": {},
+          "unit": "bytes",
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": null
+              }
+            ]
+          }
+        },
+        "overrides": []
+      },
+      "options": {
+        "reduceOptions": {
+          "calcs": [
+            "lastNotNull"
+          ],
+          "fields": "",
+          "values": false
+        },
+        "orientation": "auto",
+        "colorMode": "value",
+        "graphMode": "area",
+        "justifyMode": "auto",
+        "textMode": "auto"
+      }
+    },
+    {
+      "id": 459,
+      "type": "stat",
+      "title": "Keys (total)",
       "datasource": {
         "type": "prometheus",
         "uid": "prometheus"
@@ -254,8 +254,8 @@
             "type": "prometheus",
             "uid": "prometheus"
           },
-          "expr": "mongodb_connections{instance=\"textbee-mongo\",state=\"available\"}",
-          "legendFormat": "",
+          "expr": "sum by(instance)(redis_db_keys{instance=\"dify-redis\"})",
+          "legendFormat": "{{instance}}",
           "refId": "A",
           "instant": false
         }
@@ -295,9 +295,9 @@
       }
     },
     {
-      "id": 477,
+      "id": 460,
       "type": "stat",
-      "title": "Resident Memory (MB)",
+      "title": "Ops / sec",
       "datasource": {
         "type": "prometheus",
         "uid": "prometheus"
@@ -314,8 +314,8 @@
             "type": "prometheus",
             "uid": "prometheus"
           },
-          "expr": "mongodb_memory{instance=\"textbee-mongo\",type=\"resident\"}",
-          "legendFormat": "",
+          "expr": "sum by(instance)(rate(redis_commands_processed_total{instance=\"dify-redis\"}[5m]))",
+          "legendFormat": "{{instance}}",
           "refId": "A",
           "instant": false
         }
@@ -326,7 +326,8 @@
             "mode": "value"
           },
           "custom": {},
-          "unit": "decmbytes",
+          "unit": "ops",
+          "decimals": 1,
           "thresholds": {
             "mode": "absolute",
             "steps": [
@@ -349,15 +350,15 @@
         },
         "orientation": "auto",
         "colorMode": "value",
-        "graphMode": "none",
+        "graphMode": "area",
         "justifyMode": "auto",
         "textMode": "auto"
       }
     },
     {
-      "id": 478,
+      "id": 461,
       "type": "stat",
-      "title": "Virtual Memory (MB)",
+      "title": "Uptime",
       "datasource": {
         "type": "prometheus",
         "uid": "prometheus"
@@ -374,8 +375,8 @@
             "type": "prometheus",
             "uid": "prometheus"
           },
-          "expr": "mongodb_memory{instance=\"textbee-mongo\",type=\"virtual\"}",
-          "legendFormat": "",
+          "expr": "max by(instance)(redis_uptime_in_seconds{instance=\"dify-redis\"})",
+          "legendFormat": "{{instance}}",
           "refId": "A",
           "instant": false
         }
@@ -386,7 +387,7 @@
             "mode": "value"
           },
           "custom": {},
-          "unit": "decmbytes",
+          "unit": "s",
           "thresholds": {
             "mode": "absolute",
             "steps": [
@@ -415,9 +416,9 @@
       }
     },
     {
-      "id": 479,
+      "id": 462,
       "type": "row",
-      "title": "Operations",
+      "title": "Throughput & Clients",
       "collapsed": false,
       "gridPos": {
         "x": 0,
@@ -428,9 +429,9 @@
       "panels": []
     },
     {
-      "id": 480,
+      "id": 463,
       "type": "timeseries",
-      "title": "Operations / sec by type",
+      "title": "Commands Processed / sec",
       "datasource": {
         "type": "prometheus",
         "uid": "prometheus"
@@ -447,8 +448,8 @@
             "type": "prometheus",
             "uid": "prometheus"
           },
-          "expr": "rate(mongodb_op_counters_total{instance=\"textbee-mongo\"}[5m])",
-          "legendFormat": "{{type}}",
+          "expr": "sum by(instance)(rate(redis_commands_processed_total{instance=\"dify-redis\"}[5m]))",
+          "legendFormat": "{{instance}}",
           "refId": "A",
           "instant": false
         }
@@ -501,9 +502,9 @@
       }
     },
     {
-      "id": 481,
+      "id": 464,
       "type": "timeseries",
-      "title": "Document Metrics / sec",
+      "title": "Connected / Blocked Clients",
       "datasource": {
         "type": "prometheus",
         "uid": "prometheus"
@@ -520,9 +521,19 @@
             "type": "prometheus",
             "uid": "prometheus"
           },
-          "expr": "rate(mongodb_metrics_document_total{instance=\"textbee-mongo\"}[5m])",
-          "legendFormat": "{{state}}",
+          "expr": "sum by(instance)(redis_connected_clients{instance=\"dify-redis\"})",
+          "legendFormat": "connected {{instance}}",
           "refId": "A",
+          "instant": false
+        },
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "prometheus"
+          },
+          "expr": "sum by(instance)(redis_blocked_clients{instance=\"dify-redis\"})",
+          "legendFormat": "blocked {{instance}}",
+          "refId": "B",
           "instant": false
         }
       ],
@@ -544,7 +555,7 @@
             },
             "axisPlacement": "auto"
           },
-          "unit": "ops",
+          "unit": "short",
           "thresholds": {
             "mode": "absolute",
             "steps": [
@@ -570,9 +581,9 @@
       }
     },
     {
-      "id": 482,
+      "id": 465,
       "type": "row",
-      "title": "Connections & Memory",
+      "title": "Memory",
       "collapsed": false,
       "gridPos": {
         "x": 0,
@@ -583,9 +594,9 @@
       "panels": []
     },
     {
-      "id": 483,
+      "id": 466,
       "type": "timeseries",
-      "title": "Connections by state",
+      "title": "Memory Used",
       "datasource": {
         "type": "prometheus",
         "uid": "prometheus"
@@ -602,8 +613,87 @@
             "type": "prometheus",
             "uid": "prometheus"
           },
-          "expr": "mongodb_connections{instance=\"textbee-mongo\"}",
-          "legendFormat": "{{state}}",
+          "expr": "sum by(instance)(redis_memory_used_bytes{instance=\"dify-redis\"})",
+          "legendFormat": "used {{instance}}",
+          "refId": "A",
+          "instant": false
+        },
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "prometheus"
+          },
+          "expr": "sum by(instance)(redis_memory_max_bytes{instance=\"dify-redis\"} > 0)",
+          "legendFormat": "max {{instance}}",
+          "refId": "B",
+          "instant": false
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "palette-classic"
+          },
+          "custom": {
+            "drawStyle": "line",
+            "lineInterpolation": "smooth",
+            "lineWidth": 2,
+            "fillOpacity": 10,
+            "gradientMode": "opacity",
+            "showPoints": "never",
+            "stacking": {
+              "mode": "none",
+              "group": "A"
+            },
+            "axisPlacement": "auto"
+          },
+          "unit": "bytes",
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": null
+              }
+            ]
+          }
+        },
+        "overrides": []
+      },
+      "options": {
+        "tooltip": {
+          "mode": "multi",
+          "sort": "desc"
+        },
+        "legend": {
+          "displayMode": "list",
+          "placement": "bottom",
+          "calcs": []
+        }
+      }
+    },
+    {
+      "id": 467,
+      "type": "timeseries",
+      "title": "Memory Fragmentation Ratio",
+      "datasource": {
+        "type": "prometheus",
+        "uid": "prometheus"
+      },
+      "gridPos": {
+        "x": 12,
+        "y": 15,
+        "w": 12,
+        "h": 8
+      },
+      "targets": [
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "prometheus"
+          },
+          "expr": "avg by(instance)(redis_mem_fragmentation_ratio{instance=\"dify-redis\"})",
+          "legendFormat": "{{instance}}",
           "refId": "A",
           "instant": false
         }
@@ -652,78 +742,9 @@
       }
     },
     {
-      "id": 484,
-      "type": "timeseries",
-      "title": "Memory (MB)",
-      "datasource": {
-        "type": "prometheus",
-        "uid": "prometheus"
-      },
-      "gridPos": {
-        "x": 12,
-        "y": 15,
-        "w": 12,
-        "h": 8
-      },
-      "targets": [
-        {
-          "datasource": {
-            "type": "prometheus",
-            "uid": "prometheus"
-          },
-          "expr": "mongodb_memory{instance=\"textbee-mongo\"}",
-          "legendFormat": "{{type}}",
-          "refId": "A",
-          "instant": false
-        }
-      ],
-      "fieldConfig": {
-        "defaults": {
-          "color": {
-            "mode": "palette-classic"
-          },
-          "custom": {
-            "drawStyle": "line",
-            "lineInterpolation": "smooth",
-            "lineWidth": 2,
-            "fillOpacity": 10,
-            "gradientMode": "opacity",
-            "showPoints": "never",
-            "stacking": {
-              "mode": "none",
-              "group": "A"
-            },
-            "axisPlacement": "auto"
-          },
-          "unit": "decmbytes",
-          "thresholds": {
-            "mode": "absolute",
-            "steps": [
-              {
-                "color": "green",
-                "value": null
-              }
-            ]
-          }
-        },
-        "overrides": []
-      },
-      "options": {
-        "tooltip": {
-          "mode": "multi",
-          "sort": "desc"
-        },
-        "legend": {
-          "displayMode": "list",
-          "placement": "bottom",
-          "calcs": []
-        }
-      }
-    },
-    {
-      "id": 485,
+      "id": 468,
       "type": "row",
-      "title": "Network & Asserts",
+      "title": "Keyspace & Hit Rate",
       "collapsed": false,
       "gridPos": {
         "x": 0,
@@ -734,9 +755,9 @@
       "panels": []
     },
     {
-      "id": 486,
+      "id": 469,
       "type": "timeseries",
-      "title": "Network Requests / sec",
+      "title": "Keyspace Hit Ratio %",
       "datasource": {
         "type": "prometheus",
         "uid": "prometheus"
@@ -753,8 +774,8 @@
             "type": "prometheus",
             "uid": "prometheus"
           },
-          "expr": "rate(mongodb_network_metrics_num_requests_total{instance=\"textbee-mongo\"}[5m])",
-          "legendFormat": "requests",
+          "expr": "100 * sum by(instance)(rate(redis_keyspace_hits_total{instance=\"dify-redis\"}[5m])) / (sum by(instance)(rate(redis_keyspace_hits_total{instance=\"dify-redis\"}[5m])) + sum by(instance)(rate(redis_keyspace_misses_total{instance=\"dify-redis\"}[5m])) > 0)",
+          "legendFormat": "{{instance}}",
           "refId": "A",
           "instant": false
         }
@@ -777,7 +798,7 @@
             },
             "axisPlacement": "auto"
           },
-          "unit": "ops",
+          "unit": "percent",
           "thresholds": {
             "mode": "absolute",
             "steps": [
@@ -803,9 +824,9 @@
       }
     },
     {
-      "id": 487,
+      "id": 470,
       "type": "timeseries",
-      "title": "Asserts / sec",
+      "title": "Keys per DB",
       "datasource": {
         "type": "prometheus",
         "uid": "prometheus"
@@ -822,8 +843,8 @@
             "type": "prometheus",
             "uid": "prometheus"
           },
-          "expr": "rate(mongodb_asserts_total{instance=\"textbee-mongo\"}[5m])",
-          "legendFormat": "{{type}}",
+          "expr": "redis_db_keys{instance=\"dify-redis\"}",
+          "legendFormat": "{{instance}} {{db}}",
           "refId": "A",
           "instant": false
         }
@@ -846,7 +867,7 @@
             },
             "axisPlacement": "auto"
           },
-          "unit": "ops",
+          "unit": "short",
           "thresholds": {
             "mode": "absolute",
             "steps": [
@@ -872,9 +893,9 @@
       }
     },
     {
-      "id": 488,
+      "id": 471,
       "type": "timeseries",
-      "title": "Page Faults / sec",
+      "title": "Expired / Evicted Keys / sec",
       "datasource": {
         "type": "prometheus",
         "uid": "prometheus"
@@ -891,9 +912,19 @@
             "type": "prometheus",
             "uid": "prometheus"
           },
-          "expr": "rate(mongodb_extra_info_page_faults_total{instance=\"textbee-mongo\"}[5m])",
-          "legendFormat": "page faults",
+          "expr": "sum by(instance)(rate(redis_expired_keys_total{instance=\"dify-redis\"}[5m]))",
+          "legendFormat": "expired {{instance}}",
           "refId": "A",
+          "instant": false
+        },
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "prometheus"
+          },
+          "expr": "sum by(instance)(rate(redis_evicted_keys_total{instance=\"dify-redis\"}[5m]))",
+          "legendFormat": "evicted {{instance}}",
+          "refId": "B",
           "instant": false
         }
       ],
@@ -941,9 +972,9 @@
       }
     },
     {
-      "id": 489,
+      "id": 472,
       "type": "timeseries",
-      "title": "WiredTiger Cache Bytes",
+      "title": "Network I/O",
       "datasource": {
         "type": "prometheus",
         "uid": "prometheus"
@@ -960,9 +991,19 @@
             "type": "prometheus",
             "uid": "prometheus"
           },
-          "expr": "mongodb_mongod_wiredtiger_cache_bytes{instance=\"textbee-mongo\"}",
-          "legendFormat": "{{type}}",
+          "expr": "sum by(instance)(rate(redis_net_input_bytes_total{instance=\"dify-redis\"}[5m]))",
+          "legendFormat": "in {{instance}}",
           "refId": "A",
+          "instant": false
+        },
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "prometheus"
+          },
+          "expr": "sum by(instance)(rate(redis_net_output_bytes_total{instance=\"dify-redis\"}[5m]))",
+          "legendFormat": "out {{instance}}",
+          "refId": "B",
           "instant": false
         }
       ],
@@ -984,7 +1025,7 @@
             },
             "axisPlacement": "auto"
           },
-          "unit": "bytes",
+          "unit": "Bps",
           "thresholds": {
             "mode": "absolute",
             "steps": [

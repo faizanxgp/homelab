@@ -60,7 +60,7 @@
   },
   "panels": [
     {
-      "id": 467,
+      "id": 564,
       "type": "stat",
       "title": "Documents (notes + sync chunks)",
       "datasource": {
@@ -120,7 +120,7 @@
       }
     },
     {
-      "id": 468,
+      "id": 565,
       "type": "stat",
       "title": "Deleted Documents (tombstones)",
       "datasource": {
@@ -180,7 +180,7 @@
       }
     },
     {
-      "id": 469,
+      "id": 566,
       "type": "stat",
       "title": "Vault Disk Size",
       "datasource": {
@@ -240,7 +240,7 @@
       }
     },
     {
-      "id": 470,
+      "id": 567,
       "type": "stat",
       "title": "Vault Data Size",
       "datasource": {
@@ -300,7 +300,7 @@
       }
     },
     {
-      "id": 471,
+      "id": 568,
       "type": "row",
       "title": "Vault Growth",
       "collapsed": false,
@@ -313,7 +313,7 @@
       "panels": []
     },
     {
-      "id": 472,
+      "id": 569,
       "type": "timeseries",
       "title": "Document Count over time",
       "datasource": {
@@ -386,7 +386,7 @@
       }
     },
     {
-      "id": 473,
+      "id": 570,
       "type": "timeseries",
       "title": "Disk vs Data Size",
       "datasource": {
@@ -465,7 +465,7 @@
       }
     },
     {
-      "id": 474,
+      "id": 571,
       "type": "row",
       "title": "Compaction & Overhead",
       "collapsed": false,
@@ -478,7 +478,7 @@
       "panels": []
     },
     {
-      "id": 475,
+      "id": 572,
       "type": "timeseries",
       "title": "Disk Overhead (reclaimable by compaction)",
       "datasource": {
@@ -547,7 +547,7 @@
       }
     },
     {
-      "id": 476,
+      "id": 573,
       "type": "timeseries",
       "title": "Compaction Running",
       "datasource": {
@@ -616,7 +616,7 @@
       }
     },
     {
-      "id": 477,
+      "id": 574,
       "type": "row",
       "title": "Sync Activity (server-wide)",
       "collapsed": false,
@@ -629,7 +629,7 @@
       "panels": []
     },
     {
-      "id": 478,
+      "id": 575,
       "type": "timeseries",
       "title": "Database Writes / sec (edits being pushed)",
       "datasource": {
@@ -698,7 +698,7 @@
       }
     },
     {
-      "id": 479,
+      "id": 576,
       "type": "timeseries",
       "title": "Active Live-Sync Feeds (continuous _changes)",
       "datasource": {

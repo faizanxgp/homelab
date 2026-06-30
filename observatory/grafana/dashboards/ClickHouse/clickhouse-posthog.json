@@ -36,7 +36,7 @@
   },
   "panels": [
     {
-      "id": 567,
+      "id": 664,
       "type": "stat",
       "title": "Up",
       "datasource": {
@@ -115,7 +115,7 @@
       }
     },
     {
-      "id": 568,
+      "id": 665,
       "type": "stat",
       "title": "Uptime",
       "datasource": {
@@ -175,7 +175,7 @@
       }
     },
     {
-      "id": 569,
+      "id": 666,
       "type": "stat",
       "title": "Active Queries",
       "datasource": {
@@ -235,7 +235,7 @@
       }
     },
     {
-      "id": 570,
+      "id": 667,
       "type": "stat",
       "title": "TCP Connections",
       "datasource": {
@@ -295,7 +295,7 @@
       }
     },
     {
-      "id": 571,
+      "id": 668,
       "type": "stat",
       "title": "Memory Tracked",
       "datasource": {
@@ -355,7 +355,7 @@
       }
     },
     {
-      "id": 572,
+      "id": 669,
       "type": "stat",
       "title": "Parts (active)",
       "datasource": {
@@ -415,7 +415,7 @@
       }
     },
     {
-      "id": 573,
+      "id": 670,
       "type": "row",
       "title": "Queries & Inserts",
       "collapsed": false,
@@ -428,7 +428,7 @@
       "panels": []
     },
     {
-      "id": 574,
+      "id": 671,
       "type": "timeseries",
       "title": "Queries / sec",
       "datasource": {
@@ -497,7 +497,7 @@
       }
     },
     {
-      "id": 575,
+      "id": 672,
       "type": "timeseries",
       "title": "Inserted Rows / sec",
       "datasource": {
@@ -566,7 +566,7 @@
       }
     },
     {
-      "id": 576,
+      "id": 673,
       "type": "timeseries",
       "title": "Selected Rows / sec",
       "datasource": {
@@ -635,7 +635,7 @@
       }
     },
     {
-      "id": 577,
+      "id": 674,
       "type": "timeseries",
       "title": "Failed Queries / sec",
       "datasource": {
@@ -704,7 +704,7 @@
       }
     },
     {
-      "id": 578,
+      "id": 675,
       "type": "row",
       "title": "Resources",
       "collapsed": false,
@@ -717,7 +717,7 @@
       "panels": []
     },
     {
-      "id": 579,
+      "id": 676,
       "type": "timeseries",
       "title": "Memory Tracking",
       "datasource": {
@@ -786,7 +786,7 @@
       }
     },
     {
-      "id": 580,
+      "id": 677,
       "type": "timeseries",
       "title": "Load Average (1m)",
       "datasource": {
@@ -855,7 +855,7 @@
       }
     },
     {
-      "id": 581,
+      "id": 678,
       "type": "timeseries",
       "title": "Read / Write Bytes per sec",
       "datasource": {
@@ -934,7 +934,7 @@
       }
     },
     {
-      "id": 582,
+      "id": 679,
       "type": "timeseries",
       "title": "Background Pool Tasks",
       "datasource": {

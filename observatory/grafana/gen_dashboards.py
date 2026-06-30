@@ -8,10 +8,14 @@ OUT = "/opt/homelab/observatory/grafana/dashboards"
 
 PG_INSTANCES = [("n8n-postgres", "n8n"), ("evo-postgres", "evolution"), ("automation-postgres", "automation"), ("postiz-postgres", "postiz"), ("temporal-postgres", "temporal"),
                 # marketing stack
-                ("listmonk-db", "listmonk"), ("umami-db", "umami"), ("metabase-db", "metabase"), ("typebot-db", "typebot"), ("chatwoot-postgres", "chatwoot"), ("plausible-db", "plausible"), ("posthog-db", "posthog")]
+                ("listmonk-db", "listmonk"), ("umami-db", "umami"), ("metabase-db", "metabase"), ("typebot-db", "typebot"), ("chatwoot-postgres", "chatwoot"), ("plausible-db", "plausible"), ("posthog-db", "posthog"),
+                # ai-agents stack
+                ("flowise-db", "flowise"), ("langflow-db", "langflow"), ("dify-db", "dify")]
 REDIS_INSTANCES = [("n8n-redis", "n8n"), ("evo-redis", "evolution"), ("textbee-redis", "textbee"), ("postiz-redis", "postiz"),
                    # marketing stack
-                   ("chatwoot-redis", "chatwoot"), ("posthog-redis", "posthog")]
+                   ("chatwoot-redis", "chatwoot"), ("posthog-redis", "posthog"),
+                   # ai-agents stack
+                   ("dify-redis", "dify")]
 MYSQL_INSTANCES = [("matomo-db", "matomo")]
 CLICKHOUSE_INSTANCES = [("plausible-clickhouse", "plausible"), ("posthog-clickhouse", "posthog")]
 
@@ -193,26 +197,35 @@ for inst, friendly in REDIS_INSTANCES:
         redis_panels(f'="{inst}"')))
 
 # ============================================================ MONGODB
-m = []
-m.append(stat("Up", [tgt('mongodb_up', "textbee-mongo")], 0, 1, 4, 4, unit="none", mappings=UP_MAP, thresholds=UP_TH))
-m.append(stat("Uptime", [tgt('mongodb_instance_uptime_seconds')], 4, 1, 4, 4, unit="s", color_mode="value"))
-m.append(stat("Current Connections", [tgt('mongodb_connections{state="current"}')], 8, 1, 4, 4, unit="short", graph=True, color_mode="value"))
-m.append(stat("Available Connections", [tgt('mongodb_connections{state="available"}')], 12, 1, 4, 4, unit="short", color_mode="value"))
-m.append(stat("Resident Memory (MB)", [tgt('mongodb_memory{type="resident"}')], 16, 1, 4, 4, unit="decmbytes", color_mode="value"))
-m.append(stat("Virtual Memory (MB)", [tgt('mongodb_memory{type="virtual"}')], 20, 1, 4, 4, unit="decmbytes", color_mode="value"))
-m.append(row("Operations", 5))
-m.append(ts("Operations / sec by type", [tgt('rate(mongodb_op_counters_total[5m])', "{{type}}")], 0, 6, 12, 8, unit="ops", legend_table=True))
-m.append(ts("Document Metrics / sec", [tgt('rate(mongodb_metrics_document_total[5m])', "{{state}}")], 12, 6, 12, 8, unit="ops"))
-m.append(row("Connections & Memory", 14))
-m.append(ts("Connections by state", [tgt('mongodb_connections', "{{state}}")], 0, 15, 12, 8, unit="short"))
-m.append(ts("Memory (MB)", [tgt('mongodb_memory', "{{type}}")], 12, 15, 12, 8, unit="decmbytes"))
-m.append(row("Network & Asserts", 23))
-m.append(ts("Network Requests / sec", [tgt('rate(mongodb_network_metrics_num_requests_total[5m])', "requests")], 0, 24, 12, 8, unit="ops"))
-m.append(ts("Asserts / sec", [tgt('rate(mongodb_asserts_total[5m])', "{{type}}")], 12, 24, 12, 8, unit="ops"))
-m.append(ts("Page Faults / sec", [tgt('rate(mongodb_extra_info_page_faults_total[5m])', "page faults")], 0, 32, 12, 8, unit="ops"))
-m.append(ts("WiredTiger Cache Bytes", [tgt('mongodb_mongod_wiredtiger_cache_bytes', "{{type}}")], 12, 32, 12, 8, unit="bytes"))
-write("MongoDB", "mongodb-textbee.json", dashboard(
-    "MongoDB — textbee", "mongodb-textbee", ["mongodb", "homelab", "textbee"], m))
+MONGO_INSTANCES = [("textbee-mongo", "textbee"), ("librechat-mongo", "librechat")]
+def mongo_panels(sel):
+    def fm(extra=None):
+        return '{instance' + sel + (',' + extra if extra else '') + '}'
+    L = "{{instance}}"
+    m = []
+    m.append(stat("Up", [tgt('mongodb_up' + fm(), L)], 0, 1, 4, 4, unit="none", mappings=UP_MAP, thresholds=UP_TH))
+    m.append(stat("Uptime", [tgt('mongodb_instance_uptime_seconds' + fm())], 4, 1, 4, 4, unit="s", color_mode="value"))
+    m.append(stat("Current Connections", [tgt('mongodb_connections' + fm('state="current"'))], 8, 1, 4, 4, unit="short", graph=True, color_mode="value"))
+    m.append(stat("Available Connections", [tgt('mongodb_connections' + fm('state="available"'))], 12, 1, 4, 4, unit="short", color_mode="value"))
+    m.append(stat("Resident Memory (MB)", [tgt('mongodb_memory' + fm('type="resident"'))], 16, 1, 4, 4, unit="decmbytes", color_mode="value"))
+    m.append(stat("Virtual Memory (MB)", [tgt('mongodb_memory' + fm('type="virtual"'))], 20, 1, 4, 4, unit="decmbytes", color_mode="value"))
+    m.append(row("Operations", 5))
+    m.append(ts("Operations / sec by type", [tgt('rate(mongodb_op_counters_total' + fm() + '[5m])', "{{type}}")], 0, 6, 12, 8, unit="ops", legend_table=True))
+    m.append(ts("Document Metrics / sec", [tgt('rate(mongodb_metrics_document_total' + fm() + '[5m])', "{{state}}")], 12, 6, 12, 8, unit="ops"))
+    m.append(row("Connections & Memory", 14))
+    m.append(ts("Connections by state", [tgt('mongodb_connections' + fm(), "{{state}}")], 0, 15, 12, 8, unit="short"))
+    m.append(ts("Memory (MB)", [tgt('mongodb_memory' + fm(), "{{type}}")], 12, 15, 12, 8, unit="decmbytes"))
+    m.append(row("Network & Asserts", 23))
+    m.append(ts("Network Requests / sec", [tgt('rate(mongodb_network_metrics_num_requests_total' + fm() + '[5m])', "requests")], 0, 24, 12, 8, unit="ops"))
+    m.append(ts("Asserts / sec", [tgt('rate(mongodb_asserts_total' + fm() + '[5m])', "{{type}}")], 12, 24, 12, 8, unit="ops"))
+    m.append(ts("Page Faults / sec", [tgt('rate(mongodb_extra_info_page_faults_total' + fm() + '[5m])', "page faults")], 0, 32, 12, 8, unit="ops"))
+    m.append(ts("WiredTiger Cache Bytes", [tgt('mongodb_mongod_wiredtiger_cache_bytes' + fm(), "{{type}}")], 12, 32, 12, 8, unit="bytes"))
+    return m
+
+for inst, friendly in MONGO_INSTANCES:
+    write("MongoDB", f"mongodb-{friendly}.json", dashboard(
+        f"MongoDB — {friendly} ({inst})", f"mongodb-{friendly}", ["mongodb", "homelab", friendly],
+        mongo_panels(f'="{inst}"')))
 
 # ============================================================ N8N
 NL = "{{instance}}"

@@ -1,10 +1,10 @@
 {
-  "uid": "mongodb-textbee",
-  "title": "MongoDB \u2014 textbee (textbee-mongo)",
+  "uid": "pg-flowise",
+  "title": "PostgreSQL \u2014 flowise (flowise-db)",
   "tags": [
-    "mongodb",
+    "postgres",
     "homelab",
-    "textbee"
+    "flowise"
   ],
   "schemaVersion": 39,
   "version": 1,
@@ -36,7 +36,7 @@
   },
   "panels": [
     {
-      "id": 473,
+      "id": 274,
       "type": "stat",
       "title": "Up",
       "datasource": {
@@ -55,7 +55,7 @@
             "type": "prometheus",
             "uid": "prometheus"
           },
-          "expr": "mongodb_up{instance=\"textbee-mongo\"}",
+          "expr": "pg_up{instance=\"flowise-db\"}",
           "legendFormat": "{{instance}}",
           "refId": "A",
           "instant": false
@@ -115,9 +115,9 @@
       }
     },
     {
-      "id": 474,
+      "id": 275,
       "type": "stat",
-      "title": "Uptime",
+      "title": "Postgres Version",
       "datasource": {
         "type": "prometheus",
         "uid": "prometheus"
@@ -134,8 +134,8 @@
             "type": "prometheus",
             "uid": "prometheus"
           },
-          "expr": "mongodb_instance_uptime_seconds{instance=\"textbee-mongo\"}",
-          "legendFormat": "",
+          "expr": "pg_static{instance=\"flowise-db\"}",
+          "legendFormat": "{{instance}}",
           "refId": "A",
           "instant": false
         }
@@ -143,10 +143,10 @@
       "fieldConfig": {
         "defaults": {
           "color": {
-            "mode": "value"
+            "mode": "thresholds"
           },
           "custom": {},
-          "unit": "s",
+          "unit": "none",
           "thresholds": {
             "mode": "absolute",
             "steps": [
@@ -175,9 +175,9 @@
       }
     },
     {
-      "id": 475,
+      "id": 276,
       "type": "stat",
-      "title": "Current Connections",
+      "title": "Backends (connections)",
       "datasource": {
         "type": "prometheus",
         "uid": "prometheus"
@@ -194,8 +194,8 @@
             "type": "prometheus",
             "uid": "prometheus"
           },
-          "expr": "mongodb_connections{instance=\"textbee-mongo\",state=\"current\"}",
-          "legendFormat": "",
+          "expr": "sum by(instance)(pg_stat_database_numbackends{instance=\"flowise-db\"})",
+          "legendFormat": "{{instance}}",
           "refId": "A",
           "instant": false
         }
@@ -235,9 +235,9 @@
       }
     },
     {
-      "id": 476,
+      "id": 277,
       "type": "stat",
-      "title": "Available Connections",
+      "title": "Max Connections",
       "datasource": {
         "type": "prometheus",
         "uid": "prometheus"
@@ -254,8 +254,8 @@
             "type": "prometheus",
             "uid": "prometheus"
           },
-          "expr": "mongodb_connections{instance=\"textbee-mongo\",state=\"available\"}",
-          "legendFormat": "",
+          "expr": "pg_settings_max_connections{instance=\"flowise-db\"}",
+          "legendFormat": "{{instance}}",
           "refId": "A",
           "instant": false
         }
@@ -263,7 +263,7 @@
       "fieldConfig": {
         "defaults": {
           "color": {
-            "mode": "value"
+            "mode": "thresholds"
           },
           "custom": {},
           "unit": "short",
@@ -295,9 +295,9 @@
       }
     },
     {
-      "id": 477,
+      "id": 278,
       "type": "stat",
-      "title": "Resident Memory (MB)",
+      "title": "DB Size (sum)",
       "datasource": {
         "type": "prometheus",
         "uid": "prometheus"
@@ -314,8 +314,8 @@
             "type": "prometheus",
             "uid": "prometheus"
           },
-          "expr": "mongodb_memory{instance=\"textbee-mongo\",type=\"resident\"}",
-          "legendFormat": "",
+          "expr": "sum by(instance)(pg_database_size_bytes{instance=\"flowise-db\"})",
+          "legendFormat": "{{instance}}",
           "refId": "A",
           "instant": false
         }
@@ -326,7 +326,7 @@
             "mode": "value"
           },
           "custom": {},
-          "unit": "decmbytes",
+          "unit": "bytes",
           "thresholds": {
             "mode": "absolute",
             "steps": [
@@ -349,15 +349,15 @@
         },
         "orientation": "auto",
         "colorMode": "value",
-        "graphMode": "none",
+        "graphMode": "area",
         "justifyMode": "auto",
         "textMode": "auto"
       }
     },
     {
-      "id": 478,
+      "id": 279,
       "type": "stat",
-      "title": "Virtual Memory (MB)",
+      "title": "Deadlocks (sum)",
       "datasource": {
         "type": "prometheus",
         "uid": "prometheus"
@@ -374,8 +374,8 @@
             "type": "prometheus",
             "uid": "prometheus"
           },
-          "expr": "mongodb_memory{instance=\"textbee-mongo\",type=\"virtual\"}",
-          "legendFormat": "",
+          "expr": "sum by(instance)(pg_stat_database_deadlocks{instance=\"flowise-db\"})",
+          "legendFormat": "{{instance}}",
           "refId": "A",
           "instant": false
         }
@@ -386,13 +386,17 @@
             "mode": "value"
           },
           "custom": {},
-          "unit": "decmbytes",
+          "unit": "short",
           "thresholds": {
             "mode": "absolute",
             "steps": [
               {
                 "color": "green",
                 "value": null
+              },
+              {
+                "color": "red",
+                "value": 1
               }
             ]
           }
@@ -415,9 +419,9 @@
       }
     },
     {
-      "id": 479,
+      "id": 280,
       "type": "row",
-      "title": "Operations",
+      "title": "Connections & Throughput",
       "collapsed": false,
       "gridPos": {
         "x": 0,
@@ -428,9 +432,9 @@
       "panels": []
     },
     {
-      "id": 480,
+      "id": 281,
       "type": "timeseries",
-      "title": "Operations / sec by type",
+      "title": "Active Backends",
       "datasource": {
         "type": "prometheus",
         "uid": "prometheus"
@@ -447,8 +451,8 @@
             "type": "prometheus",
             "uid": "prometheus"
           },
-          "expr": "rate(mongodb_op_counters_total{instance=\"textbee-mongo\"}[5m])",
-          "legendFormat": "{{type}}",
+          "expr": "sum by(instance)(pg_stat_database_numbackends{instance=\"flowise-db\"})",
+          "legendFormat": "{{instance}}",
           "refId": "A",
           "instant": false
         }
@@ -471,7 +475,7 @@
             },
             "axisPlacement": "auto"
           },
-          "unit": "ops",
+          "unit": "short",
           "thresholds": {
             "mode": "absolute",
             "steps": [
@@ -501,9 +505,9 @@
       }
     },
     {
-      "id": 481,
+      "id": 282,
       "type": "timeseries",
-      "title": "Document Metrics / sec",
+      "title": "Connection Utilisation %",
       "datasource": {
         "type": "prometheus",
         "uid": "prometheus"
@@ -520,8 +524,77 @@
             "type": "prometheus",
             "uid": "prometheus"
           },
-          "expr": "rate(mongodb_metrics_document_total{instance=\"textbee-mongo\"}[5m])",
-          "legendFormat": "{{state}}",
+          "expr": "100 * sum by(instance)(pg_stat_database_numbackends{instance=\"flowise-db\"}) / on(instance) group_left max by(instance)(pg_settings_max_connections{instance=\"flowise-db\"})",
+          "legendFormat": "{{instance}}",
+          "refId": "A",
+          "instant": false
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "palette-classic"
+          },
+          "custom": {
+            "drawStyle": "line",
+            "lineInterpolation": "smooth",
+            "lineWidth": 2,
+            "fillOpacity": 10,
+            "gradientMode": "opacity",
+            "showPoints": "never",
+            "stacking": {
+              "mode": "none",
+              "group": "A"
+            },
+            "axisPlacement": "auto"
+          },
+          "unit": "percent",
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": null
+              }
+            ]
+          }
+        },
+        "overrides": []
+      },
+      "options": {
+        "tooltip": {
+          "mode": "multi",
+          "sort": "desc"
+        },
+        "legend": {
+          "displayMode": "list",
+          "placement": "bottom",
+          "calcs": []
+        }
+      }
+    },
+    {
+      "id": 283,
+      "type": "timeseries",
+      "title": "Commits / sec",
+      "datasource": {
+        "type": "prometheus",
+        "uid": "prometheus"
+      },
+      "gridPos": {
+        "x": 0,
+        "y": 14,
+        "w": 12,
+        "h": 8
+      },
+      "targets": [
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "prometheus"
+          },
+          "expr": "sum by(instance)(rate(pg_stat_database_xact_commit{instance=\"flowise-db\"}[5m]))",
+          "legendFormat": "{{instance}}",
           "refId": "A",
           "instant": false
         }
@@ -570,29 +643,16 @@
       }
     },
     {
-      "id": 482,
-      "type": "row",
-      "title": "Connections & Memory",
-      "collapsed": false,
-      "gridPos": {
-        "x": 0,
-        "y": 14,
-        "w": 24,
-        "h": 1
-      },
-      "panels": []
-    },
-    {
-      "id": 483,
+      "id": 284,
       "type": "timeseries",
-      "title": "Connections by state",
+      "title": "Rollbacks / sec",
       "datasource": {
         "type": "prometheus",
         "uid": "prometheus"
       },
       "gridPos": {
-        "x": 0,
-        "y": 15,
+        "x": 12,
+        "y": 14,
         "w": 12,
         "h": 8
       },
@@ -602,8 +662,478 @@
             "type": "prometheus",
             "uid": "prometheus"
           },
-          "expr": "mongodb_connections{instance=\"textbee-mongo\"}",
-          "legendFormat": "{{state}}",
+          "expr": "sum by(instance)(rate(pg_stat_database_xact_rollback{instance=\"flowise-db\"}[5m]))",
+          "legendFormat": "{{instance}}",
+          "refId": "A",
+          "instant": false
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "palette-classic"
+          },
+          "custom": {
+            "drawStyle": "line",
+            "lineInterpolation": "smooth",
+            "lineWidth": 2,
+            "fillOpacity": 10,
+            "gradientMode": "opacity",
+            "showPoints": "never",
+            "stacking": {
+              "mode": "none",
+              "group": "A"
+            },
+            "axisPlacement": "auto"
+          },
+          "unit": "ops",
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": null
+              }
+            ]
+          }
+        },
+        "overrides": []
+      },
+      "options": {
+        "tooltip": {
+          "mode": "multi",
+          "sort": "desc"
+        },
+        "legend": {
+          "displayMode": "list",
+          "placement": "bottom",
+          "calcs": []
+        }
+      }
+    },
+    {
+      "id": 285,
+      "type": "row",
+      "title": "Tuples & Cache",
+      "collapsed": false,
+      "gridPos": {
+        "x": 0,
+        "y": 22,
+        "w": 24,
+        "h": 1
+      },
+      "panels": []
+    },
+    {
+      "id": 286,
+      "type": "timeseries",
+      "title": "Tuples Fetched/Returned/sec",
+      "datasource": {
+        "type": "prometheus",
+        "uid": "prometheus"
+      },
+      "gridPos": {
+        "x": 0,
+        "y": 23,
+        "w": 12,
+        "h": 8
+      },
+      "targets": [
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "prometheus"
+          },
+          "expr": "sum by(instance)(rate(pg_stat_database_tup_fetched{instance=\"flowise-db\"}[5m]))",
+          "legendFormat": "fetched {{instance}}",
+          "refId": "A",
+          "instant": false
+        },
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "prometheus"
+          },
+          "expr": "sum by(instance)(rate(pg_stat_database_tup_returned{instance=\"flowise-db\"}[5m]))",
+          "legendFormat": "returned {{instance}}",
+          "refId": "B",
+          "instant": false
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "palette-classic"
+          },
+          "custom": {
+            "drawStyle": "line",
+            "lineInterpolation": "smooth",
+            "lineWidth": 2,
+            "fillOpacity": 10,
+            "gradientMode": "opacity",
+            "showPoints": "never",
+            "stacking": {
+              "mode": "none",
+              "group": "A"
+            },
+            "axisPlacement": "auto"
+          },
+          "unit": "ops",
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": null
+              }
+            ]
+          }
+        },
+        "overrides": []
+      },
+      "options": {
+        "tooltip": {
+          "mode": "multi",
+          "sort": "desc"
+        },
+        "legend": {
+          "displayMode": "list",
+          "placement": "bottom",
+          "calcs": []
+        }
+      }
+    },
+    {
+      "id": 287,
+      "type": "timeseries",
+      "title": "Tuples Ins/Upd/Del per sec",
+      "datasource": {
+        "type": "prometheus",
+        "uid": "prometheus"
+      },
+      "gridPos": {
+        "x": 12,
+        "y": 23,
+        "w": 12,
+        "h": 8
+      },
+      "targets": [
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "prometheus"
+          },
+          "expr": "sum by(instance)(rate(pg_stat_database_tup_inserted{instance=\"flowise-db\"}[5m]))",
+          "legendFormat": "insert {{instance}}",
+          "refId": "A",
+          "instant": false
+        },
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "prometheus"
+          },
+          "expr": "sum by(instance)(rate(pg_stat_database_tup_updated{instance=\"flowise-db\"}[5m]))",
+          "legendFormat": "update {{instance}}",
+          "refId": "B",
+          "instant": false
+        },
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "prometheus"
+          },
+          "expr": "sum by(instance)(rate(pg_stat_database_tup_deleted{instance=\"flowise-db\"}[5m]))",
+          "legendFormat": "delete {{instance}}",
+          "refId": "C",
+          "instant": false
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "palette-classic"
+          },
+          "custom": {
+            "drawStyle": "line",
+            "lineInterpolation": "smooth",
+            "lineWidth": 2,
+            "fillOpacity": 10,
+            "gradientMode": "opacity",
+            "showPoints": "never",
+            "stacking": {
+              "mode": "none",
+              "group": "A"
+            },
+            "axisPlacement": "auto"
+          },
+          "unit": "ops",
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": null
+              }
+            ]
+          }
+        },
+        "overrides": []
+      },
+      "options": {
+        "tooltip": {
+          "mode": "multi",
+          "sort": "desc"
+        },
+        "legend": {
+          "displayMode": "list",
+          "placement": "bottom",
+          "calcs": []
+        }
+      }
+    },
+    {
+      "id": 288,
+      "type": "timeseries",
+      "title": "Cache Hit Ratio %",
+      "datasource": {
+        "type": "prometheus",
+        "uid": "prometheus"
+      },
+      "gridPos": {
+        "x": 0,
+        "y": 31,
+        "w": 12,
+        "h": 8
+      },
+      "targets": [
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "prometheus"
+          },
+          "expr": "100 * sum by(instance)(rate(pg_stat_database_blks_hit{instance=\"flowise-db\"}[5m])) / (sum by(instance)(rate(pg_stat_database_blks_hit{instance=\"flowise-db\"}[5m])) + sum by(instance)(rate(pg_stat_database_blks_read{instance=\"flowise-db\"}[5m])) > 0)",
+          "legendFormat": "{{instance}}",
+          "refId": "A",
+          "instant": false
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "palette-classic"
+          },
+          "custom": {
+            "drawStyle": "line",
+            "lineInterpolation": "smooth",
+            "lineWidth": 2,
+            "fillOpacity": 10,
+            "gradientMode": "opacity",
+            "showPoints": "never",
+            "stacking": {
+              "mode": "none",
+              "group": "A"
+            },
+            "axisPlacement": "auto"
+          },
+          "unit": "percent",
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": null
+              }
+            ]
+          }
+        },
+        "overrides": []
+      },
+      "options": {
+        "tooltip": {
+          "mode": "multi",
+          "sort": "desc"
+        },
+        "legend": {
+          "displayMode": "list",
+          "placement": "bottom",
+          "calcs": []
+        }
+      }
+    },
+    {
+      "id": 289,
+      "type": "timeseries",
+      "title": "Disk Block Reads / sec",
+      "datasource": {
+        "type": "prometheus",
+        "uid": "prometheus"
+      },
+      "gridPos": {
+        "x": 12,
+        "y": 31,
+        "w": 12,
+        "h": 8
+      },
+      "targets": [
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "prometheus"
+          },
+          "expr": "sum by(instance)(rate(pg_stat_database_blks_read{instance=\"flowise-db\"}[5m]))",
+          "legendFormat": "{{instance}}",
+          "refId": "A",
+          "instant": false
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "palette-classic"
+          },
+          "custom": {
+            "drawStyle": "line",
+            "lineInterpolation": "smooth",
+            "lineWidth": 2,
+            "fillOpacity": 10,
+            "gradientMode": "opacity",
+            "showPoints": "never",
+            "stacking": {
+              "mode": "none",
+              "group": "A"
+            },
+            "axisPlacement": "auto"
+          },
+          "unit": "ops",
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": null
+              }
+            ]
+          }
+        },
+        "overrides": []
+      },
+      "options": {
+        "tooltip": {
+          "mode": "multi",
+          "sort": "desc"
+        },
+        "legend": {
+          "displayMode": "list",
+          "placement": "bottom",
+          "calcs": []
+        }
+      }
+    },
+    {
+      "id": 290,
+      "type": "row",
+      "title": "Database Sizes & Locks",
+      "collapsed": false,
+      "gridPos": {
+        "x": 0,
+        "y": 39,
+        "w": 24,
+        "h": 1
+      },
+      "panels": []
+    },
+    {
+      "id": 291,
+      "type": "timeseries",
+      "title": "Database Size",
+      "datasource": {
+        "type": "prometheus",
+        "uid": "prometheus"
+      },
+      "gridPos": {
+        "x": 0,
+        "y": 40,
+        "w": 12,
+        "h": 8
+      },
+      "targets": [
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "prometheus"
+          },
+          "expr": "pg_database_size_bytes{instance=\"flowise-db\"}",
+          "legendFormat": "{{instance}} / {{datname}}",
+          "refId": "A",
+          "instant": false
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "palette-classic"
+          },
+          "custom": {
+            "drawStyle": "line",
+            "lineInterpolation": "smooth",
+            "lineWidth": 2,
+            "fillOpacity": 10,
+            "gradientMode": "opacity",
+            "showPoints": "never",
+            "stacking": {
+              "mode": "none",
+              "group": "A"
+            },
+            "axisPlacement": "auto"
+          },
+          "unit": "bytes",
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": null
+              }
+            ]
+          }
+        },
+        "overrides": []
+      },
+      "options": {
+        "tooltip": {
+          "mode": "multi",
+          "sort": "desc"
+        },
+        "legend": {
+          "displayMode": "list",
+          "placement": "bottom",
+          "calcs": []
+        }
+      }
+    },
+    {
+      "id": 292,
+      "type": "timeseries",
+      "title": "Locks",
+      "datasource": {
+        "type": "prometheus",
+        "uid": "prometheus"
+      },
+      "gridPos": {
+        "x": 12,
+        "y": 40,
+        "w": 12,
+        "h": 8
+      },
+      "targets": [
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "prometheus"
+          },
+          "expr": "sum by(instance, mode)(pg_locks_count{instance=\"flowise-db\"})",
+          "legendFormat": "{{instance}} {{mode}}",
           "refId": "A",
           "instant": false
         }
@@ -652,98 +1182,16 @@
       }
     },
     {
-      "id": 484,
+      "id": 293,
       "type": "timeseries",
-      "title": "Memory (MB)",
-      "datasource": {
-        "type": "prometheus",
-        "uid": "prometheus"
-      },
-      "gridPos": {
-        "x": 12,
-        "y": 15,
-        "w": 12,
-        "h": 8
-      },
-      "targets": [
-        {
-          "datasource": {
-            "type": "prometheus",
-            "uid": "prometheus"
-          },
-          "expr": "mongodb_memory{instance=\"textbee-mongo\"}",
-          "legendFormat": "{{type}}",
-          "refId": "A",
-          "instant": false
-        }
-      ],
-      "fieldConfig": {
-        "defaults": {
-          "color": {
-            "mode": "palette-classic"
-          },
-          "custom": {
-            "drawStyle": "line",
-            "lineInterpolation": "smooth",
-            "lineWidth": 2,
-            "fillOpacity": 10,
-            "gradientMode": "opacity",
-            "showPoints": "never",
-            "stacking": {
-              "mode": "none",
-              "group": "A"
-            },
-            "axisPlacement": "auto"
-          },
-          "unit": "decmbytes",
-          "thresholds": {
-            "mode": "absolute",
-            "steps": [
-              {
-                "color": "green",
-                "value": null
-              }
-            ]
-          }
-        },
-        "overrides": []
-      },
-      "options": {
-        "tooltip": {
-          "mode": "multi",
-          "sort": "desc"
-        },
-        "legend": {
-          "displayMode": "list",
-          "placement": "bottom",
-          "calcs": []
-        }
-      }
-    },
-    {
-      "id": 485,
-      "type": "row",
-      "title": "Network & Asserts",
-      "collapsed": false,
-      "gridPos": {
-        "x": 0,
-        "y": 23,
-        "w": 24,
-        "h": 1
-      },
-      "panels": []
-    },
-    {
-      "id": 486,
-      "type": "timeseries",
-      "title": "Network Requests / sec",
+      "title": "Temp Bytes / sec",
       "datasource": {
         "type": "prometheus",
         "uid": "prometheus"
       },
       "gridPos": {
         "x": 0,
-        "y": 24,
+        "y": 48,
         "w": 12,
         "h": 8
       },
@@ -753,8 +1201,8 @@
             "type": "prometheus",
             "uid": "prometheus"
           },
-          "expr": "rate(mongodb_network_metrics_num_requests_total{instance=\"textbee-mongo\"}[5m])",
-          "legendFormat": "requests",
+          "expr": "sum by(instance)(rate(pg_stat_database_temp_bytes{instance=\"flowise-db\"}[5m]))",
+          "legendFormat": "{{instance}}",
           "refId": "A",
           "instant": false
         }
@@ -777,7 +1225,7 @@
             },
             "axisPlacement": "auto"
           },
-          "unit": "ops",
+          "unit": "Bps",
           "thresholds": {
             "mode": "absolute",
             "steps": [
@@ -803,16 +1251,16 @@
       }
     },
     {
-      "id": 487,
+      "id": 294,
       "type": "timeseries",
-      "title": "Asserts / sec",
+      "title": "Conflicts / Rollback ratio %",
       "datasource": {
         "type": "prometheus",
         "uid": "prometheus"
       },
       "gridPos": {
         "x": 12,
-        "y": 24,
+        "y": 48,
         "w": 12,
         "h": 8
       },
@@ -822,8 +1270,8 @@
             "type": "prometheus",
             "uid": "prometheus"
           },
-          "expr": "rate(mongodb_asserts_total{instance=\"textbee-mongo\"}[5m])",
-          "legendFormat": "{{type}}",
+          "expr": "100 * sum by(instance)(rate(pg_stat_database_xact_rollback{instance=\"flowise-db\"}[5m])) / (sum by(instance)(rate(pg_stat_database_xact_commit{instance=\"flowise-db\"}[5m])) + sum by(instance)(rate(pg_stat_database_xact_rollback{instance=\"flowise-db\"}[5m])) > 0)",
+          "legendFormat": "{{instance}}",
           "refId": "A",
           "instant": false
         }
@@ -846,145 +1294,7 @@
             },
             "axisPlacement": "auto"
           },
-          "unit": "ops",
-          "thresholds": {
-            "mode": "absolute",
-            "steps": [
-              {
-                "color": "green",
-                "value": null
-              }
-            ]
-          }
-        },
-        "overrides": []
-      },
-      "options": {
-        "tooltip": {
-          "mode": "multi",
-          "sort": "desc"
-        },
-        "legend": {
-          "displayMode": "list",
-          "placement": "bottom",
-          "calcs": []
-        }
-      }
-    },
-    {
-      "id": 488,
-      "type": "timeseries",
-      "title": "Page Faults / sec",
-      "datasource": {
-        "type": "prometheus",
-        "uid": "prometheus"
-      },
-      "gridPos": {
-        "x": 0,
-        "y": 32,
-        "w": 12,
-        "h": 8
-      },
-      "targets": [
-        {
-          "datasource": {
-            "type": "prometheus",
-            "uid": "prometheus"
-          },
-          "expr": "rate(mongodb_extra_info_page_faults_total{instance=\"textbee-mongo\"}[5m])",
-          "legendFormat": "page faults",
-          "refId": "A",
-          "instant": false
-        }
-      ],
-      "fieldConfig": {
-        "defaults": {
-          "color": {
-            "mode": "palette-classic"
-          },
-          "custom": {
-            "drawStyle": "line",
-            "lineInterpolation": "smooth",
-            "lineWidth": 2,
-            "fillOpacity": 10,
-            "gradientMode": "opacity",
-            "showPoints": "never",
-            "stacking": {
-              "mode": "none",
-              "group": "A"
-            },
-            "axisPlacement": "auto"
-          },
-          "unit": "ops",
-          "thresholds": {
-            "mode": "absolute",
-            "steps": [
-              {
-                "color": "green",
-                "value": null
-              }
-            ]
-          }
-        },
-        "overrides": []
-      },
-      "options": {
-        "tooltip": {
-          "mode": "multi",
-          "sort": "desc"
-        },
-        "legend": {
-          "displayMode": "list",
-          "placement": "bottom",
-          "calcs": []
-        }
-      }
-    },
-    {
-      "id": 489,
-      "type": "timeseries",
-      "title": "WiredTiger Cache Bytes",
-      "datasource": {
-        "type": "prometheus",
-        "uid": "prometheus"
-      },
-      "gridPos": {
-        "x": 12,
-        "y": 32,
-        "w": 12,
-        "h": 8
-      },
-      "targets": [
-        {
-          "datasource": {
-            "type": "prometheus",
-            "uid": "prometheus"
-          },
-          "expr": "mongodb_mongod_wiredtiger_cache_bytes{instance=\"textbee-mongo\"}",
-          "legendFormat": "{{type}}",
-          "refId": "A",
-          "instant": false
-        }
-      ],
-      "fieldConfig": {
-        "defaults": {
-          "color": {
-            "mode": "palette-classic"
-          },
-          "custom": {
-            "drawStyle": "line",
-            "lineInterpolation": "smooth",
-            "lineWidth": 2,
-            "fillOpacity": 10,
-            "gradientMode": "opacity",
-            "showPoints": "never",
-            "stacking": {
-              "mode": "none",
-              "group": "A"
-            },
-            "axisPlacement": "auto"
-          },
-          "unit": "bytes",
+          "unit": "percent",
           "thresholds": {
             "mode": "absolute",
             "steps": [
