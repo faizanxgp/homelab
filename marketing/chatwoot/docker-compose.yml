@@ -1,0 +1,109 @@
+# Chatwoot — open-source customer-engagement / shared-inbox suite.
+# Rails web + Sidekiq worker, Postgres (pgvector) + Redis.
+# Part of the marketing stack. Defined but kept stopped (review before `up`).
+# Public (when enabled) via cloudflared at chatwoot.itproxima.com.
+name: chatwoot
+x-chatwoot-env: &chatwoot-env
+  INSTALLATION_ENV: docker
+  RAILS_ENV: production
+  NODE_ENV: production
+  SECRET_KEY_BASE: "${CHATWOOT_SECRET_KEY_BASE}"      # rails secret / openssl rand -hex 64
+  FRONTEND_URL: "https://chatwoot.itproxima.com"
+  POSTGRES_HOST: chatwoot-postgres
+  POSTGRES_USERNAME: chatwoot
+  POSTGRES_PASSWORD: "${CHATWOOT_DB_PASSWORD}"
+  POSTGRES_DATABASE: chatwoot
+  REDIS_URL: "redis://chatwoot-redis:6379"
+  RAILS_LOG_TO_STDOUT: "true"
+
+services:
+  chatwoot-web:
+    image: chatwoot/chatwoot:latest
+    container_name: chatwoot-web
+    restart: unless-stopped
+    environment: *chatwoot-env
+    entrypoint: docker/entrypoints/rails.sh
+    command: ["bundle", "exec", "rails", "s", "-p", "3000", "-b", "0.0.0.0"]
+    depends_on:
+      chatwoot-postgres:
+        condition: service_healthy
+      chatwoot-redis:
+        condition: service_healthy
+    ports:
+      - "127.0.0.1:8416:3000"   # local test only; public via tunnel
+    networks: [chatwoot-internal, marketing, drawbridge, observatory]
+
+  chatwoot-worker:
+    image: chatwoot/chatwoot:latest
+    container_name: chatwoot-worker
+    restart: unless-stopped
+    environment: *chatwoot-env
+    command: ["bundle", "exec", "sidekiq", "-C", "config/sidekiq.yml"]
+    depends_on:
+      chatwoot-postgres:
+        condition: service_healthy
+      chatwoot-redis:
+        condition: service_healthy
+    networks: [chatwoot-internal, observatory]
+
+  chatwoot-postgres:
+    image: pgvector/pgvector:pg16
+    container_name: chatwoot-postgres
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: chatwoot
+      POSTGRES_PASSWORD: "${CHATWOOT_DB_PASSWORD}"
+      POSTGRES_DB: chatwoot
+    volumes:
+      - ./volumes/postgres:/var/lib/postgresql/data
+    networks: [chatwoot-internal]
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U chatwoot -d chatwoot"]
+      interval: 10s
+      timeout: 3s
+      retries: 10
+
+  chatwoot-redis:
+    image: redis:7-alpine
+    container_name: chatwoot-redis
+    restart: unless-stopped
+    volumes:
+      - ./volumes/redis:/data
+    networks: [chatwoot-internal]
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 10s
+      timeout: 3s
+      retries: 10
+
+  chatwoot-postgres-exporter:
+    image: prometheuscommunity/postgres-exporter:latest
+    container_name: chatwoot-postgres-exporter
+    restart: unless-stopped
+    environment:
+      DATA_SOURCE_NAME: "postgresql://chatwoot:${CHATWOOT_DB_PASSWORD}@chatwoot-postgres:5432/chatwoot?sslmode=disable"
+    depends_on:
+      chatwoot-postgres:
+        condition: service_healthy
+    networks: [chatwoot-internal, observatory]
+
+  chatwoot-redis-exporter:
+    image: oliver006/redis_exporter:latest
+    container_name: chatwoot-redis-exporter
+    restart: unless-stopped
+    environment:
+      REDIS_ADDR: "redis://chatwoot-redis:6379"
+    depends_on:
+      chatwoot-redis:
+        condition: service_healthy
+    networks: [chatwoot-internal, observatory]
+
+networks:
+  chatwoot-internal:
+    driver: bridge
+  marketing:
+    external: true
+  drawbridge:
+    external: true
+  observatory:
+    external: true
