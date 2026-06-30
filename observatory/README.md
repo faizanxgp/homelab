@@ -61,7 +61,7 @@ Drop a new dashboard JSON into `grafana/dashboards/` and restart Grafana — it 
 
 ## Environment
 
-Create `observatory/monitoring/.env`:
+Create `observatory/.env`:
 ```
 GF_SECURITY_ADMIN_PASSWORD=<strong password>
 ```

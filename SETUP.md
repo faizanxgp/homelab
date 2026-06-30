@@ -130,7 +130,7 @@ WEBDAV_USER=mian          # or whatever username you prefer
 WEBDAV_PASSWORD=<strong password>
 ```
 
-**`observatory/monitoring/.env`** (create this one)
+**`observatory/.env`** (create this one)
 ```
 GF_SECURITY_ADMIN_PASSWORD=<grafana admin password>
 ```
@@ -175,7 +175,7 @@ Bring up services in this order (dependencies first):
 ### Observatory first — so everything is monitored from the start
 
 ```bash
-docker compose -f observatory/monitoring/docker-compose.yml    up -d
+docker compose -f observatory/docker-compose.yml    up -d
 docker compose -f observatory/uptime-kuma/docker-compose.yml  up -d
 ```
 
@@ -227,7 +227,7 @@ All containers should show `Up` — none should be in a restart loop.
 ### Grafana
 1. Open `grafana.yourdomain.com` → log in with `admin` / your `GF_SECURITY_ADMIN_PASSWORD`.
 2. Datasources (Prometheus and Loki) are provisioned automatically.
-3. Import dashboards from `observatory/monitoring/grafana/dashboards/`.
+3. Import dashboards from `observatory/grafana/dashboards/`.
 
 ### n8n
 1. Open `n8n.yourdomain.com` → create your owner account.
