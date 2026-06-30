@@ -4,7 +4,7 @@ All metric names used here were verified live against the running exporters."""
 import json, os
 
 DS = {"type": "prometheus", "uid": "prometheus"}
-OUT = "/opt/homelab/observatory/monitoring/grafana/dashboards"
+OUT = "/opt/homelab/observatory/grafana/dashboards"
 
 PG_INSTANCES = [("n8n-postgres", "n8n"), ("evo-postgres", "evolution"), ("automation-postgres", "automation"), ("postiz-postgres", "postiz")]
 REDIS_INSTANCES = [("n8n-redis", "n8n"), ("evo-redis", "evolution"), ("textbee-redis", "textbee"), ("postiz-redis", "postiz")]

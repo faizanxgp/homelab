@@ -2,4 +2,4 @@
 # Replaces cAdvisor's per-container data, which is broken on Docker 29's containerd
 # image store. Refreshes every minute; only errors are logged.
 CRON_TZ=Asia/Karachi
-* * * * * root /opt/homelab/observatory/monitoring/scripts/container-metrics.sh >> /var/log/homelab/container-metrics.log 2>&1
+* * * * * root /opt/homelab/observatory/scripts/container-metrics.sh >> /var/log/homelab/container-metrics.log 2>&1

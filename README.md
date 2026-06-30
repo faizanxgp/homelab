@@ -195,7 +195,7 @@ cp utility/webdav/.env.example       utility/webdav/.env
 CF_API_TOKEN=your_token bash utility/cloudflared/deploy-tunnel.sh
 
 # 5. Bring up whatever you want, in any order
-docker compose -f observatory/monitoring/docker-compose.yml    up -d
+docker compose -f observatory/docker-compose.yml    up -d
 docker compose -f observatory/uptime-kuma/docker-compose.yml  up -d
 docker compose -f utility/cloudflared/docker-compose.yml      up -d
 docker compose -f automation/n8n/docker-compose.yml           up -d
