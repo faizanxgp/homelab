@@ -57,7 +57,7 @@ DBS = [  # TCP port checks (no creds stored)
     ("Redis - n8n",             "n8n-redis",           6379),
     ("Redis - Evolution",       "evo-redis",           6379),
     ("Redis - TextBee",         "textbee-redis",       6379),
-    ("MongoDB - TextBee",       "textbee-db",          27017),
+    ("MongoDB - TextBee",       "textbee-mongo",          27017),
 ]
 # Endpoint-less services: no HTTP/TCP health to hit, so monitor the Docker
 # container's running-state directly via the mounted /var/run/docker.sock.
