@@ -6,8 +6,14 @@ import json, os
 DS = {"type": "prometheus", "uid": "prometheus"}
 OUT = "/opt/homelab/observatory/grafana/dashboards"
 
-PG_INSTANCES = [("n8n-postgres", "n8n"), ("evo-postgres", "evolution"), ("automation-postgres", "automation"), ("postiz-postgres", "postiz"), ("temporal-postgres", "temporal")]
-REDIS_INSTANCES = [("n8n-redis", "n8n"), ("evo-redis", "evolution"), ("textbee-redis", "textbee"), ("postiz-redis", "postiz")]
+PG_INSTANCES = [("n8n-postgres", "n8n"), ("evo-postgres", "evolution"), ("automation-postgres", "automation"), ("postiz-postgres", "postiz"), ("temporal-postgres", "temporal"),
+                # marketing stack
+                ("listmonk-db", "listmonk"), ("umami-db", "umami"), ("metabase-db", "metabase"), ("typebot-db", "typebot"), ("chatwoot-postgres", "chatwoot"), ("plausible-db", "plausible"), ("posthog-db", "posthog")]
+REDIS_INSTANCES = [("n8n-redis", "n8n"), ("evo-redis", "evolution"), ("textbee-redis", "textbee"), ("postiz-redis", "postiz"),
+                   # marketing stack
+                   ("chatwoot-redis", "chatwoot"), ("posthog-redis", "posthog")]
+MYSQL_INSTANCES = [("matomo-db", "matomo")]
+CLICKHOUSE_INSTANCES = [("plausible-clickhouse", "plausible"), ("posthog-clickhouse", "posthog")]
 
 _id = 0
 def nid():
@@ -445,5 +451,69 @@ es.append(ts("Circuit Breakers Tripped", [tgt(f'sum by(breaker)(elasticsearch_br
 es.append(ts("Store Size by Index", [tgt(f'elasticsearch_indices_store_size_bytes{ES_SEL}', "{{index}}")], 12, 31, 12, 8, unit="bytes"))
 write("Elasticsearch", "elasticsearch-temporal.json", dashboard(
     "Elasticsearch — Temporal Visibility (temporal-es)", "es-temporal", ["elasticsearch", "temporal", "homelab"], es))
+
+# ============================================================ MYSQL / MARIADB (mysqld_exporter)
+def mysql_panels(sel):
+    f = lambda: f'{{instance{sel}}}'
+    L = "{{instance}}"
+    p = []
+    p.append(stat("Up", [tgt(f'mysql_up{f()}', L)], 0, 1, 4, 4, unit="none", mappings=UP_MAP, thresholds=UP_TH))
+    p.append(stat("Threads Connected", [tgt(f'mysql_global_status_threads_connected{f()}', L)], 4, 1, 4, 4, color_mode="value", graph=True))
+    p.append(stat("Max Connections", [tgt(f'mysql_global_variables_max_connections{f()}', L)], 8, 1, 4, 4))
+    p.append(stat("Uptime", [tgt(f'mysql_global_status_uptime{f()}', L)], 12, 1, 4, 4, unit="s"))
+    p.append(stat("Slow Queries (total)", [tgt(f'mysql_global_status_slow_queries{f()}', L)], 16, 1, 4, 4, color_mode="value", thresholds=[{"color":"green","value":None},{"color":"yellow","value":1}]))
+    p.append(stat("Aborted Connects", [tgt(f'mysql_global_status_aborted_connects{f()}', L)], 20, 1, 4, 4, color_mode="value"))
+    p.append(row("Throughput", 5))
+    p.append(ts("Queries / sec", [tgt(f'rate(mysql_global_status_queries{f()}[5m])', L)], 0, 6, 12, 8, unit="ops"))
+    p.append(ts("Connection Utilisation %", [tgt(f'100 * mysql_global_status_threads_connected{f()} / mysql_global_variables_max_connections{f()}', L)], 12, 6, 12, 8, unit="percent"))
+    p.append(ts("Command Rate (select/insert/update/delete)", [
+        tgt(f'rate(mysql_global_status_commands_total{{instance{sel},command="select"}}[5m])', "select"),
+        tgt(f'rate(mysql_global_status_commands_total{{instance{sel},command="insert"}}[5m])', "insert", "B"),
+        tgt(f'rate(mysql_global_status_commands_total{{instance{sel},command="update"}}[5m])', "update", "C"),
+        tgt(f'rate(mysql_global_status_commands_total{{instance{sel},command="delete"}}[5m])', "delete", "D")], 0, 14, 12, 8, unit="ops"))
+    p.append(ts("Network Bytes / sec", [
+        tgt(f'rate(mysql_global_status_bytes_received{f()}[5m])', "received"),
+        tgt(f'rate(mysql_global_status_bytes_sent{f()}[5m])', "sent", "B")], 12, 14, 12, 8, unit="Bps"))
+    p.append(row("InnoDB", 22))
+    p.append(ts("InnoDB Buffer Pool (data vs total)", [
+        tgt(f'mysql_global_status_innodb_page_size{f()} * mysql_global_status_buffer_pool_pages{{instance{sel},state="data"}}', "data"),
+        tgt(f'mysql_global_status_innodb_page_size{f()} * mysql_global_status_buffer_pool_pages{{instance{sel},state="total"}}', "total", "B")], 0, 23, 12, 8, unit="bytes"))
+    p.append(ts("InnoDB Row Ops / sec", [tgt(f'rate(mysql_global_status_innodb_row_ops_total{f()}[5m])', "{{operation}}")], 12, 23, 12, 8, unit="ops"))
+    return p
+
+for inst, friendly in MYSQL_INSTANCES:
+    write("MySQL", f"mysql-{friendly}.json", dashboard(
+        f"MySQL — {friendly} ({inst})", f"mysql-{friendly}", ["mysql", "mariadb", "homelab", friendly],
+        mysql_panels(f'="{inst}"')))
+
+# ============================================================ CLICKHOUSE (native /metrics)
+def clickhouse_panels(sel):
+    f = lambda: f'{{instance{sel}}}'
+    L = "{{instance}}"
+    p = []
+    p.append(stat("Up", [tgt(f'up{{job="clickhouse",instance{sel}}}', L)], 0, 1, 4, 4, unit="none", mappings=UP_MAP, thresholds=UP_TH))
+    p.append(stat("Uptime", [tgt(f'ClickHouseAsyncMetrics_Uptime{f()}', L)], 4, 1, 4, 4, unit="s"))
+    p.append(stat("Active Queries", [tgt(f'ClickHouseMetrics_Query{f()}', L)], 8, 1, 4, 4, color_mode="value", graph=True))
+    p.append(stat("TCP Connections", [tgt(f'ClickHouseMetrics_TCPConnection{f()}', L)], 12, 1, 4, 4, color_mode="value"))
+    p.append(stat("Memory Tracked", [tgt(f'ClickHouseMetrics_MemoryTracking{f()}', L)], 16, 1, 4, 4, unit="bytes", color_mode="value", graph=True))
+    p.append(stat("Parts (active)", [tgt(f'ClickHouseMetrics_PartsActive{f()}', L)], 20, 1, 4, 4, color_mode="value"))
+    p.append(row("Queries & Inserts", 5))
+    p.append(ts("Queries / sec", [tgt(f'rate(ClickHouseProfileEvents_Query{f()}[5m])', L)], 0, 6, 12, 8, unit="ops"))
+    p.append(ts("Inserted Rows / sec", [tgt(f'rate(ClickHouseProfileEvents_InsertedRows{f()}[5m])', L)], 12, 6, 12, 8, unit="ops"))
+    p.append(ts("Selected Rows / sec", [tgt(f'rate(ClickHouseProfileEvents_SelectedRows{f()}[5m])', L)], 0, 14, 12, 8, unit="ops"))
+    p.append(ts("Failed Queries / sec", [tgt(f'rate(ClickHouseProfileEvents_FailedQuery{f()}[5m])', L)], 12, 14, 12, 8, unit="ops"))
+    p.append(row("Resources", 22))
+    p.append(ts("Memory Tracking", [tgt(f'ClickHouseMetrics_MemoryTracking{f()}', L)], 0, 23, 12, 8, unit="bytes"))
+    p.append(ts("Load Average (1m)", [tgt(f'ClickHouseAsyncMetrics_LoadAverage1{f()}', L)], 12, 23, 12, 8, unit="short"))
+    p.append(ts("Read / Write Bytes per sec", [
+        tgt(f'rate(ClickHouseProfileEvents_ReadBufferFromFileDescriptorReadBytes{f()}[5m])', "read"),
+        tgt(f'rate(ClickHouseProfileEvents_WriteBufferFromFileDescriptorWriteBytes{f()}[5m])', "write", "B")], 0, 31, 12, 8, unit="Bps"))
+    p.append(ts("Background Pool Tasks", [tgt(f'ClickHouseMetrics_BackgroundMergesAndMutationsPoolTask{f()}', L)], 12, 31, 12, 8, unit="short"))
+    return p
+
+for inst, friendly in CLICKHOUSE_INSTANCES:
+    write("ClickHouse", f"clickhouse-{friendly}.json", dashboard(
+        f"ClickHouse — {friendly} ({inst})", f"ch-{friendly}", ["clickhouse", "homelab", friendly],
+        clickhouse_panels(f'="{inst}"')))
 
 print("\nDone.")

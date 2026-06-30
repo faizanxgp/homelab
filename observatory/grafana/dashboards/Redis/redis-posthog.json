@@ -1,10 +1,10 @@
 {
-  "uid": "obsidian-vault",
-  "title": "Obsidian \u2014 Vault (via CouchDB)",
+  "uid": "redis-posthog",
+  "title": "Redis \u2014 posthog (posthog-redis)",
   "tags": [
-    "obsidian",
+    "redis",
     "homelab",
-    "couchdb"
+    "posthog"
   ],
   "schemaVersion": 39,
   "version": 1,
@@ -17,31 +17,7 @@
   "refresh": "30s",
   "timezone": "browser",
   "templating": {
-    "list": [
-      {
-        "name": "vault",
-        "type": "query",
-        "datasource": {
-          "type": "prometheus",
-          "uid": "prometheus"
-        },
-        "label": "Vault DB",
-        "query": {
-          "qryType": 1,
-          "query": "label_values(couchdb_database_doc_count{db_name!~\"_.*\"}, db_name)",
-          "refId": "var"
-        },
-        "definition": "label_values(couchdb_database_doc_count{db_name!~\"_.*\"}, db_name)",
-        "includeAll": true,
-        "multi": true,
-        "refresh": 2,
-        "sort": 1,
-        "current": {
-          "text": "All",
-          "value": "$__all"
-        }
-      }
-    ]
+    "list": []
   },
   "annotations": {
     "list": [
@@ -60,9 +36,9 @@
   },
   "panels": [
     {
-      "id": 467,
+      "id": 376,
       "type": "stat",
-      "title": "Documents (notes + sync chunks)",
+      "title": "Up",
       "datasource": {
         "type": "prometheus",
         "uid": "prometheus"
@@ -70,7 +46,7 @@
       "gridPos": {
         "x": 0,
         "y": 1,
-        "w": 6,
+        "w": 4,
         "h": 4
       },
       "targets": [
@@ -79,8 +55,87 @@
             "type": "prometheus",
             "uid": "prometheus"
           },
-          "expr": "sum(couchdb_database_doc_count{db_name=~\"$vault\"})",
-          "legendFormat": "docs",
+          "expr": "redis_up{instance=\"posthog-redis\"}",
+          "legendFormat": "{{instance}}",
+          "refId": "A",
+          "instant": false
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "thresholds"
+          },
+          "custom": {},
+          "unit": "none",
+          "mappings": [
+            {
+              "type": "value",
+              "options": {
+                "0": {
+                  "text": "DOWN",
+                  "color": "red"
+                },
+                "1": {
+                  "text": "UP",
+                  "color": "green"
+                }
+              }
+            }
+          ],
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "red",
+                "value": null
+              },
+              {
+                "color": "green",
+                "value": 1
+              }
+            ]
+          }
+        },
+        "overrides": []
+      },
+      "options": {
+        "reduceOptions": {
+          "calcs": [
+            "lastNotNull"
+          ],
+          "fields": "",
+          "values": false
+        },
+        "orientation": "auto",
+        "colorMode": "value",
+        "graphMode": "none",
+        "justifyMode": "auto",
+        "textMode": "auto"
+      }
+    },
+    {
+      "id": 377,
+      "type": "stat",
+      "title": "Connected Clients",
+      "datasource": {
+        "type": "prometheus",
+        "uid": "prometheus"
+      },
+      "gridPos": {
+        "x": 4,
+        "y": 1,
+        "w": 4,
+        "h": 4
+      },
+      "targets": [
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "prometheus"
+          },
+          "expr": "sum by(instance)(redis_connected_clients{instance=\"posthog-redis\"})",
+          "legendFormat": "{{instance}}",
           "refId": "A",
           "instant": false
         }
@@ -120,17 +175,17 @@
       }
     },
     {
-      "id": 468,
+      "id": 378,
       "type": "stat",
-      "title": "Deleted Documents (tombstones)",
+      "title": "Memory Used",
       "datasource": {
         "type": "prometheus",
         "uid": "prometheus"
       },
       "gridPos": {
-        "x": 6,
+        "x": 8,
         "y": 1,
-        "w": 6,
+        "w": 4,
         "h": 4
       },
       "targets": [
@@ -139,8 +194,8 @@
             "type": "prometheus",
             "uid": "prometheus"
           },
-          "expr": "sum(couchdb_database_doc_del_count{db_name=~\"$vault\"})",
-          "legendFormat": "deleted",
+          "expr": "sum by(instance)(redis_memory_used_bytes{instance=\"posthog-redis\"})",
+          "legendFormat": "{{instance}}",
           "refId": "A",
           "instant": false
         }
@@ -151,7 +206,7 @@
             "mode": "value"
           },
           "custom": {},
-          "unit": "short",
+          "unit": "bytes",
           "thresholds": {
             "mode": "absolute",
             "steps": [
@@ -174,15 +229,15 @@
         },
         "orientation": "auto",
         "colorMode": "value",
-        "graphMode": "none",
+        "graphMode": "area",
         "justifyMode": "auto",
         "textMode": "auto"
       }
     },
     {
-      "id": 469,
+      "id": 379,
       "type": "stat",
-      "title": "Vault Disk Size",
+      "title": "Keys (total)",
       "datasource": {
         "type": "prometheus",
         "uid": "prometheus"
@@ -190,7 +245,7 @@
       "gridPos": {
         "x": 12,
         "y": 1,
-        "w": 6,
+        "w": 4,
         "h": 4
       },
       "targets": [
@@ -199,8 +254,8 @@
             "type": "prometheus",
             "uid": "prometheus"
           },
-          "expr": "sum(couchdb_database_disk_size{db_name=~\"$vault\"})",
-          "legendFormat": "disk",
+          "expr": "sum by(instance)(redis_db_keys{instance=\"posthog-redis\"})",
+          "legendFormat": "{{instance}}",
           "refId": "A",
           "instant": false
         }
@@ -211,67 +266,7 @@
             "mode": "value"
           },
           "custom": {},
-          "unit": "bytes",
-          "thresholds": {
-            "mode": "absolute",
-            "steps": [
-              {
-                "color": "green",
-                "value": null
-              }
-            ]
-          }
-        },
-        "overrides": []
-      },
-      "options": {
-        "reduceOptions": {
-          "calcs": [
-            "lastNotNull"
-          ],
-          "fields": "",
-          "values": false
-        },
-        "orientation": "auto",
-        "colorMode": "value",
-        "graphMode": "area",
-        "justifyMode": "auto",
-        "textMode": "auto"
-      }
-    },
-    {
-      "id": 470,
-      "type": "stat",
-      "title": "Vault Data Size",
-      "datasource": {
-        "type": "prometheus",
-        "uid": "prometheus"
-      },
-      "gridPos": {
-        "x": 18,
-        "y": 1,
-        "w": 6,
-        "h": 4
-      },
-      "targets": [
-        {
-          "datasource": {
-            "type": "prometheus",
-            "uid": "prometheus"
-          },
-          "expr": "sum(couchdb_database_data_size{db_name=~\"$vault\"})",
-          "legendFormat": "data",
-          "refId": "A",
-          "instant": false
-        }
-      ],
-      "fieldConfig": {
-        "defaults": {
-          "color": {
-            "mode": "value"
-          },
-          "custom": {},
-          "unit": "bytes",
+          "unit": "short",
           "thresholds": {
             "mode": "absolute",
             "steps": [
@@ -300,9 +295,130 @@
       }
     },
     {
-      "id": 471,
+      "id": 380,
+      "type": "stat",
+      "title": "Ops / sec",
+      "datasource": {
+        "type": "prometheus",
+        "uid": "prometheus"
+      },
+      "gridPos": {
+        "x": 16,
+        "y": 1,
+        "w": 4,
+        "h": 4
+      },
+      "targets": [
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "prometheus"
+          },
+          "expr": "sum by(instance)(rate(redis_commands_processed_total{instance=\"posthog-redis\"}[5m]))",
+          "legendFormat": "{{instance}}",
+          "refId": "A",
+          "instant": false
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "value"
+          },
+          "custom": {},
+          "unit": "ops",
+          "decimals": 1,
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": null
+              }
+            ]
+          }
+        },
+        "overrides": []
+      },
+      "options": {
+        "reduceOptions": {
+          "calcs": [
+            "lastNotNull"
+          ],
+          "fields": "",
+          "values": false
+        },
+        "orientation": "auto",
+        "colorMode": "value",
+        "graphMode": "area",
+        "justifyMode": "auto",
+        "textMode": "auto"
+      }
+    },
+    {
+      "id": 381,
+      "type": "stat",
+      "title": "Uptime",
+      "datasource": {
+        "type": "prometheus",
+        "uid": "prometheus"
+      },
+      "gridPos": {
+        "x": 20,
+        "y": 1,
+        "w": 4,
+        "h": 4
+      },
+      "targets": [
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "prometheus"
+          },
+          "expr": "max by(instance)(redis_uptime_in_seconds{instance=\"posthog-redis\"})",
+          "legendFormat": "{{instance}}",
+          "refId": "A",
+          "instant": false
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "value"
+          },
+          "custom": {},
+          "unit": "s",
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": null
+              }
+            ]
+          }
+        },
+        "overrides": []
+      },
+      "options": {
+        "reduceOptions": {
+          "calcs": [
+            "lastNotNull"
+          ],
+          "fields": "",
+          "values": false
+        },
+        "orientation": "auto",
+        "colorMode": "value",
+        "graphMode": "none",
+        "justifyMode": "auto",
+        "textMode": "auto"
+      }
+    },
+    {
+      "id": 382,
       "type": "row",
-      "title": "Vault Growth",
+      "title": "Throughput & Clients",
       "collapsed": false,
       "gridPos": {
         "x": 0,
@@ -313,9 +429,9 @@
       "panels": []
     },
     {
-      "id": 472,
+      "id": 383,
       "type": "timeseries",
-      "title": "Document Count over time",
+      "title": "Commands Processed / sec",
       "datasource": {
         "type": "prometheus",
         "uid": "prometheus"
@@ -332,9 +448,92 @@
             "type": "prometheus",
             "uid": "prometheus"
           },
-          "expr": "couchdb_database_doc_count{db_name=~\"$vault\"}",
-          "legendFormat": "{{db_name}}",
+          "expr": "sum by(instance)(rate(redis_commands_processed_total{instance=\"posthog-redis\"}[5m]))",
+          "legendFormat": "{{instance}}",
           "refId": "A",
+          "instant": false
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "palette-classic"
+          },
+          "custom": {
+            "drawStyle": "line",
+            "lineInterpolation": "smooth",
+            "lineWidth": 2,
+            "fillOpacity": 10,
+            "gradientMode": "opacity",
+            "showPoints": "never",
+            "stacking": {
+              "mode": "none",
+              "group": "A"
+            },
+            "axisPlacement": "auto"
+          },
+          "unit": "ops",
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": null
+              }
+            ]
+          }
+        },
+        "overrides": []
+      },
+      "options": {
+        "tooltip": {
+          "mode": "multi",
+          "sort": "desc"
+        },
+        "legend": {
+          "displayMode": "table",
+          "placement": "bottom",
+          "calcs": [
+            "lastNotNull",
+            "max",
+            "mean"
+          ]
+        }
+      }
+    },
+    {
+      "id": 384,
+      "type": "timeseries",
+      "title": "Connected / Blocked Clients",
+      "datasource": {
+        "type": "prometheus",
+        "uid": "prometheus"
+      },
+      "gridPos": {
+        "x": 12,
+        "y": 6,
+        "w": 12,
+        "h": 8
+      },
+      "targets": [
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "prometheus"
+          },
+          "expr": "sum by(instance)(redis_connected_clients{instance=\"posthog-redis\"})",
+          "legendFormat": "connected {{instance}}",
+          "refId": "A",
+          "instant": false
+        },
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "prometheus"
+          },
+          "expr": "sum by(instance)(redis_blocked_clients{instance=\"posthog-redis\"})",
+          "legendFormat": "blocked {{instance}}",
+          "refId": "B",
           "instant": false
         }
       ],
@@ -375,27 +574,36 @@
           "sort": "desc"
         },
         "legend": {
-          "displayMode": "table",
+          "displayMode": "list",
           "placement": "bottom",
-          "calcs": [
-            "lastNotNull",
-            "max",
-            "mean"
-          ]
+          "calcs": []
         }
       }
     },
     {
-      "id": 473,
+      "id": 385,
+      "type": "row",
+      "title": "Memory",
+      "collapsed": false,
+      "gridPos": {
+        "x": 0,
+        "y": 14,
+        "w": 24,
+        "h": 1
+      },
+      "panels": []
+    },
+    {
+      "id": 386,
       "type": "timeseries",
-      "title": "Disk vs Data Size",
+      "title": "Memory Used",
       "datasource": {
         "type": "prometheus",
         "uid": "prometheus"
       },
       "gridPos": {
-        "x": 12,
-        "y": 6,
+        "x": 0,
+        "y": 15,
         "w": 12,
         "h": 8
       },
@@ -405,8 +613,8 @@
             "type": "prometheus",
             "uid": "prometheus"
           },
-          "expr": "sum(couchdb_database_disk_size{db_name=~\"$vault\"})",
-          "legendFormat": "disk",
+          "expr": "sum by(instance)(redis_memory_used_bytes{instance=\"posthog-redis\"})",
+          "legendFormat": "used {{instance}}",
           "refId": "A",
           "instant": false
         },
@@ -415,8 +623,8 @@
             "type": "prometheus",
             "uid": "prometheus"
           },
-          "expr": "sum(couchdb_database_data_size{db_name=~\"$vault\"})",
-          "legendFormat": "data",
+          "expr": "sum by(instance)(redis_memory_max_bytes{instance=\"posthog-redis\"} > 0)",
+          "legendFormat": "max {{instance}}",
           "refId": "B",
           "instant": false
         }
@@ -465,91 +673,9 @@
       }
     },
     {
-      "id": 474,
-      "type": "row",
-      "title": "Compaction & Overhead",
-      "collapsed": false,
-      "gridPos": {
-        "x": 0,
-        "y": 14,
-        "w": 24,
-        "h": 1
-      },
-      "panels": []
-    },
-    {
-      "id": 475,
+      "id": 387,
       "type": "timeseries",
-      "title": "Disk Overhead (reclaimable by compaction)",
-      "datasource": {
-        "type": "prometheus",
-        "uid": "prometheus"
-      },
-      "gridPos": {
-        "x": 0,
-        "y": 15,
-        "w": 12,
-        "h": 8
-      },
-      "targets": [
-        {
-          "datasource": {
-            "type": "prometheus",
-            "uid": "prometheus"
-          },
-          "expr": "sum(couchdb_database_overhead{db_name=~\"$vault\"})",
-          "legendFormat": "overhead",
-          "refId": "A",
-          "instant": false
-        }
-      ],
-      "fieldConfig": {
-        "defaults": {
-          "color": {
-            "mode": "palette-classic"
-          },
-          "custom": {
-            "drawStyle": "line",
-            "lineInterpolation": "smooth",
-            "lineWidth": 2,
-            "fillOpacity": 10,
-            "gradientMode": "opacity",
-            "showPoints": "never",
-            "stacking": {
-              "mode": "none",
-              "group": "A"
-            },
-            "axisPlacement": "auto"
-          },
-          "unit": "bytes",
-          "thresholds": {
-            "mode": "absolute",
-            "steps": [
-              {
-                "color": "green",
-                "value": null
-              }
-            ]
-          }
-        },
-        "overrides": []
-      },
-      "options": {
-        "tooltip": {
-          "mode": "multi",
-          "sort": "desc"
-        },
-        "legend": {
-          "displayMode": "list",
-          "placement": "bottom",
-          "calcs": []
-        }
-      }
-    },
-    {
-      "id": 476,
-      "type": "timeseries",
-      "title": "Compaction Running",
+      "title": "Memory Fragmentation Ratio",
       "datasource": {
         "type": "prometheus",
         "uid": "prometheus"
@@ -566,8 +692,8 @@
             "type": "prometheus",
             "uid": "prometheus"
           },
-          "expr": "couchdb_database_compact_running{db_name=~\"$vault\"}",
-          "legendFormat": "{{db_name}}",
+          "expr": "avg by(instance)(redis_mem_fragmentation_ratio{instance=\"posthog-redis\"})",
+          "legendFormat": "{{instance}}",
           "refId": "A",
           "instant": false
         }
@@ -616,9 +742,9 @@
       }
     },
     {
-      "id": 477,
+      "id": 388,
       "type": "row",
-      "title": "Sync Activity (server-wide)",
+      "title": "Keyspace & Hit Rate",
       "collapsed": false,
       "gridPos": {
         "x": 0,
@@ -629,9 +755,9 @@
       "panels": []
     },
     {
-      "id": 478,
+      "id": 389,
       "type": "timeseries",
-      "title": "Database Writes / sec (edits being pushed)",
+      "title": "Keyspace Hit Ratio %",
       "datasource": {
         "type": "prometheus",
         "uid": "prometheus"
@@ -648,9 +774,157 @@
             "type": "prometheus",
             "uid": "prometheus"
           },
-          "expr": "rate(couchdb_httpd_database_writes[5m])",
-          "legendFormat": "writes/s",
+          "expr": "100 * sum by(instance)(rate(redis_keyspace_hits_total{instance=\"posthog-redis\"}[5m])) / (sum by(instance)(rate(redis_keyspace_hits_total{instance=\"posthog-redis\"}[5m])) + sum by(instance)(rate(redis_keyspace_misses_total{instance=\"posthog-redis\"}[5m])) > 0)",
+          "legendFormat": "{{instance}}",
           "refId": "A",
+          "instant": false
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "palette-classic"
+          },
+          "custom": {
+            "drawStyle": "line",
+            "lineInterpolation": "smooth",
+            "lineWidth": 2,
+            "fillOpacity": 10,
+            "gradientMode": "opacity",
+            "showPoints": "never",
+            "stacking": {
+              "mode": "none",
+              "group": "A"
+            },
+            "axisPlacement": "auto"
+          },
+          "unit": "percent",
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": null
+              }
+            ]
+          }
+        },
+        "overrides": []
+      },
+      "options": {
+        "tooltip": {
+          "mode": "multi",
+          "sort": "desc"
+        },
+        "legend": {
+          "displayMode": "list",
+          "placement": "bottom",
+          "calcs": []
+        }
+      }
+    },
+    {
+      "id": 390,
+      "type": "timeseries",
+      "title": "Keys per DB",
+      "datasource": {
+        "type": "prometheus",
+        "uid": "prometheus"
+      },
+      "gridPos": {
+        "x": 12,
+        "y": 24,
+        "w": 12,
+        "h": 8
+      },
+      "targets": [
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "prometheus"
+          },
+          "expr": "redis_db_keys{instance=\"posthog-redis\"}",
+          "legendFormat": "{{instance}} {{db}}",
+          "refId": "A",
+          "instant": false
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "palette-classic"
+          },
+          "custom": {
+            "drawStyle": "line",
+            "lineInterpolation": "smooth",
+            "lineWidth": 2,
+            "fillOpacity": 10,
+            "gradientMode": "opacity",
+            "showPoints": "never",
+            "stacking": {
+              "mode": "none",
+              "group": "A"
+            },
+            "axisPlacement": "auto"
+          },
+          "unit": "short",
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": null
+              }
+            ]
+          }
+        },
+        "overrides": []
+      },
+      "options": {
+        "tooltip": {
+          "mode": "multi",
+          "sort": "desc"
+        },
+        "legend": {
+          "displayMode": "list",
+          "placement": "bottom",
+          "calcs": []
+        }
+      }
+    },
+    {
+      "id": 391,
+      "type": "timeseries",
+      "title": "Expired / Evicted Keys / sec",
+      "datasource": {
+        "type": "prometheus",
+        "uid": "prometheus"
+      },
+      "gridPos": {
+        "x": 0,
+        "y": 32,
+        "w": 12,
+        "h": 8
+      },
+      "targets": [
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "prometheus"
+          },
+          "expr": "sum by(instance)(rate(redis_expired_keys_total{instance=\"posthog-redis\"}[5m]))",
+          "legendFormat": "expired {{instance}}",
+          "refId": "A",
+          "instant": false
+        },
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "prometheus"
+          },
+          "expr": "sum by(instance)(rate(redis_evicted_keys_total{instance=\"posthog-redis\"}[5m]))",
+          "legendFormat": "evicted {{instance}}",
+          "refId": "B",
           "instant": false
         }
       ],
@@ -698,16 +972,16 @@
       }
     },
     {
-      "id": 479,
+      "id": 392,
       "type": "timeseries",
-      "title": "Active Live-Sync Feeds (continuous _changes)",
+      "title": "Network I/O",
       "datasource": {
         "type": "prometheus",
         "uid": "prometheus"
       },
       "gridPos": {
         "x": 12,
-        "y": 24,
+        "y": 32,
         "w": 12,
         "h": 8
       },
@@ -717,9 +991,19 @@
             "type": "prometheus",
             "uid": "prometheus"
           },
-          "expr": "sum(couchdb_httpd_clients_requesting_changes)",
-          "legendFormat": "clients",
+          "expr": "sum by(instance)(rate(redis_net_input_bytes_total{instance=\"posthog-redis\"}[5m]))",
+          "legendFormat": "in {{instance}}",
           "refId": "A",
+          "instant": false
+        },
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "prometheus"
+          },
+          "expr": "sum by(instance)(rate(redis_net_output_bytes_total{instance=\"posthog-redis\"}[5m]))",
+          "legendFormat": "out {{instance}}",
+          "refId": "B",
           "instant": false
         }
       ],
@@ -741,7 +1025,7 @@
             },
             "axisPlacement": "auto"
           },
-          "unit": "short",
+          "unit": "Bps",
           "thresholds": {
             "mode": "absolute",
             "steps": [
