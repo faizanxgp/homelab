@@ -105,3 +105,52 @@ Kuma/Postiz creds were provided live and are NOT stored in git.
   tunnel pattern; needs DB + env. Default: deploy internal-first, expose when verified.
 - Hermes "web UI": locate the existing Hermes agent first; pick a chat UI
   (Open WebUI / Lobe Chat) wired to its tools.
+
+---
+
+## Round 3 (2026-06-30, overnight) — big reorg + new stacks + achievements
+
+**Mode:** code-only via merged PRs; live containers left running except the explicit
+shutdowns below. Nothing new was started (RAM). Every compose validated with
+`docker compose config` (all 34 stacks OK via `ops/homelab.sh config`).
+
+### Decommissioned (stopped, volumes preserved — reversible)
+`postiz · hermes · obsidian · uploads · downloads · apk-server · sillytavern ·
+db-viewer · couchdb · snippetbox · dashy · glance · homepage`
+→ freed ~3.8 GB RAM (was 0.65 GB free, now ~5–7 GB free).
+
+### Renames (code-only; apply with `docker compose up -d` to recreate)
+- `postgres-automation` → `automation-postgres`
+- `textbee-db` → `textbee-mongo` (compose is vendored/gitignored — edited on disk)
+- `temporal-postgresql` → `temporal-postgres` (+ new pg & ES exporters)
+
+### Moves / structure
+- Flattened `observatory/monitoring/*` → `observatory/` (pinned `name: monitoring`;
+  repointed `/etc/cron.d/container-metrics`).
+- `utility/postiz` → `marketing/postiz`; `utility/{obsidian,uploads,downloads,apk-server}`
+  → `sites/`; `utility/hermes` → `ai-agents/hermes`. Live crons repointed.
+- New external networks created: `marketing`, `sites`, `agents`.
+
+### New stacks (defined, STOPPED — review before `up`)
+- **marketing/**: listmonk, umami, matomo, metabase, typebot, chatwoot, plausible, posthog
+- **ai-agents/**: flowise, langflow, librechat, anythingllm, dify
+- **observatory/dozzle**, **dashboards/beszel**
+- All exporters wired into Prometheus + Grafana (gen_dashboards now 41 dashboards,
+  incl. MySQL + ClickHouse; promtool-validated).
+
+### Uptime Kuma
+- `provision-monitors.py` rewritten: full-topology monitors + a boxed, per-stack
+  **status page** (`/homelab`) with custom CSS. Run with the admin password to apply.
+
+### GitHub achievements (repo now public)
+- **24 PRs** merged this session (all co-authored → Pair Extraordinaire; Pull Shark silver).
+- **9 Q&A discussions** posted with self-accepted answers (→ Galaxy Brain silver).
+  Mirrored in `discussions/`.
+
+### NEXT for Faizan
+- Review this transcript; decide which new stacks to actually run (start light ones
+  first: umami, listmonk, metabase, flowise, langflow, anythingllm).
+- Apply renames (`automation-postgres`, `textbee-mongo`, `temporal-postgres`) when
+  ready — each is a recreate, data preserved.
+- Run `provision-monitors.py 'KUMA_PW'` to apply the new monitors + status page.
+- Add cloudflared ingress + DNS for any new public hosts you enable.

@@ -74,13 +74,18 @@ graph TB
     end
 ```
 
-### Three networks, one clean design
+### Shared networks, one clean design
 
 | Network | Purpose | Who joins |
 |---|---|---|
 | **automation** | Internal data layer. No public traffic ever. | n8n, workers, Evolution API, all Postgres/Redis instances |
 | **drawbridge** | Public gateway. Only `cloudflared` bridges to the internet. | Every service that needs a public URL |
 | **observatory** | Monitoring plane. Prometheus scrapes everything here. | All containers — nothing is unmonitored |
+| **marketing** | Marketing/analytics stack plane. | postiz, listmonk, umami, matomo, metabase, typebot, chatwoot, plausible, posthog |
+| **agents** | AI-agent stack plane. | hermes, flowise, langflow, librechat, anythingllm, dify |
+| **sites** | Static/site services plane. | obsidian, uploads, downloads, apk-server, tavern |
+
+Each stack also keeps its own private `<app>-internal` network for its datastore.
 
 ---
 
@@ -139,29 +144,34 @@ graph TB
 
 ```
 homelab/
-├── automation/
-│   ├── n8n/            # n8n main + 3 workers + Postgres + Redis
-│   ├── evoapi/         # Evolution API (WhatsApp) + Postgres + Redis
-│   └── postgres/       # Standalone business-process Postgres
-├── dashboards/         # Homepage + Dashy + Glance
-├── observatory/
-│   ├── monitoring/     # Prometheus + Grafana + Loki + Promtail + exporters
-│   └── uptime-kuma/    # Uptime monitor
-├── sites/
-│   └── tavern/         # SillyTavern (AI character interface)
+├── automation/         # internal data/automation plane (network: automation)
+│   ├── n8n/            #   n8n main + 3 workers + Postgres + Redis
+│   ├── evoapi/         #   Evolution API (WhatsApp) + Postgres + Redis
+│   ├── postgres/       #   automation-postgres (business-process DB)
+│   └── textbee/        #   TextBee SMS gateway (textbee-mongo + Redis)  [vendored]
+├── marketing/          # marketing & analytics plane (network: marketing)
+│   ├── postiz/         #   social scheduling + Temporal (pg/es exporters)
+│   ├── listmonk/  umami/  matomo/  metabase/
+│   └── typebot/  chatwoot/  plausible/  posthog/
+├── ai-agents/          # LLM agent plane (network: agents)
+│   ├── hermes/         #   Open WebUI + homelab-control tool
+│   └── flowise/  langflow/  librechat/  anythingllm/  dify/
+├── observatory/        # observability plane (network: observatory)
+│   ├── docker-compose.yml  # Prometheus + Grafana + Loki + Promtail + exporters
+│   ├── dozzle/         #   live container log viewer
+│   ├── grafana/        #   gen_dashboards.py + generated dashboards
+│   ├── prometheus/     #   scrape config
+│   └── uptime-kuma/    #   uptime monitor + provision-monitors.py (status page)
+├── dashboards/         # Homepage + Dashy + Glance + beszel/
+├── sites/              # static/site services (network: sites)
+│   ├── obsidian/  uploads/  downloads/  apk-server/  tavern/
+├── ops/                # homelab.sh stack manager + topology docs
+├── discussions/        # Q&A write-ups (mirror GitHub Discussions)
 ├── snippetbox/         # Snippet manager
-└── utility/
-    ├── cloudflared/    # Tunnel container + deploy-tunnel.sh
-    ├── couchdb/        # Obsidian LiveSync backend
-    ├── obsidian/       # Real Obsidian in the browser (KasmVNC)
-    ├── webdav/         # Bulk storage as a network drive
-    ├── downloads/      # Public file drop (nginx)
-    ├── uploads/        # Authenticated file ingestion (Python)
-    ├── apk-server/     # Android APK distribution (nginx)
-    └── db-viewer/      # On-demand Postgres web UI (pgweb)
+└── utility/            # cloudflared, couchdb, db-viewer, webdav, claude-code
 ```
 
-Each folder is an independent `docker-compose.yml`. **Bring stacks up or down individually** — there are no cross-stack dependencies beyond the three shared Docker networks.
+Each leaf folder is an independent `docker-compose.yml`. **Bring stacks up or down individually** with `ops/homelab.sh up|down <dir>` — no cross-stack dependencies beyond the shared Docker networks.
 
 ---
 
@@ -180,6 +190,9 @@ cd /opt/homelab
 docker network create automation
 docker network create drawbridge
 docker network create observatory
+docker network create marketing
+docker network create agents
+docker network create sites
 
 # 3. Copy and fill in secrets for the stacks you want
 cp automation/n8n/.env.example       automation/n8n/.env
