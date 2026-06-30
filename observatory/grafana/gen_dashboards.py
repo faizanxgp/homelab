@@ -6,7 +6,7 @@ import json, os
 DS = {"type": "prometheus", "uid": "prometheus"}
 OUT = "/opt/homelab/observatory/grafana/dashboards"
 
-PG_INSTANCES = [("n8n-postgres", "n8n"), ("evo-postgres", "evolution"), ("automation-postgres", "automation"), ("postiz-postgres", "postiz")]
+PG_INSTANCES = [("n8n-postgres", "n8n"), ("evo-postgres", "evolution"), ("automation-postgres", "automation"), ("postiz-postgres", "postiz"), ("temporal-postgres", "temporal")]
 REDIS_INSTANCES = [("n8n-redis", "n8n"), ("evo-redis", "evolution"), ("textbee-redis", "textbee"), ("postiz-redis", "postiz")]
 
 _id = 0
@@ -418,5 +418,32 @@ u.append(table("Certificate days remaining", [tgt(f'monitor_cert_days_remaining{
 write("Uptime Kuma", "uptime-kuma.json", dashboard(
     "Uptime Kuma — Service Health", "uptime-kuma", ["uptime-kuma", "monitoring", "homelab"], u,
     variables=[var_query("monitor", 'label_values(monitor_response_time, monitor_name)', "Monitor")]))
+
+# ============================================================ ELASTICSEARCH (Temporal visibility)
+ES_SEL = '{instance="temporal-es"}'
+es = []
+es.append(stat("Up", [tgt(f'elasticsearch_up{ES_SEL}', "up")], 0, 1, 4, 4, unit="none", mappings=UP_MAP, thresholds=UP_TH))
+es.append(stat("Nodes", [tgt(f'elasticsearch_cluster_health_number_of_nodes{ES_SEL}', "nodes")], 4, 1, 4, 4, unit="none"))
+es.append(stat("Docs", [tgt(f'sum(elasticsearch_indices_docs{ES_SEL})', "docs")], 8, 1, 4, 4, unit="short", graph=True, color_mode="value"))
+es.append(stat("Store Size", [tgt(f'sum(elasticsearch_indices_store_size_bytes{ES_SEL})', "size")], 12, 1, 4, 4, unit="bytes", graph=True, color_mode="value"))
+es.append(stat("Unassigned Shards", [tgt(f'elasticsearch_cluster_health_unassigned_shards{ES_SEL}', "unassigned")], 16, 1, 4, 4, unit="none", color_mode="value", thresholds=[{"color":"green","value":None},{"color":"red","value":1}]))
+es.append(stat("Active Shards", [tgt(f'elasticsearch_cluster_health_active_shards{ES_SEL}', "active")], 20, 1, 4, 4, unit="none"))
+es.append(row("JVM & Process", 5))
+es.append(ts("JVM Heap (used vs max)", [
+    tgt(f'elasticsearch_jvm_memory_used_bytes{{instance="temporal-es",area="heap"}}', "heap used"),
+    tgt(f'elasticsearch_jvm_memory_max_bytes{{instance="temporal-es",area="heap"}}', "heap max", "B")], 0, 6, 12, 8, unit="bytes"))
+es.append(ts("Process CPU %", [tgt(f'elasticsearch_process_cpu_percent{ES_SEL}', "cpu")], 12, 6, 12, 8, unit="percent"))
+es.append(ts("OS Load (1/5/15m)", [
+    tgt(f'elasticsearch_os_load1{ES_SEL}', "1m"),
+    tgt(f'elasticsearch_os_load5{ES_SEL}', "5m", "B"),
+    tgt(f'elasticsearch_os_load15{ES_SEL}', "15m", "C")], 0, 14, 12, 8, unit="short"))
+es.append(ts("GC Collections / sec", [tgt(f'sum by(gc)(rate(elasticsearch_jvm_gc_collection_seconds_count{ES_SEL}[5m]))', "{{gc}}")], 12, 14, 12, 8, unit="ops"))
+es.append(row("Indices Activity", 22))
+es.append(ts("Indexing Rate / sec", [tgt(f'rate(elasticsearch_indices_indexing_index_total{ES_SEL}[5m])', "index")], 0, 23, 12, 8, unit="ops"))
+es.append(ts("Search Query Rate / sec", [tgt(f'rate(elasticsearch_indices_search_query_total{ES_SEL}[5m])', "query")], 12, 23, 12, 8, unit="ops"))
+es.append(ts("Circuit Breakers Tripped", [tgt(f'sum by(breaker)(elasticsearch_breakers_tripped{ES_SEL})', "{{breaker}}")], 0, 31, 12, 8, unit="short"))
+es.append(ts("Store Size by Index", [tgt(f'elasticsearch_indices_store_size_bytes{ES_SEL}', "{{index}}")], 12, 31, 12, 8, unit="bytes"))
+write("Elasticsearch", "elasticsearch-temporal.json", dashboard(
+    "Elasticsearch — Temporal Visibility (temporal-es)", "es-temporal", ["elasticsearch", "temporal", "homelab"], es))
 
 print("\nDone.")
