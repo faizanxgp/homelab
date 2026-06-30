@@ -19,7 +19,7 @@ The `nginx.conf` sets `application/vnd.android.package-archive` as the MIME type
 docker compose up -d
 ```
 
-Drop `.apk` files into `utility/apk-server/files/`. They're served at `apk.yourdomain.com/filename.apk`. Directory listing lets you browse available APKs.
+Drop `.apk` files into `sites/apk-server/files/`. They're served at `apk.yourdomain.com/filename.apk`. Directory listing lets you browse available APKs.
 
 ## On the device
 

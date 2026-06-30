@@ -187,7 +187,7 @@ cp automation/evoapi/.env.example    automation/evoapi/.env
 cp automation/postgres/.env.example  automation/postgres/.env
 cp utility/cloudflared/.env.example  utility/cloudflared/.env
 cp utility/couchdb/.env.example      utility/couchdb/.env
-cp utility/obsidian/.env.example     utility/obsidian/.env
+cp sites/obsidian/.env.example     sites/obsidian/.env
 cp utility/webdav/.env.example       utility/webdav/.env
 # edit each .env with your passwords
 
@@ -201,7 +201,7 @@ docker compose -f utility/cloudflared/docker-compose.yml      up -d
 docker compose -f automation/n8n/docker-compose.yml           up -d
 docker compose -f automation/evoapi/docker-compose.yml        up -d
 docker compose -f utility/couchdb/docker-compose.yml          up -d
-docker compose -f utility/obsidian/docker-compose.yml         up -d
+docker compose -f sites/obsidian/docker-compose.yml         up -d
 # ... add more as needed
 ```
 

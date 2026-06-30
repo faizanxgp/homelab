@@ -38,9 +38,12 @@ services:
     networks:
       - drawbridge                   # public tunnel net; cloudflared reaches http://obsidian:3000
       - observatory                  # so promtail/cadvisor observe it
+      - sites                          # grouped on the sites network
 
 networks:
   drawbridge:
     external: true
   observatory:
+    external: true
+  sites:
     external: true

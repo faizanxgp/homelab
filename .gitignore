@@ -40,13 +40,13 @@ Thumbs.db
 *.keystore
 
 # ── Served / generated file drops (keep folder, drop contents) ──
-utility/downloads/files/*
-utility/uploads/files/*
-utility/apk-server/files/*
+sites/downloads/files/*
+sites/uploads/files/*
+sites/apk-server/files/*
 utility/storage/archive/*
-!utility/downloads/files/.gitkeep
-!utility/uploads/files/.gitkeep
-!utility/apk-server/files/.gitkeep
+!sites/downloads/files/.gitkeep
+!sites/uploads/files/.gitkeep
+!sites/apk-server/files/.gitkeep
 !utility/storage/archive/.gitkeep
 wa_qr*.png
 wa_qr*.html

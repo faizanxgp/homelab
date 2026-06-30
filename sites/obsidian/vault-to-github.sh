@@ -10,10 +10,10 @@
 # that must NOT land on the portfolio-facing GitHub. Do not remove that exclude
 # without deliberately deciding to publish them.
 #
-# Run by cron every Monday & Thursday (see utility/obsidian/cron/obsidian-vault).
+# Run by cron every Monday & Thursday (see sites/obsidian/cron/obsidian-vault).
 set -euo pipefail
 
-VAULT="/opt/homelab/utility/obsidian/volumes/config/vault"   # the web vault (LiveSync target)
+VAULT="/opt/homelab/sites/obsidian/volumes/config/vault"   # the web vault (LiveSync target)
 MIRROR="/opt/obsidian-vault"                                  # dedicated git mirror (outside the homelab repo)
 REMOTE="https://github.com/faizanxgp/Obsidian.git"
 BRANCH="main"

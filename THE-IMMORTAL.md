@@ -17,7 +17,7 @@ session reads this and continues from "NEXT".
 - Homelab monorepo: **`/opt/homelab`** → `github.com/faizanxgp/homelab` (push works,
   creds in `/root/.git-credentials`). Commit as `faizanxgp / mianfaizanxgp@gmail.com`.
 - Obsidian: **web vault** (editable in `obsidian.itproxima.com`) lives at
-  `/opt/homelab/utility/obsidian/volumes/config/vault/`. A cron mirrors `*.md`
+  `/opt/homelab/sites/obsidian/volumes/config/vault/`. A cron mirrors `*.md`
   from there to **`/opt/obsidian-vault`** → `github.com/faizanxgp/Obsidian`
   (`vault-to-github.sh`, Mon & Thu 09:00 Asia/Karachi).
 - Public routing via cloudflared tunnel: `utility/cloudflared/deploy-tunnel.sh`.
@@ -81,7 +81,7 @@ Kuma/Postiz creds were provided live and are NOT stored in git.
   repo?). `gh` CLI is not installed on the box — couldn't verify visibility.
 
 ### ✅ #4 Claude Code files in Obsidian
-- `utility/obsidian/docker-compose.yml`: bind-mounted `/root/.claude/{agents,memory,
+- `sites/obsidian/docker-compose.yml`: bind-mounted `/root/.claude/{agents,memory,
   settings*,statusline}` (rw) + `projects` chat-logs (ro) → `/config/vault/Claude-Code/`.
 - Verified present inside container. Container-only mounts → never hit GitHub mirror.
 
