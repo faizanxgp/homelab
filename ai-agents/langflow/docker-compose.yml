@@ -1,0 +1,61 @@
+# Langflow — visual builder for LangChain-style agent flows (Postgres-backed).
+# Part of the ai-agents stack. Defined but kept stopped.
+# Public (when enabled) via cloudflared at langflow.itproxima.com.
+name: langflow
+services:
+  langflow:
+    image: langflowai/langflow:latest
+    container_name: langflow
+    restart: unless-stopped
+    depends_on:
+      langflow-db:
+        condition: service_healthy
+    environment:
+      LANGFLOW_DATABASE_URL: "postgresql://langflow:${LANGFLOW_DB_PASSWORD}@langflow-db:5432/langflow"
+      LANGFLOW_CONFIG_DIR: /app/langflow
+      LANGFLOW_AUTO_LOGIN: "false"
+      LANGFLOW_SUPERUSER: "${LANGFLOW_SUPERUSER}"
+      LANGFLOW_SUPERUSER_PASSWORD: "${LANGFLOW_SUPERUSER_PASSWORD}"
+    volumes:
+      - ./volumes/data:/app/langflow
+    ports:
+      - "127.0.0.1:8512:7860"   # local test only; public via tunnel
+    networks: [langflow-internal, agents, drawbridge, observatory]
+
+  langflow-db:
+    image: postgres:16-alpine
+    container_name: langflow-db
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: langflow
+      POSTGRES_PASSWORD: "${LANGFLOW_DB_PASSWORD}"
+      POSTGRES_DB: langflow
+    volumes:
+      - ./volumes/postgres:/var/lib/postgresql/data
+    networks: [langflow-internal]
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U langflow -d langflow"]
+      interval: 10s
+      timeout: 3s
+      retries: 10
+
+  langflow-postgres-exporter:
+    image: prometheuscommunity/postgres-exporter:latest
+    container_name: langflow-postgres-exporter
+    restart: unless-stopped
+    environment:
+      DATA_SOURCE_NAME: "postgresql://langflow:${LANGFLOW_DB_PASSWORD}@langflow-db:5432/langflow?sslmode=disable"
+    depends_on:
+      langflow-db:
+        condition: service_healthy
+    networks: [langflow-internal, observatory]
+
+networks:
+  langflow-internal:
+    driver: bridge
+  agents:
+    external: true
+  drawbridge:
+    external: true
+  observatory:
+    external: true
