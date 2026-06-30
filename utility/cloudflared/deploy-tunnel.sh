@@ -54,6 +54,26 @@ ROUTES=(
   "dav.$ZONE_NAME            http://webdav:6065"
   "postiz.$ZONE_NAME         http://postiz:5000"
   "hermes.$ZONE_NAME         http://hermes:8080"
+  # ── marketing stack ──
+  "umami.$ZONE_NAME          http://umami:3000"
+  "listmonk.$ZONE_NAME       http://listmonk:9000"
+  "matomo.$ZONE_NAME         http://matomo:80"
+  "metabase.$ZONE_NAME       http://metabase:3000"
+  "typebot.$ZONE_NAME        http://typebot-builder:3000"
+  "bot.$ZONE_NAME            http://typebot-viewer:3000"
+  "chatwoot.$ZONE_NAME       http://chatwoot-web:3000"
+  "plausible.$ZONE_NAME      http://plausible:8000"
+  "posthog.$ZONE_NAME        http://posthog-web:8000"
+  # ── ai-agents stack ──
+  "flowise.$ZONE_NAME        http://flowise:3000"
+  "langflow.$ZONE_NAME       http://langflow:7860"
+  "librechat.$ZONE_NAME      http://librechat:3080"
+  "anythingllm.$ZONE_NAME    http://anythingllm:3001"
+  "dify.$ZONE_NAME           http://dify-api:5001        ^/(console|api|v1|files)"
+  "dify.$ZONE_NAME           http://dify-web:3000"
+  # ── observability ──
+  "dozzle.$ZONE_NAME         http://dozzle:8080"
+  "beszel.$ZONE_NAME         http://beszel:8090"
 )
 # NOTE: postiz is intentionally NOT in ACCESS_HOSTS — it has its own auth, and a
 # Cloudflare Access gate would break social-platform OAuth callbacks to /api/*.
@@ -66,6 +86,7 @@ ACCESS_HOSTS=(
   "uploads.$ZONE_NAME"
   "obsidian.$ZONE_NAME"
   "hermes.$ZONE_NAME"
+  "dozzle.$ZONE_NAME"        # read-only log viewer has no auth of its own — gate it
 )
 
 echo "==> Resolving account + zone"
