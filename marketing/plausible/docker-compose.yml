@@ -45,6 +45,8 @@ services:
     image: clickhouse/clickhouse-server:24.12-alpine
     container_name: plausible-events-db
     restart: unless-stopped
+    environment:
+      CLICKHOUSE_SKIP_USER_SETUP: "1"   # don't write default-user.xml (users.d is mounted :ro)
     volumes:
       - ./volumes/clickhouse:/var/lib/clickhouse
       - ./clickhouse/config.d:/etc/clickhouse-server/config.d:ro
