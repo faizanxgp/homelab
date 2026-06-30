@@ -1,0 +1,75 @@
+# Typebot — open-source conversational form / chatbot builder.
+# builder (admin UI) + viewer (public bot runtime), Postgres-backed.
+# Part of the marketing stack. Defined but kept stopped (review before `up`).
+# Public (when enabled) via cloudflared: typebot.itproxima.com + bot.itproxima.com.
+name: typebot
+services:
+  typebot-builder:
+    image: baptistearno/typebot-builder:latest
+    container_name: typebot-builder
+    restart: unless-stopped
+    depends_on:
+      typebot-db:
+        condition: service_healthy
+    environment:
+      DATABASE_URL: "postgresql://typebot:${TYPEBOT_DB_PASSWORD}@typebot-db:5432/typebot"
+      ENCRYPTION_SECRET: "${TYPEBOT_ENCRYPTION_SECRET}"   # openssl rand -base64 24
+      NEXTAUTH_URL: "https://typebot.itproxima.com"
+      NEXT_PUBLIC_VIEWER_URL: "https://bot.itproxima.com"
+      ADMIN_EMAIL: "${TYPEBOT_ADMIN_EMAIL}"
+    ports:
+      - "127.0.0.1:8414:3000"   # builder; public via tunnel
+    networks: [typebot-internal, marketing, drawbridge, observatory]
+
+  typebot-viewer:
+    image: baptistearno/typebot-viewer:latest
+    container_name: typebot-viewer
+    restart: unless-stopped
+    depends_on:
+      typebot-db:
+        condition: service_healthy
+    environment:
+      DATABASE_URL: "postgresql://typebot:${TYPEBOT_DB_PASSWORD}@typebot-db:5432/typebot"
+      ENCRYPTION_SECRET: "${TYPEBOT_ENCRYPTION_SECRET}"
+      NEXT_PUBLIC_VIEWER_URL: "https://bot.itproxima.com"
+    ports:
+      - "127.0.0.1:8415:3000"   # viewer; public via tunnel
+    networks: [typebot-internal, marketing, drawbridge, observatory]
+
+  typebot-db:
+    image: postgres:16-alpine
+    container_name: typebot-db
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: typebot
+      POSTGRES_PASSWORD: "${TYPEBOT_DB_PASSWORD}"
+      POSTGRES_DB: typebot
+    volumes:
+      - ./volumes/postgres:/var/lib/postgresql/data
+    networks: [typebot-internal]
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U typebot -d typebot"]
+      interval: 10s
+      timeout: 3s
+      retries: 10
+
+  typebot-postgres-exporter:
+    image: prometheuscommunity/postgres-exporter:latest
+    container_name: typebot-postgres-exporter
+    restart: unless-stopped
+    environment:
+      DATA_SOURCE_NAME: "postgresql://typebot:${TYPEBOT_DB_PASSWORD}@typebot-db:5432/typebot?sslmode=disable"
+    depends_on:
+      typebot-db:
+        condition: service_healthy
+    networks: [typebot-internal, observatory]
+
+networks:
+  typebot-internal:
+    driver: bridge
+  marketing:
+    external: true
+  drawbridge:
+    external: true
+  observatory:
+    external: true
