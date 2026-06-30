@@ -37,7 +37,7 @@ scrape_configs:
       - targets: ['evo-postgres-exporter:9187']
         labels: {instance: 'evo-postgres'}
       - targets: ['automation-postgres-exporter:9187']
-        labels: {instance: 'postgres-automation'}
+        labels: {instance: 'automation-postgres'}
       - targets: ['postiz-postgres-exporter:9187']
         labels: {instance: 'postiz-postgres'}
 

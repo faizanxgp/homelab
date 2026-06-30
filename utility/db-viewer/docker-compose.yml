@@ -1,4 +1,4 @@
-# Temporary web DB viewer (pgweb) for poking at postgres-automation.
+# Temporary web DB viewer (pgweb) for poking at automation-postgres.
 # Bridges automation<->drawbridge so the tunnel can reach a UI that can reach the DB,
 # WITHOUT the DB itself being on drawbridge.
 # Public hostname (set in Cloudflare dashboard): db.itproxima.com -> http://db-viewer:8081
@@ -16,7 +16,7 @@ services:
     # http://db-viewer:8081 container-to-container over drawbridge. Nothing touches the host.
     networks:
       - drawbridge              # cloudflared reaches it at http://db-viewer:8081
-      - automation              # so it can reach postgres-automation:5432 internally
+      - automation              # so it can reach automation-postgres:5432 internally
       - observatory             # so cadvisor/promtail observe it
 
 networks:

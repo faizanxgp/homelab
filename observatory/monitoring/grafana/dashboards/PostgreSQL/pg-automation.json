@@ -1,6 +1,6 @@
 {
   "uid": "pg-automation",
-  "title": "PostgreSQL \u2014 automation (postgres-automation)",
+  "title": "PostgreSQL \u2014 automation (automation-postgres)",
   "tags": [
     "postgres",
     "homelab",
@@ -55,7 +55,7 @@
             "type": "prometheus",
             "uid": "prometheus"
           },
-          "expr": "pg_up{instance=\"postgres-automation\"}",
+          "expr": "pg_up{instance=\"automation-postgres\"}",
           "legendFormat": "{{instance}}",
           "refId": "A",
           "instant": false
@@ -134,7 +134,7 @@
             "type": "prometheus",
             "uid": "prometheus"
           },
-          "expr": "pg_static{instance=\"postgres-automation\"}",
+          "expr": "pg_static{instance=\"automation-postgres\"}",
           "legendFormat": "{{instance}}",
           "refId": "A",
           "instant": false
@@ -194,7 +194,7 @@
             "type": "prometheus",
             "uid": "prometheus"
           },
-          "expr": "sum by(instance)(pg_stat_database_numbackends{instance=\"postgres-automation\"})",
+          "expr": "sum by(instance)(pg_stat_database_numbackends{instance=\"automation-postgres\"})",
           "legendFormat": "{{instance}}",
           "refId": "A",
           "instant": false
@@ -254,7 +254,7 @@
             "type": "prometheus",
             "uid": "prometheus"
           },
-          "expr": "pg_settings_max_connections{instance=\"postgres-automation\"}",
+          "expr": "pg_settings_max_connections{instance=\"automation-postgres\"}",
           "legendFormat": "{{instance}}",
           "refId": "A",
           "instant": false
@@ -314,7 +314,7 @@
             "type": "prometheus",
             "uid": "prometheus"
           },
-          "expr": "sum by(instance)(pg_database_size_bytes{instance=\"postgres-automation\"})",
+          "expr": "sum by(instance)(pg_database_size_bytes{instance=\"automation-postgres\"})",
           "legendFormat": "{{instance}}",
           "refId": "A",
           "instant": false
@@ -374,7 +374,7 @@
             "type": "prometheus",
             "uid": "prometheus"
           },
-          "expr": "sum by(instance)(pg_stat_database_deadlocks{instance=\"postgres-automation\"})",
+          "expr": "sum by(instance)(pg_stat_database_deadlocks{instance=\"automation-postgres\"})",
           "legendFormat": "{{instance}}",
           "refId": "A",
           "instant": false
@@ -451,7 +451,7 @@
             "type": "prometheus",
             "uid": "prometheus"
           },
-          "expr": "sum by(instance)(pg_stat_database_numbackends{instance=\"postgres-automation\"})",
+          "expr": "sum by(instance)(pg_stat_database_numbackends{instance=\"automation-postgres\"})",
           "legendFormat": "{{instance}}",
           "refId": "A",
           "instant": false
@@ -524,7 +524,7 @@
             "type": "prometheus",
             "uid": "prometheus"
           },
-          "expr": "100 * sum by(instance)(pg_stat_database_numbackends{instance=\"postgres-automation\"}) / on(instance) group_left max by(instance)(pg_settings_max_connections{instance=\"postgres-automation\"})",
+          "expr": "100 * sum by(instance)(pg_stat_database_numbackends{instance=\"automation-postgres\"}) / on(instance) group_left max by(instance)(pg_settings_max_connections{instance=\"automation-postgres\"})",
           "legendFormat": "{{instance}}",
           "refId": "A",
           "instant": false
@@ -593,7 +593,7 @@
             "type": "prometheus",
             "uid": "prometheus"
           },
-          "expr": "sum by(instance)(rate(pg_stat_database_xact_commit{instance=\"postgres-automation\"}[5m]))",
+          "expr": "sum by(instance)(rate(pg_stat_database_xact_commit{instance=\"automation-postgres\"}[5m]))",
           "legendFormat": "{{instance}}",
           "refId": "A",
           "instant": false
@@ -662,7 +662,7 @@
             "type": "prometheus",
             "uid": "prometheus"
           },
-          "expr": "sum by(instance)(rate(pg_stat_database_xact_rollback{instance=\"postgres-automation\"}[5m]))",
+          "expr": "sum by(instance)(rate(pg_stat_database_xact_rollback{instance=\"automation-postgres\"}[5m]))",
           "legendFormat": "{{instance}}",
           "refId": "A",
           "instant": false
@@ -744,7 +744,7 @@
             "type": "prometheus",
             "uid": "prometheus"
           },
-          "expr": "sum by(instance)(rate(pg_stat_database_tup_fetched{instance=\"postgres-automation\"}[5m]))",
+          "expr": "sum by(instance)(rate(pg_stat_database_tup_fetched{instance=\"automation-postgres\"}[5m]))",
           "legendFormat": "fetched {{instance}}",
           "refId": "A",
           "instant": false
@@ -754,7 +754,7 @@
             "type": "prometheus",
             "uid": "prometheus"
           },
-          "expr": "sum by(instance)(rate(pg_stat_database_tup_returned{instance=\"postgres-automation\"}[5m]))",
+          "expr": "sum by(instance)(rate(pg_stat_database_tup_returned{instance=\"automation-postgres\"}[5m]))",
           "legendFormat": "returned {{instance}}",
           "refId": "B",
           "instant": false
@@ -823,7 +823,7 @@
             "type": "prometheus",
             "uid": "prometheus"
           },
-          "expr": "sum by(instance)(rate(pg_stat_database_tup_inserted{instance=\"postgres-automation\"}[5m]))",
+          "expr": "sum by(instance)(rate(pg_stat_database_tup_inserted{instance=\"automation-postgres\"}[5m]))",
           "legendFormat": "insert {{instance}}",
           "refId": "A",
           "instant": false
@@ -833,7 +833,7 @@
             "type": "prometheus",
             "uid": "prometheus"
           },
-          "expr": "sum by(instance)(rate(pg_stat_database_tup_updated{instance=\"postgres-automation\"}[5m]))",
+          "expr": "sum by(instance)(rate(pg_stat_database_tup_updated{instance=\"automation-postgres\"}[5m]))",
           "legendFormat": "update {{instance}}",
           "refId": "B",
           "instant": false
@@ -843,7 +843,7 @@
             "type": "prometheus",
             "uid": "prometheus"
           },
-          "expr": "sum by(instance)(rate(pg_stat_database_tup_deleted{instance=\"postgres-automation\"}[5m]))",
+          "expr": "sum by(instance)(rate(pg_stat_database_tup_deleted{instance=\"automation-postgres\"}[5m]))",
           "legendFormat": "delete {{instance}}",
           "refId": "C",
           "instant": false
@@ -912,7 +912,7 @@
             "type": "prometheus",
             "uid": "prometheus"
           },
-          "expr": "100 * sum by(instance)(rate(pg_stat_database_blks_hit{instance=\"postgres-automation\"}[5m])) / (sum by(instance)(rate(pg_stat_database_blks_hit{instance=\"postgres-automation\"}[5m])) + sum by(instance)(rate(pg_stat_database_blks_read{instance=\"postgres-automation\"}[5m])) > 0)",
+          "expr": "100 * sum by(instance)(rate(pg_stat_database_blks_hit{instance=\"automation-postgres\"}[5m])) / (sum by(instance)(rate(pg_stat_database_blks_hit{instance=\"automation-postgres\"}[5m])) + sum by(instance)(rate(pg_stat_database_blks_read{instance=\"automation-postgres\"}[5m])) > 0)",
           "legendFormat": "{{instance}}",
           "refId": "A",
           "instant": false
@@ -981,7 +981,7 @@
             "type": "prometheus",
             "uid": "prometheus"
           },
-          "expr": "sum by(instance)(rate(pg_stat_database_blks_read{instance=\"postgres-automation\"}[5m]))",
+          "expr": "sum by(instance)(rate(pg_stat_database_blks_read{instance=\"automation-postgres\"}[5m]))",
           "legendFormat": "{{instance}}",
           "refId": "A",
           "instant": false
@@ -1063,7 +1063,7 @@
             "type": "prometheus",
             "uid": "prometheus"
           },
-          "expr": "pg_database_size_bytes{instance=\"postgres-automation\"}",
+          "expr": "pg_database_size_bytes{instance=\"automation-postgres\"}",
           "legendFormat": "{{instance}} / {{datname}}",
           "refId": "A",
           "instant": false
@@ -1132,7 +1132,7 @@
             "type": "prometheus",
             "uid": "prometheus"
           },
-          "expr": "sum by(instance, mode)(pg_locks_count{instance=\"postgres-automation\"})",
+          "expr": "sum by(instance, mode)(pg_locks_count{instance=\"automation-postgres\"})",
           "legendFormat": "{{instance}} {{mode}}",
           "refId": "A",
           "instant": false
@@ -1201,7 +1201,7 @@
             "type": "prometheus",
             "uid": "prometheus"
           },
-          "expr": "sum by(instance)(rate(pg_stat_database_temp_bytes{instance=\"postgres-automation\"}[5m]))",
+          "expr": "sum by(instance)(rate(pg_stat_database_temp_bytes{instance=\"automation-postgres\"}[5m]))",
           "legendFormat": "{{instance}}",
           "refId": "A",
           "instant": false
@@ -1270,7 +1270,7 @@
             "type": "prometheus",
             "uid": "prometheus"
           },
-          "expr": "100 * sum by(instance)(rate(pg_stat_database_xact_rollback{instance=\"postgres-automation\"}[5m])) / (sum by(instance)(rate(pg_stat_database_xact_commit{instance=\"postgres-automation\"}[5m])) + sum by(instance)(rate(pg_stat_database_xact_rollback{instance=\"postgres-automation\"}[5m])) > 0)",
+          "expr": "100 * sum by(instance)(rate(pg_stat_database_xact_rollback{instance=\"automation-postgres\"}[5m])) / (sum by(instance)(rate(pg_stat_database_xact_commit{instance=\"automation-postgres\"}[5m])) + sum by(instance)(rate(pg_stat_database_xact_rollback{instance=\"automation-postgres\"}[5m])) > 0)",
           "legendFormat": "{{instance}}",
           "refId": "A",
           "instant": false
