@@ -1,0 +1,27 @@
+# AnythingLLM — all-in-one private RAG / chat over your documents (single container).
+# Uses its own embedded storage (SQLite + LanceDB) under ./volumes/storage.
+# Part of the ai-agents stack. Defined but kept stopped.
+# Public (when enabled) via cloudflared at anythingllm.itproxima.com.
+name: anythingllm
+services:
+  anythingllm:
+    image: mintplexlabs/anythingllm:latest
+    container_name: anythingllm
+    restart: unless-stopped
+    cap_add:
+      - SYS_ADMIN          # required by the in-container document processor
+    environment:
+      STORAGE_DIR: /app/server/storage
+    volumes:
+      - ./volumes/storage:/app/server/storage
+    ports:
+      - "127.0.0.1:8514:3001"   # local test only; public via tunnel
+    networks: [agents, drawbridge, observatory]
+
+networks:
+  agents:
+    external: true
+  drawbridge:
+    external: true
+  observatory:
+    external: true
