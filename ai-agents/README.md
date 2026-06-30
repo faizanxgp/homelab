@@ -30,3 +30,12 @@ cd ai-agents/<app>
 cp .env.example .env && $EDITOR .env
 docker compose up -d
 ```
+
+> **Volume permissions (langflow & anythingllm):** these images run as a non-root
+> user (uid 1000) and write SQLite/secrets into their bind-mounted volume. A fresh
+> root-owned `./volumes` makes them crash-loop (`unable to open database file` /
+> `Permission denied: secret_key`). Fix before first start:
+> ```bash
+> mkdir -p ai-agents/langflow/volumes/data ai-agents/anythingllm/volumes/storage
+> sudo chown -R 1000:1000 ai-agents/langflow/volumes ai-agents/anythingllm/volumes
+> ```
