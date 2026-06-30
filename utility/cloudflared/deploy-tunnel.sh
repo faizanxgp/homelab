@@ -44,7 +44,7 @@ ROUTES=(
   "grafana.$ZONE_NAME        http://grafana:3000"
   "uptime.$ZONE_NAME         http://uptime-kuma:3001"
   "snippets.$ZONE_NAME       http://snippetbox:5000"
-  "db.$ZONE_NAME             tcp://postgres-automation:5432"
+  "db.$ZONE_NAME             tcp://automation-postgres:5432"
   "tavern.$ZONE_NAME         http://sillytavern:8000"
   "apk.$ZONE_NAME            http://apk-server:80"
   "downloads.$ZONE_NAME      http://downloads:80"

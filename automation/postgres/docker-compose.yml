@@ -1,7 +1,7 @@
 services:
-  postgres-automation:
+  automation-postgres:
     image: postgres:16
-    container_name: postgres-automation
+    container_name: automation-postgres
     restart: unless-stopped
     environment:
       POSTGRES_USER: automation
@@ -25,9 +25,9 @@ services:
     container_name: automation-postgres-exporter
     restart: unless-stopped
     environment:
-      DATA_SOURCE_NAME: "postgresql://automation:${AUTOMATION_DB_PASSWORD}@postgres-automation:5432/automation?sslmode=disable"
+      DATA_SOURCE_NAME: "postgresql://automation:${AUTOMATION_DB_PASSWORD}@automation-postgres:5432/automation?sslmode=disable"
     depends_on:
-      postgres-automation:
+      automation-postgres:
         condition: service_healthy
     networks:
       - observatory

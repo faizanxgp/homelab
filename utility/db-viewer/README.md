@@ -25,7 +25,7 @@ Internet → Cloudflare Access (email OTP) → cloudflared tunnel → db-viewer:
                                                                        ↓
                                                           automation network
                                                                        ↓
-                                                     postgres-automation:5432
+                                                     automation-postgres:5432
 ```
 
 - No host port published — the container is only reachable container-to-container
@@ -37,5 +37,5 @@ Internet → Cloudflare Access (email OTP) → cloudflared tunnel → db-viewer:
 | Network | Why |
 |---|---|
 | `drawbridge` | Public URL via tunnel → Access gate |
-| `automation` | Can reach `postgres-automation:5432` |
+| `automation` | Can reach `automation-postgres:5432` |
 | `observatory` | cAdvisor/Promtail observe it while running |

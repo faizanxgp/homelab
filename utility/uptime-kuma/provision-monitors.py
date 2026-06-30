@@ -53,7 +53,7 @@ INTERNAL = [  # app health by container name on the observatory network
 DBS = [  # TCP port checks (no creds stored)
     ("Postgres - n8n",          "n8n-postgres",        5432),
     ("Postgres - Evolution",    "evo-postgres",        5432),
-    ("Postgres - automation",   "postgres-automation", 5432),
+    ("Postgres - automation",   "automation-postgres", 5432),
     ("Redis - n8n",             "n8n-redis",           6379),
     ("Redis - Evolution",       "evo-redis",           6379),
     ("Redis - TextBee",         "textbee-redis",       6379),
