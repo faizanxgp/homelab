@@ -1,0 +1,152 @@
+# Dify — LLM app development platform (agents, workflows, RAG).
+# Multi-service: api + worker + web on Postgres + Redis + Weaviate (vectors) +
+# sandbox (code execution). Part of the ai-agents stack. Kept STOPPED.
+# NOTE: production Dify fronts api/web with a bundled nginx that routes
+# /console,/api,/v1 -> api and everything else -> web. Here api and web are
+# exposed separately; route them with the cloudflared tunnel (see README) or add
+# Dify's upstream nginx service. Public host (when enabled): dify.itproxima.com.
+name: dify
+x-dify-api-env: &dify-api-env
+  SECRET_KEY: "${DIFY_SECRET_KEY}"                # openssl rand -base64 42
+  DB_USERNAME: dify
+  DB_PASSWORD: "${DIFY_DB_PASSWORD}"
+  DB_HOST: dify-db
+  DB_PORT: "5432"
+  DB_DATABASE: dify
+  REDIS_HOST: dify-redis
+  REDIS_PORT: "6379"
+  REDIS_DB: "0"
+  CELERY_BROKER_URL: "redis://dify-redis:6379/1"
+  VECTOR_STORE: weaviate
+  WEAVIATE_ENDPOINT: "http://dify-weaviate:8080"
+  STORAGE_TYPE: opendal
+  OPENDAL_SCHEME: fs
+  CODE_EXECUTION_ENDPOINT: "http://dify-sandbox:8194"
+  CODE_EXECUTION_API_KEY: "${DIFY_SANDBOX_KEY}"
+  LOG_LEVEL: INFO
+
+services:
+  dify-api:
+    image: langgenius/dify-api:latest
+    container_name: dify-api
+    restart: unless-stopped
+    environment:
+      <<: *dify-api-env
+      MODE: api
+    depends_on:
+      dify-db: { condition: service_healthy }
+      dify-redis: { condition: service_healthy }
+    volumes:
+      - ./volumes/app/storage:/app/api/storage
+    ports:
+      - "127.0.0.1:8519:5001"   # api; route /console,/api,/v1 here via the tunnel
+    networks: [dify-internal, agents, drawbridge, observatory]
+
+  dify-worker:
+    image: langgenius/dify-api:latest
+    container_name: dify-worker
+    restart: unless-stopped
+    environment:
+      <<: *dify-api-env
+      MODE: worker
+    depends_on:
+      dify-db: { condition: service_healthy }
+      dify-redis: { condition: service_healthy }
+    volumes:
+      - ./volumes/app/storage:/app/api/storage
+    networks: [dify-internal, observatory]
+
+  dify-web:
+    image: langgenius/dify-web:latest
+    container_name: dify-web
+    restart: unless-stopped
+    environment:
+      CONSOLE_API_URL: "https://dify.itproxima.com"
+      APP_API_URL: "https://dify.itproxima.com"
+    ports:
+      - "127.0.0.1:8511:3000"   # web; default route via the tunnel
+    networks: [dify-internal, agents, drawbridge, observatory]
+
+  dify-db:
+    image: postgres:15-alpine
+    container_name: dify-db
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: dify
+      POSTGRES_PASSWORD: "${DIFY_DB_PASSWORD}"
+      POSTGRES_DB: dify
+    volumes:
+      - ./volumes/db:/var/lib/postgresql/data
+    networks: [dify-internal]
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U dify -d dify"]
+      interval: 10s
+      timeout: 3s
+      retries: 10
+
+  dify-redis:
+    image: redis:6-alpine
+    container_name: dify-redis
+    restart: unless-stopped
+    volumes:
+      - ./volumes/redis:/data
+    networks: [dify-internal]
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 10s
+      timeout: 3s
+      retries: 10
+
+  dify-weaviate:
+    image: semitechnologies/weaviate:1.25.5
+    container_name: dify-weaviate
+    restart: unless-stopped
+    environment:
+      PERSISTENCE_DATA_PATH: /var/lib/weaviate
+      QUERY_DEFAULTS_LIMIT: "25"
+      AUTHENTICATION_ANONYMOUS_ACCESS_ENABLED: "true"
+      DEFAULT_VECTORIZER_MODULE: none
+      CLUSTER_HOSTNAME: node1
+    volumes:
+      - ./volumes/weaviate:/var/lib/weaviate
+    networks: [dify-internal]
+
+  dify-sandbox:
+    image: langgenius/dify-sandbox:latest
+    container_name: dify-sandbox
+    restart: unless-stopped
+    environment:
+      API_KEY: "${DIFY_SANDBOX_KEY}"
+      GIN_MODE: release
+      WORKER_TIMEOUT: "15"
+    networks: [dify-internal]
+
+  dify-postgres-exporter:
+    image: prometheuscommunity/postgres-exporter:latest
+    container_name: dify-postgres-exporter
+    restart: unless-stopped
+    environment:
+      DATA_SOURCE_NAME: "postgresql://dify:${DIFY_DB_PASSWORD}@dify-db:5432/dify?sslmode=disable"
+    depends_on:
+      dify-db: { condition: service_healthy }
+    networks: [dify-internal, observatory]
+
+  dify-redis-exporter:
+    image: oliver006/redis_exporter:latest
+    container_name: dify-redis-exporter
+    restart: unless-stopped
+    environment:
+      REDIS_ADDR: "redis://dify-redis:6379"
+    depends_on:
+      dify-redis: { condition: service_healthy }
+    networks: [dify-internal, observatory]
+
+networks:
+  dify-internal:
+    driver: bridge
+  agents:
+    external: true
+  drawbridge:
+    external: true
+  observatory:
+    external: true
