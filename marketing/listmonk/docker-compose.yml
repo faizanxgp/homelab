@@ -1,0 +1,64 @@
+# Listmonk — self-hosted newsletter & mailing-list manager.
+# Part of the marketing stack. Defined but kept stopped (review before `up`).
+# Public (when enabled) via cloudflared at listmonk.itproxima.com.
+name: listmonk
+services:
+  listmonk:
+    image: listmonk/listmonk:latest
+    container_name: listmonk
+    restart: unless-stopped
+    depends_on:
+      listmonk-db:
+        condition: service_healthy
+    environment:
+      LISTMONK_app__address: "0.0.0.0:9000"
+      LISTMONK_db__host: listmonk-db
+      LISTMONK_db__port: "5432"
+      LISTMONK_db__user: listmonk
+      LISTMONK_db__password: "${LISTMONK_DB_PASSWORD}"
+      LISTMONK_db__database: listmonk
+      LISTMONK_db__ssl_mode: disable
+      TZ: Asia/Karachi
+    # First run installs the schema; idempotent so it is safe on every boot.
+    command: ["sh", "-c", "./listmonk --install --idempotent --yes --config '' && ./listmonk --upgrade --yes --config '' && ./listmonk --config ''"]
+    ports:
+      - "127.0.0.1:8410:9000"   # local test only; public via tunnel
+    networks: [listmonk-internal, marketing, drawbridge, observatory]
+
+  listmonk-db:
+    image: postgres:17-alpine
+    container_name: listmonk-db
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: listmonk
+      POSTGRES_PASSWORD: "${LISTMONK_DB_PASSWORD}"
+      POSTGRES_DB: listmonk
+    volumes:
+      - ./volumes/postgres:/var/lib/postgresql/data
+    networks: [listmonk-internal]
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U listmonk -d listmonk"]
+      interval: 10s
+      timeout: 3s
+      retries: 10
+
+  listmonk-postgres-exporter:
+    image: prometheuscommunity/postgres-exporter:latest
+    container_name: listmonk-postgres-exporter
+    restart: unless-stopped
+    environment:
+      DATA_SOURCE_NAME: "postgresql://listmonk:${LISTMONK_DB_PASSWORD}@listmonk-db:5432/listmonk?sslmode=disable"
+    depends_on:
+      listmonk-db:
+        condition: service_healthy
+    networks: [listmonk-internal, observatory]
+
+networks:
+  listmonk-internal:
+    driver: bridge
+  marketing:
+    external: true
+  drawbridge:
+    external: true
+  observatory:
+    external: true

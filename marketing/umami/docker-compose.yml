@@ -1,0 +1,64 @@
+# Umami — privacy-friendly, lightweight web analytics (Postgres-backed).
+# Part of the marketing stack. Defined but kept stopped (review before `up`).
+# Public (when enabled) via cloudflared at umami.itproxima.com.
+name: umami
+services:
+  umami:
+    image: ghcr.io/umami-software/umami:postgresql-latest
+    container_name: umami
+    restart: unless-stopped
+    depends_on:
+      umami-db:
+        condition: service_healthy
+    environment:
+      DATABASE_TYPE: postgresql
+      DATABASE_URL: "postgresql://umami:${UMAMI_DB_PASSWORD}@umami-db:5432/umami"
+      APP_SECRET: "${UMAMI_APP_SECRET}"
+      TZ: Asia/Karachi
+    ports:
+      - "127.0.0.1:8411:3000"   # local test only; public via tunnel
+    networks: [umami-internal, marketing, drawbridge, observatory]
+    healthcheck:
+      test: ["CMD-SHELL", "wget -qO- http://localhost:3000/api/heartbeat || exit 1"]
+      interval: 15s
+      timeout: 5s
+      retries: 10
+      start_period: 30s
+
+  umami-db:
+    image: postgres:17-alpine
+    container_name: umami-db
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: umami
+      POSTGRES_PASSWORD: "${UMAMI_DB_PASSWORD}"
+      POSTGRES_DB: umami
+    volumes:
+      - ./volumes/postgres:/var/lib/postgresql/data
+    networks: [umami-internal]
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U umami -d umami"]
+      interval: 10s
+      timeout: 3s
+      retries: 10
+
+  umami-postgres-exporter:
+    image: prometheuscommunity/postgres-exporter:latest
+    container_name: umami-postgres-exporter
+    restart: unless-stopped
+    environment:
+      DATA_SOURCE_NAME: "postgresql://umami:${UMAMI_DB_PASSWORD}@umami-db:5432/umami?sslmode=disable"
+    depends_on:
+      umami-db:
+        condition: service_healthy
+    networks: [umami-internal, observatory]
+
+networks:
+  umami-internal:
+    driver: bridge
+  marketing:
+    external: true
+  drawbridge:
+    external: true
+  observatory:
+    external: true
