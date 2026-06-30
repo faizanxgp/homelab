@@ -1,0 +1,5 @@
+<clickhouse>
+    <!-- Listen on all container interfaces so plausible (on the internal network)
+         can reach the HTTP (8123) and native (9000) ports. Not published to host. -->
+    <listen_host>0.0.0.0</listen_host>
+</clickhouse>
