@@ -15,7 +15,7 @@ A read-only nginx file server. Drop files into `./files/` on the host and they'r
 docker compose up -d
 ```
 
-Drop files into `utility/downloads/files/`. They're served immediately. Directory listing is enabled by default in `nginx.conf`.
+Drop files into `sites/downloads/files/`. They're served immediately. Directory listing is enabled by default in `nginx.conf`.
 
 ## Networks
 

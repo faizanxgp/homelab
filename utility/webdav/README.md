@@ -13,8 +13,8 @@ behind CF Access. Its own basic auth is the gate — user/password in `.env` (`W
 ## On-disk sources (bind-mounted into the container at /data)
 | WebDAV path  | Server path                        | Also reachable at            |
 |--------------|------------------------------------|------------------------------|
-| `/downloads` | `utility/downloads/files`          | downloads.itproxima.com      |
-| `/uploads`   | `utility/uploads/files`            | uploads.itproxima.com        |
+| `/downloads` | `sites/downloads/files`          | downloads.itproxima.com      |
+| `/uploads`   | `sites/uploads/files`            | uploads.itproxima.com        |
 | `/archive`   | `utility/storage/archive`          | (bulk; OneDrive migration)   |
 
 These are the **same** dirs bind-mounted into the web vault at `/config/vault/storage/*`.

@@ -89,7 +89,7 @@ cp automation/evoapi/.env.example    automation/evoapi/.env
 cp automation/postgres/.env.example  automation/postgres/.env
 cp utility/cloudflared/.env.example  utility/cloudflared/.env
 cp utility/couchdb/.env.example      utility/couchdb/.env
-cp utility/obsidian/.env.example     utility/obsidian/.env
+cp sites/obsidian/.env.example     sites/obsidian/.env
 cp utility/webdav/.env.example       utility/webdav/.env
 ```
 
@@ -197,11 +197,11 @@ docker compose -f automation/evoapi/docker-compose.yml   up -d
 
 ```bash
 docker compose -f utility/couchdb/docker-compose.yml   up -d
-docker compose -f utility/obsidian/docker-compose.yml  up -d
+docker compose -f sites/obsidian/docker-compose.yml  up -d
 docker compose -f utility/webdav/docker-compose.yml    up -d
-docker compose -f utility/downloads/docker-compose.yml up -d
-docker compose -f utility/uploads/docker-compose.yml   up -d
-docker compose -f utility/apk-server/docker-compose.yml up -d
+docker compose -f sites/downloads/docker-compose.yml up -d
+docker compose -f sites/uploads/docker-compose.yml   up -d
+docker compose -f sites/apk-server/docker-compose.yml up -d
 ```
 
 ### Dashboards + misc
@@ -235,7 +235,7 @@ All containers should show `Up` — none should be in a restart loop.
 3. Workers connect automatically — check Settings → Workers to confirm all three are online.
 
 ### Obsidian + LiveSync
-See [`utility/obsidian/README.md`](utility/obsidian/README.md) for the full first-run setup (vault init + LiveSync config on web, phone, and laptop).
+See [`sites/obsidian/README.md`](sites/obsidian/README.md) for the full first-run setup (vault init + LiveSync config on web, phone, and laptop).
 
 ### Evolution API (WhatsApp)
 1. Open `evolution.yourdomain.com` with header `apikey: <your EVO_API_KEY>`.
@@ -256,7 +256,7 @@ echo "https://faizanxgp:YOUR_PAT@github.com" > ~/.git-credentials
 chmod 600 ~/.git-credentials
 
 # Install the cron job (edit paths inside the script first)
-cp utility/obsidian/vault-to-github.sh /usr/local/bin/vault-to-github
+cp sites/obsidian/vault-to-github.sh /usr/local/bin/vault-to-github
 chmod +x /usr/local/bin/vault-to-github
 
 # Add to crontab (Mon & Thu at 09:00 server time)

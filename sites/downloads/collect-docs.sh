@@ -8,7 +8,7 @@
 set -euo pipefail
 
 REPO="/opt/homelab"
-OUT="$REPO/utility/downloads/files/Homelab-Docs"
+OUT="$REPO/sites/downloads/files/Homelab-Docs"
 rm -rf "$OUT"; mkdir -p "$OUT"
 
 # title-case a dir slug: "uptime-kuma" -> "Uptime Kuma"
@@ -43,7 +43,7 @@ done
 {
   echo "# 🗂️ Homelab Docs — index"
   echo
-  echo "All homelab READMEs + key docs, auto-collected by \`utility/downloads/collect-docs.sh\`."
+  echo "All homelab READMEs + key docs, auto-collected by \`sites/downloads/collect-docs.sh\`."
   echo "Browse/download at **downloads.itproxima.com/Homelab-Docs/** or open in Obsidian."
   echo
   ( cd "$OUT" && for f in *.md; do [ "$f" = "INDEX.md" ] && continue; echo "- [$f](<$f>)"; done )

@@ -11,9 +11,12 @@ services:
     networks:
       - drawbridge            # the public tunnel network; cloudflared reaches http://apk-server:80
       - observatory           # so cadvisor/promtail observe it
+      - sites                          # grouped on the sites network
 
 networks:
   drawbridge:
     external: true
   observatory:
+    external: true
+  sites:
     external: true

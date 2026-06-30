@@ -15,7 +15,7 @@ LOOP="${3:-600}"
 
 API="http://127.0.0.1:8080"
 KEY="$(grep -E '^EVO_API_KEY=' /opt/homelab/automation/evoapi/.env | cut -d= -f2- | tr -d ' \r\n')"
-OUT="/opt/homelab/utility/downloads/files"
+OUT="/opt/homelab/sites/downloads/files"
 PNG="$OUT/$SLUG.png"
 HTML="$OUT/$SLUG.html"
 

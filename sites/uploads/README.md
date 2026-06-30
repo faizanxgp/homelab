@@ -5,8 +5,8 @@ A minimal Python HTTP server that accepts file uploads and saves them to `./file
 ## The triangle
 
 ```
-uploads.yourdomain.com  →  writes to  → utility/uploads/files/
-downloads.yourdomain.com →  reads from → utility/uploads/files/  (same dir, different container)
+uploads.yourdomain.com  →  writes to  → sites/uploads/files/
+downloads.yourdomain.com →  reads from → sites/uploads/files/  (same dir, different container)
 Obsidian vault           →  shows at   → vault/storage/uploads/   (bind mount of same dir)
 ```
 
