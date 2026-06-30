@@ -188,7 +188,7 @@ for inst, friendly in REDIS_INSTANCES:
 
 # ============================================================ MONGODB
 m = []
-m.append(stat("Up", [tgt('mongodb_up', "textbee-db")], 0, 1, 4, 4, unit="none", mappings=UP_MAP, thresholds=UP_TH))
+m.append(stat("Up", [tgt('mongodb_up', "textbee-mongo")], 0, 1, 4, 4, unit="none", mappings=UP_MAP, thresholds=UP_TH))
 m.append(stat("Uptime", [tgt('mongodb_instance_uptime_seconds')], 4, 1, 4, 4, unit="s", color_mode="value"))
 m.append(stat("Current Connections", [tgt('mongodb_connections{state="current"}')], 8, 1, 4, 4, unit="short", graph=True, color_mode="value"))
 m.append(stat("Available Connections", [tgt('mongodb_connections{state="available"}')], 12, 1, 4, 4, unit="short", color_mode="value"))

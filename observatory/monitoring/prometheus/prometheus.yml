@@ -57,7 +57,7 @@ scrape_configs:
   - job_name: mongodb
     static_configs:
       - targets: ['textbee-mongo-exporter:9216']
-        labels: {instance: 'textbee-db'}
+        labels: {instance: 'textbee-mongo'}
 
   # ---- CouchDB exporter (Obsidian LiveSync backend) ----
   - job_name: couchdb

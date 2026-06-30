@@ -56,7 +56,7 @@
             "uid": "prometheus"
           },
           "expr": "mongodb_up",
-          "legendFormat": "textbee-db",
+          "legendFormat": "textbee-mongo",
           "refId": "A",
           "instant": false
         }
