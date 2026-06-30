@@ -1,0 +1,26 @@
+# Beszel — lightweight server monitoring hub + agent (CPU/RAM/disk/net/containers).
+# Lives in the dashboards stack. Defined but kept stopped.
+# Public (when enabled) via cloudflared at beszel.itproxima.com.
+name: beszel
+services:
+  beszel:
+    image: henrygd/beszel:latest
+    container_name: beszel
+    restart: unless-stopped
+    volumes:
+      - ./volumes/beszel_data:/beszel_data
+    ports:
+      - "127.0.0.1:8090:8090"   # hub UI; local test only, public via tunnel
+    networks: [drawbridge, observatory]
+
+  beszel-agent:
+    image: henrygd/beszel-agent:latest
+    container_name: beszel-agent
+    restart: unless-stopped
+    network_mode: host   # agent reads host metrics directly
+    environment:
+      LISTEN: "45876"
+      # Public key shown by the hub on "add system". Put it in .env.
+      KEY: "${BESZEL_AGENT_KEY}"
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock:ro
