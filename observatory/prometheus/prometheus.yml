@@ -40,6 +40,8 @@ scrape_configs:
         labels: {instance: 'automation-postgres'}
       - targets: ['postiz-postgres-exporter:9187']
         labels: {instance: 'postiz-postgres'}
+      - targets: ['temporal-postgres-exporter:9187']
+        labels: {instance: 'temporal-postgres'}
 
   # ---- Redis exporters ----
   - job_name: redis
@@ -64,6 +66,12 @@ scrape_configs:
     static_configs:
       - targets: ['couchdb-exporter:9984']
         labels: {instance: 'couchdb'}
+
+  # ---- Elasticsearch exporter (Temporal visibility store) ----
+  - job_name: elasticsearch
+    static_configs:
+      - targets: ['temporal-es-exporter:9114']
+        labels: {instance: 'temporal-es'}
 
   # ---- Cloudflare Tunnel (cloudflared built-in metrics) ----
   - job_name: cloudflared

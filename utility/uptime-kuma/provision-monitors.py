@@ -70,7 +70,7 @@ CONTAINERS = [
     "textbee-mongo-exporter", "textbee-redis-exporter",
     # Postiz stack (no public endpoints — watch container state)
     "postiz-postgres", "postiz-redis",
-    "temporal", "temporal-postgresql", "temporal-elasticsearch",
+    "temporal", "temporal-postgres", "temporal-elasticsearch",
 ]
 DOCKER_HOST_NAME = "local-socket"
 DOCKER_SOCK = "/var/run/docker.sock"

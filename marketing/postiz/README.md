@@ -12,7 +12,7 @@ generation and per-post analytics.
 - `postiz-postgres` (Postgres 17) + `postiz-redis` (Redis 7) — dedicated, on the
   private `postiz-internal` network, never exposed.
 - **Temporal** workflow engine (required by modern Postiz): `temporal`
-  (auto-setup) + `temporal-postgresql` + `temporal-elasticsearch`. ES is mandatory —
+  (auto-setup) + `temporal-postgres` + `temporal-elasticsearch`. ES is mandatory —
   the Postgres-only visibility store caps Text search attributes at 3 and Postiz
   needs more (`addSearchAttributes` fails otherwise). ES runs a small 512m heap.
 - Secrets in `.env` (gitignored); see `.env.example`.
