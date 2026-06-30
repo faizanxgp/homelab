@@ -1,0 +1,80 @@
+# Plausible (Community Edition) — privacy-first web analytics.
+# Postgres (app) + ClickHouse (events). ClickHouse exposes native Prometheus
+# metrics on :9363 (see clickhouse/config.d/prometheus.xml).
+# Part of the marketing stack. Defined but kept stopped (review before `up`).
+# Public (when enabled) via cloudflared at plausible.itproxima.com.
+name: plausible
+services:
+  plausible:
+    image: ghcr.io/plausible/community-edition:v2.1.4
+    container_name: plausible
+    restart: unless-stopped
+    command: sh -c "/entrypoint.sh db createdb && /entrypoint.sh db migrate && /entrypoint.sh run"
+    depends_on:
+      plausible-db:
+        condition: service_healthy
+      plausible-events-db:
+        condition: service_healthy
+    environment:
+      BASE_URL: "https://plausible.itproxima.com"
+      SECRET_KEY_BASE: "${PLAUSIBLE_SECRET_KEY_BASE}"   # openssl rand -base64 48
+      DATABASE_URL: "postgres://plausible:${PLAUSIBLE_DB_PASSWORD}@plausible-db:5432/plausible"
+      CLICKHOUSE_DATABASE_URL: "http://plausible-events-db:8123/plausible_events_db"
+    ports:
+      - "127.0.0.1:8417:8000"   # local test only; public via tunnel
+    networks: [plausible-internal, marketing, drawbridge, observatory]
+
+  plausible-db:
+    image: postgres:16-alpine
+    container_name: plausible-db
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: plausible
+      POSTGRES_PASSWORD: "${PLAUSIBLE_DB_PASSWORD}"
+      POSTGRES_DB: plausible
+    volumes:
+      - ./volumes/postgres:/var/lib/postgresql/data
+    networks: [plausible-internal]
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U plausible -d plausible"]
+      interval: 10s
+      timeout: 3s
+      retries: 10
+
+  plausible-events-db:
+    image: clickhouse/clickhouse-server:24.12-alpine
+    container_name: plausible-events-db
+    restart: unless-stopped
+    volumes:
+      - ./volumes/clickhouse:/var/lib/clickhouse
+      - ./clickhouse/config.d:/etc/clickhouse-server/config.d:ro
+      - ./clickhouse/users.d:/etc/clickhouse-server/users.d:ro
+    ulimits:
+      nofile: { soft: 262144, hard: 262144 }
+    networks: [plausible-internal, observatory]   # :9363 prometheus scraped on observatory
+    healthcheck:
+      test: ["CMD-SHELL", "wget --no-verbose --tries=1 -O - http://127.0.0.1:8123/ping || exit 1"]
+      interval: 15s
+      timeout: 5s
+      retries: 10
+
+  plausible-postgres-exporter:
+    image: prometheuscommunity/postgres-exporter:latest
+    container_name: plausible-postgres-exporter
+    restart: unless-stopped
+    environment:
+      DATA_SOURCE_NAME: "postgresql://plausible:${PLAUSIBLE_DB_PASSWORD}@plausible-db:5432/plausible?sslmode=disable"
+    depends_on:
+      plausible-db:
+        condition: service_healthy
+    networks: [plausible-internal, observatory]
+
+networks:
+  plausible-internal:
+    driver: bridge
+  marketing:
+    external: true
+  drawbridge:
+    external: true
+  observatory:
+    external: true
