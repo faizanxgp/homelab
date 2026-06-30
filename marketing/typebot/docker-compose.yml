@@ -14,6 +14,7 @@ services:
     environment:
       DATABASE_URL: "postgresql://typebot:${TYPEBOT_DB_PASSWORD}@typebot-db:5432/typebot"
       ENCRYPTION_SECRET: "${TYPEBOT_ENCRYPTION_SECRET}"   # openssl rand -base64 24
+      HOSTNAME: "0.0.0.0"
       NEXTAUTH_URL: "https://typebot.itproxima.com"
       NEXT_PUBLIC_VIEWER_URL: "https://bot.itproxima.com"
       ADMIN_EMAIL: "${TYPEBOT_ADMIN_EMAIL}"
@@ -32,6 +33,8 @@ services:
       DATABASE_URL: "postgresql://typebot:${TYPEBOT_DB_PASSWORD}@typebot-db:5432/typebot"
       ENCRYPTION_SECRET: "${TYPEBOT_ENCRYPTION_SECRET}"
       NEXT_PUBLIC_VIEWER_URL: "https://bot.itproxima.com"
+      NEXTAUTH_URL: "https://typebot.itproxima.com"
+      HOSTNAME: "0.0.0.0"
     ports:
       - "127.0.0.1:8415:3000"   # viewer; public via tunnel
     networks: [typebot-internal, marketing, drawbridge, observatory]
