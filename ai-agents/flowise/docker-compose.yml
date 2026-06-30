@@ -1,0 +1,65 @@
+# Flowise — low-code builder for LLM agents & chains (Postgres-backed).
+# Part of the ai-agents stack. Defined but kept stopped.
+# Public (when enabled) via cloudflared at flowise.itproxima.com.
+name: flowise
+services:
+  flowise:
+    image: flowiseai/flowise:latest
+    container_name: flowise
+    restart: unless-stopped
+    depends_on:
+      flowise-db:
+        condition: service_healthy
+    environment:
+      PORT: "3000"
+      DATABASE_TYPE: postgres
+      DATABASE_HOST: flowise-db
+      DATABASE_PORT: "5432"
+      DATABASE_NAME: flowise
+      DATABASE_USER: flowise
+      DATABASE_PASSWORD: "${FLOWISE_DB_PASSWORD}"
+      FLOWISE_USERNAME: "${FLOWISE_USERNAME}"
+      FLOWISE_PASSWORD: "${FLOWISE_PASSWORD}"
+    volumes:
+      - ./volumes/data:/root/.flowise
+    ports:
+      - "127.0.0.1:8510:3000"   # local test only; public via tunnel
+    networks: [flowise-internal, agents, drawbridge, observatory]
+
+  flowise-db:
+    image: postgres:16-alpine
+    container_name: flowise-db
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: flowise
+      POSTGRES_PASSWORD: "${FLOWISE_DB_PASSWORD}"
+      POSTGRES_DB: flowise
+    volumes:
+      - ./volumes/postgres:/var/lib/postgresql/data
+    networks: [flowise-internal]
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U flowise -d flowise"]
+      interval: 10s
+      timeout: 3s
+      retries: 10
+
+  flowise-postgres-exporter:
+    image: prometheuscommunity/postgres-exporter:latest
+    container_name: flowise-postgres-exporter
+    restart: unless-stopped
+    environment:
+      DATA_SOURCE_NAME: "postgresql://flowise:${FLOWISE_DB_PASSWORD}@flowise-db:5432/flowise?sslmode=disable"
+    depends_on:
+      flowise-db:
+        condition: service_healthy
+    networks: [flowise-internal, observatory]
+
+networks:
+  flowise-internal:
+    driver: bridge
+  agents:
+    external: true
+  drawbridge:
+    external: true
+  observatory:
+    external: true
